@@ -69,14 +69,55 @@ class MyValidator: public QValidator
 
 
 KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
-                       const QStringList &preferredItems)
+                       const QStringList &args)
     
-    : KFilePlugin(parent, name, preferredItems)
+    : KFilePlugin(parent, name, args)
 {
     kdDebug(7034) << "mp3 plugin\n";
+    
+    QStringList sg;
+    sg.append("id3v1.1");
+    sg.append("Technical");
+    
+    KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/x-mp3", sg, sg);
+
+    // id3 group
+    KFileMimeTypeInfo::GroupInfo group = info.groupInfo("id3v1.1");
+    // ### set group properties somewhere
+    
+    group.addItemInfo("Title", i18n("Title"), QVariant::String, Modifiable,
+                      NoUnit, KFileMetaInfo::Name);
+    group.addItemInfo("Artist", i18n("Artist"), QVariant::String, Modifiable,
+                      NoUnit, KFileMetaInfo::Author);
+    group.addItemInfo("Album", i18n("Album"), QVariant::String, Modifiable);
+    group.addItemInfo("Year", i18n("Year"), QVariant::String, Modifiable);
+    group.addItemInfo("Comment", i18n("Comment"), QVariant::String, Modifiable,
+                      NoUnit, KFileMetaInfo::Description);
+    group.addItemInfo("Tracknumber", i18n("Track"), QVariant::Int, Modifiable);
+    group.addItemInfo("Genre", i18n("Genre"), QVariant::String, Modifiable);
+
+    // technical group
+    KFileMimeTypeInfo::GroupInfo group = info.groupInfo("Technical");
+
+    group.addItemInfo("Version", i18n("Version"), QVariant::Int, 0, 0, NoUnit,
+                      NoHint, i18n("MPEG"));
+
+    group.addItemInfo("Layer", i18n("Layer"), QVariant::Int);
+    group.addItemInfo("CRC", i18n("CRC"), QVariant::Bool);
+    group.addItemInfo("Bitrate", i18n("Bitrate"), QVariant::Int, 0, 0, NoUnit,
+                      NoHint, QString::null, i18n("kbps"));
+
+    group.addItemInfo("Sample Rate", i18n("Sample Rate"), QVariant::Int, 0, 0,
+                      NoUnit, NoHint, QString::null, i18n("Hz"));
+    
+    group.addItemInfo("Channels", i18n("Channels"), QVariant::Int);
+    group.addItemInfo("Copyright", i18n("Copyright"), QVariant::Bool);
+    group.addItemInfo("Original", i18n("Original"), QVariant::Bool);
+    group.addItemInfo("Length", i18n("Length"), QVariant::Int);
+    group.addItemInfo("Emphasis", i18n("Emphasis"), QVariant::String);
 }
 
-bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info, int )
+bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info, uint what )
 {
     kdDebug(7034) << "mp3 plugin readInfo\n";
     
@@ -98,90 +139,60 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info, int )
 
     ::get_mp3_info(&mp3, ::SCAN_QUICK, ::VBR_VARIABLE);
   
+    // here we go
     QString value;
   
     if (!mp3.id3_isvalid)
         memset(&mp3.id3, sizeof(id3tag), 0);
-
-    if (mp3.id3_isvalid) {
-        info.insert(KFileMetaInfoItem("Title", i18n("Title"),
-                    QVariant(QString::fromLocal8Bit(mp3.id3.title)), true));
-
-        info.insert(KFileMetaInfoItem("Artist", i18n("Artist"),
-                    QVariant(QString::fromLocal8Bit(mp3.id3.artist)), true));
-
-        info.insert(KFileMetaInfoItem("Album", i18n("Album"),
-                    QVariant(QString::fromLocal8Bit(mp3.id3.album)), true));
-
-        info.insert(KFileMetaInfoItem("Date", i18n("Year"),
-                    QVariant(QString::fromLocal8Bit(mp3.id3.year)), true));
-
-         info.insert(KFileMetaInfoItem("Comment", i18n("Comment"),
-                    QVariant(QString::fromLocal8Bit(mp3.id3.comment)), true));
-
-         // the key is "Tracknumber" here because it's in ogg, too
-        if (mp3.id3.track[0])
-            info.insert(KFileMetaInfoItem("Tracknumber", i18n("Track"),
-                        QVariant((int)mp3.id3.track[0]), true));
+    else
+    {
+        KFileMetaInfoGroup id3group = info.appendGroup("id3v1.1");
         
-	// Could we find a valid genre?
-        if (mp3.id3.genre[0]>MAXGENRE) {
-		// No, set it to 12 ("Other")
-        	mp3.id3.genre[0] = 12;
-	}
+        id3group.appendItem("Title", QString::fromLocal8Bit(mp3.id3.title));
+        id3group.appendItem("Artist", QString::fromLocal8Bit(mp3.id3.artist));
+        id3group.appendItem("Album", QString::fromLocal8Bit(mp3.id3.album));
+        id3group.appendItem("Year", QString::fromLocal8Bit(mp3.id3.year));
+        id3group.appendItem("Comment", QString::fromLocal8Bit(mp3.id3.comment));
 
-        if (!mp3.id3_isvalid) {
-            info.insert(KFileMetaInfoItem("Genre", i18n("Genre"),
-                    QVariant(QString("")), true));
-        }
-        else  {
-            info.insert(KFileMetaInfoItem("Genre", i18n("Genre"),
-                        QVariant(QString::fromLocal8Bit(
-                        ::typegenre[mp3.id3.genre[0]])), true));
-        }
-    }    
+        if (mp3.id3.track[0])
+            id3group.appendItem("Tracknumber", fromLocal8Bit(mp3.id3.track[0]));
+        
+      	// Could we find a valid genre?
+        if (mp3.id3.genre[0]>MAXGENRE) {
+            // No, set it to 12 ("Other")
+          	mp3.id3.genre[0] = 12;
+      	}
+
+        id3group.appendItem("Genre", QString::fromLocal8Bit(
+                                              ::typegenre[mp3.id3.genre[0]]));
+    }
     
     // end of the id3 part
-    
+    // now the technical stuff
     if (mp3.header_isvalid) {
-        info.insert(KFileMetaInfoItem("Version", i18n("Version"),
-                    QVariant(mp3.header.version), false, i18n("MPEG")));
-    
-        info.insert(KFileMetaInfoItem("Layer",
-            i18n("Layer"), QVariant(::header_layer(&mp3.header))));
-    
-        info.insert(KFileMetaInfoItem("CRC", i18n("CRC"),
-                    QVariant((bool)header_crc(&mp3.header), 42)));
-    
-        info.insert(KFileMetaInfoItem("Bitrate", i18n("Bitrate"),
-                    QVariant(::header_bitrate(&mp3.header)), false,
-                    QString::null, i18n("kbps")));
-    
-        info.insert(KFileMetaInfoItem("Sample Rate", i18n("Sample Rate"),
-                    QVariant(::header_frequency(&mp3.header)), false,
-                    QString::null, i18n("Hz")));
-    
+
+        KFileMetaInfoGroup techgroup = info.appendGroup("Technical");
+        
+        techgroup.appendItem("Version", mp3.header.version);
+        techgroup.appendItem("Layer", ::header_layer(&mp3.header));
+        techgroup.appendItem("CRC", bool(header_crc(&mp3.header)));
+        techgroup.appendItem("Bitrate", ::header_bitrate(&mp3.header));
+        techgroup.appendItem("Sample Rate", ::header_frequency(&mp3.header));
         // Modes 0-2 are forms of stereo, mode 3 is mono
-        info.insert(KFileMetaInfoItem("Channels", i18n("Channels"),
-                    QVariant(int((mp3.header.mode == 3) ? 1 : 2))));
-    
-        info.insert(KFileMetaInfoItem("Copyright", i18n("Copyright"),
-                    QVariant((bool)mp3.header.copyright, 42)));
+        techgroup.appendItem("Channels", int((mp3.header.mode == 3) ? 1 : 2));
+        techgroup.appendItem("Copyright", bool(mp3.header.copyright));
+        techgroup.appendItem("Original", bool(mp3.header.original));
+        techgroup.appendItem("Length", mp3.seconds);
+        techgroup.appendItem("Emphasis", ::header_emphasis(&mp3.header));
+        
+//        int playmin = mp3.seconds / 60;
+//        int playsec = mp3.seconds % 60;
+//        QString str;
+//        str = QString("%0:%1").arg(playmin)
+//                              .arg(QString::number(playsec).rightJustify(2,'0') );
+//         info.insert(KFileMetaInfoItem("Length", i18n("Length"),
+//                     QVariant(str), false, QString::null));
 
-        info.insert(KFileMetaInfoItem("Original", i18n("Original"),
-                    QVariant((bool)mp3.header.original, 42)));
-
-         int playmin = mp3.seconds / 60;
-         int playsec = mp3.seconds % 60;
-         QString str;
-         str = QString("%0:%1").arg(playmin)
-                               .arg(QString::number(playsec).rightJustify(2,'0') );
-
-         info.insert(KFileMetaInfoItem("Length", i18n("Length"),
-                     QVariant(str), false, QString::null));
-    
-         info.insert(KFileMetaInfoItem("Emphasis", i18n("Emphasis"),
-                    QVariant(::header_emphasis(&mp3.header))));
     }
 
     fclose(mp3.file);
@@ -191,14 +202,14 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info, int )
     
     kdDebug(7034) << "the preferredItems contain " << m_preferred.size() << endl;
     
-    info.setPreferredKeys(m_preferred);
-    info.setSupportedKeys(m_preferred);
-    info.setSupportsVariableKeys(false);
+//    info.setPreferredKeys(m_preferred);
+//    info.setSupportedKeys(m_preferred);
+//    info.setSupportsVariableKeys(false);
     
     return true;
 }
 
-bool KMp3Plugin::writeInfo( const KFileMetaInfo::Internal& info) const
+bool KMp3Plugin::writeInfo( const KFileMetaInfo& info) const
 {
     mp3info mp3;
     memset(&mp3,0,sizeof(mp3info));
@@ -218,16 +229,16 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo::Internal& info) const
 
     ::get_mp3_info(&mp3, ::SCAN_NONE, ::VBR_VARIABLE);
     
-    strncpy(mp3.id3.title,  info["Title"]  .value().toString().local8Bit(), 31);
-    strncpy(mp3.id3.artist, info["Artist"] .value().toString().local8Bit(), 31);
-    strncpy(mp3.id3.album,  info["Album"]  .value().toString().local8Bit(), 31);
-    strncpy(mp3.id3.year,   info["Date"]   .value().toString().local8Bit(),  5);
-    strncpy(mp3.id3.comment,info["Comment"].value().toString().local8Bit(), 29);
+    strncpy(mp3.id3.title,  info["id3v1.1"]["Title"]  .value().toString().local8Bit(), 31);
+    strncpy(mp3.id3.artist, info["id3v1.1"]["Artist"] .value().toString().local8Bit(), 31);
+    strncpy(mp3.id3.album,  info["id3v1.1"]["Album"]  .value().toString().local8Bit(), 31);
+    strncpy(mp3.id3.year,   info["id3v1.1"]["Date"]   .value().toString().local8Bit(),  5);
+    strncpy(mp3.id3.comment,info["id3v1.1"]["Comment"].value().toString().local8Bit(), 29);
 
-    KFileMetaInfoItem track = info["Tracknumber"];
+    KFileMetaInfoItem track = info["id3v1.1"]["Tracknumber"];
     if (track.isValid()) mp3.id3.track[0] = track.value().toInt();
     
-    QString s = info["Genre"].value().toString();
+    QString s = info["id3v1.1"]["Genre"].value().toString();
 
     for (mp3.id3.genre[0] = 0; mp3.id3.genre[0] <= MAXGENRE; mp3.id3.genre[0]++)
     {

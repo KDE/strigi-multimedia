@@ -30,11 +30,10 @@ class KMp3Plugin: public KFilePlugin
     Q_OBJECT
     
 public:
-    KMp3Plugin( QObject *parent, const char *name,
-                const QStringList& preferredItems );
+    KMp3Plugin( QObject *parent, const char *name, const QStringList& args );
     
-    virtual bool readInfo( KFileMetaInfo::Internal& info, int );
-    virtual bool writeInfo( const KFileMetaInfo::Internal& info ) const;
+    virtual bool readInfo( KFileMetaInfo& info, uint what );
+    virtual bool writeInfo( const KFileMetaInfo& info) const;
     virtual QValidator* createValidator( const QString &key,
                                          QObject* parent, const char* name,
                                          const QString &group) const;
