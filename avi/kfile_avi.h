@@ -43,18 +43,20 @@ public:
 
 
 
-	virtual bool readInfo( KFileMetaInfo& info, uint what);
+    virtual bool readInfo( KFileMetaInfo& info, uint what);
 
 private:
 
-    unsigned short readHeader();
-    unsigned short readList_hdrl();
-    unsigned short readList_strl();
+    bool read_avi();
+    bool read_list();
+    bool read_avih();
+    bool read_strl();
 
+    QFile f;
     QDataStream dstream;
 
     // AVI header information
-    bool avih;
+    bool done_avih;
     uint32_t avih_microsecperframe;
     uint32_t avih_maxbytespersec;
     uint32_t avih_reserved1;

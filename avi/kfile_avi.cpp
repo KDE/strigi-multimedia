@@ -76,103 +76,143 @@ KAviPlugin::KAviPlugin(QObject *parent, const char *name,
     setSuffix(item, i18n("fps"));
 
     item = addItemInfo(group, "Video codec", i18n("Video codec"), QVariant::String);
-    //item = addItemInfo(group, "Audeo codec", i18n("Audio codec"), QVariant::String);
+    //item = addItemInfo(group, "Audio codec", i18n("Audio codec"), QVariant::String);
 
 }
 
-
-unsigned short KAviPlugin::readHeader()
+bool KAviPlugin::read_avi()
 {
-    // defs for block markers
-	static const unsigned short mlen = 4;
-	static const char *sig_riff = "RIFF";   // main RIFF marker
-    static const char *sig_list = "LIST";   // list marker
-    static const char *sig_junk = "JUNK";   // junk marker
+    static const char *sig_riff = "RIFF";
+    static const char *sig_avi  = "AVI ";
+    static const char *sig_list = "LIST";
+    static const char *sig_junk = "JUNK";
+    uint32_t dwbuf1;
 
-	static const char *sig_avi  = "AVI ";   // main AVI marker
+    done_avih = false;
+        
+    // read AVI header
+    char charbuf1[5];
+    charbuf1[4] = '\0';
+    
+    // this must be RIFF
+    f.readBlock(charbuf1, 4);
+    if (memcmp(charbuf1, sig_riff, 4) != 0)
+        return false;    
+    
+    dstream >> dwbuf1;
+    
+    // this must be AVI
+    f.readBlock(charbuf1, 4);
+    if (memcmp(charbuf1, sig_avi, 4) != 0)
+        return false;    
+    
+            
+    // start reading AVI file
+    bool done = false;    
+    do {
+        
+        // read header
+        f.readBlock(charbuf1, 4);    
+        
+        kdDebug(7034) << "about to handle chunk with ID: " << charbuf1 << "\n";
+        
+        if (memcmp(charbuf1, sig_list, 4) == 0) {
+            // if list
+            if (!read_list())
+                return false;
+        
+        } else if (memcmp(charbuf1, sig_junk, 4) == 0) {
+            // if junk
+
+            // read chunk size
+            dstream >> dwbuf1;
+            
+            kdDebug(7034) << "Skipping junk chunk length: " << dwbuf1 << "\n";
+                    
+            // skip junk
+            f.at( f.at() + dwbuf1 );
+            
+        } else {
+            // something we dont understand yet
+            kdDebug(7034) << "Unknown chunk header found: " << charbuf1 << "\n";
+            return false;
+        };
+
+        if (
+          ((done_avih) && (strlen(handler_vids) > 0)/* && (strlen(handler_auds) > 0)*/) || 
+          f.atEnd()) {
+            kdDebug(7034) << "We're done!\n";
+            done = true;
+        }
+                    
+    } while (!done);
+
+    return true;                        
+}
+
+
+bool KAviPlugin::read_list()
+{
     static const char *sig_hdrl = "hdrl";   // header list
     static const char *sig_strl = "strl";   // ...list
-    //static const char *sig_movi = "movi";   // movie data
-
-    // buffers for holding stuff we want to look at
+    static const char *sig_movi = "movi";   // movie list
+    
     uint32_t dwbuf1;
-    uint32_t dwbuf2;
+    char charbuf1[5];
+    charbuf1[4] = '\0';
 
-    unsigned short retval = 0;
-    bool done = false;
-    while (!done) {
-        // read a chunk of block, and the dword after it which is its size
-        dstream >> dwbuf1;
-        dstream >> dwbuf2;
+    kdDebug(7034) << "In read_list()\n";
+    
+    // read size & list type
+    dstream >> dwbuf1;
+    f.readBlock(charbuf1, 4);
+        
+    // read the relevant bits of the list
+    if (memcmp(charbuf1, sig_hdrl, 4) == 0) {
+        // should be the main AVI header
+        if (!read_avih())
+            return false;
 
-        // check what block marker it is
-        if (memcmp(&dwbuf1, sig_riff, mlen) == 0) {
-            // we have a RIFF block, this should be the start of the AVI
+    } else if (memcmp(charbuf1, sig_strl, 4) == 0) {
+        // should be some stream info
+        if (!read_strl())
+            return false;
 
-            // check for avi
-            dstream >> dwbuf1;
-            if (memcmp(&dwbuf1, sig_avi, mlen) != 0) {
-                // we are not a valid machine
-                kdDebug(7034) << "Not a valid AVI - failed 2nd block\n";
-                done = true;
-            }
+    } else if (memcmp(charbuf1, sig_movi, 4) == 0) {
+        // movie list
 
-        } else if (memcmp(&dwbuf1, sig_list, mlen) == 0) {
-            // found a list marker, need to see what sort of list and do stuff
-
-            // hdrl | movi (anything else means we should be in readList instead!
-            dstream >> dwbuf1;
-            //f->readBlock(&dwbuf1, mlen);
-            if (memcmp(&dwbuf1, sig_hdrl, mlen) == 0) {
-                // we are a header list!
-                retval = readList_hdrl();
-            } else if (memcmp(&dwbuf1, sig_strl, mlen) == 0) {
-                // we are a stream list, pass the size to the handler method
-                retval = readList_strl();
-            }
-
-        } else if (memcmp(&dwbuf1, sig_junk, mlen) == 0) {
-            // found a junk marker, need to just skip to the end of the block
-
-            // size is in dwbuf2, seek ahead by that amount...
-            // FIXME: implement this!
-
-            //f->at( f->at() + (unsigned long) dwbuf2 );
-
-        } else {
-            //kdDebug(7034) << "Not a valid AVI - failed a primary marker\n";
-            return 1;
-        }
-
-    }
-
-    return 1;
+        kdDebug(7034) << "Skipping movi chunk length: " << dwbuf1 << "\n";
+        
+        // skip past it
+        f.at( f.at() + dwbuf1 );
+            
+    } else {
+        // unknown list type
+        kdDebug(7034) << "Unknown list type found: " << charbuf1 << "\n";
+    }            
+    
+    return true;
 }
 
-unsigned short KAviPlugin::readList_hdrl()
+
+bool KAviPlugin::read_avih()
 {
-    static const char *sig_avih = "avih";   // AVI header data
+    static const char *sig_avih = "avih";   // header list
+
     uint32_t dwbuf1;
-	uint32_t blksize;
+    char charbuf1[5];
 
-
-    kdDebug(7034) << "Reading hdrl\n";
-
-    // this should start with 'avih'
+    // read header and length
+    f.readBlock(charbuf1, 4);
     dstream >> dwbuf1;
-    if (memcmp(&dwbuf1, sig_avih, 4) != 0) {
-	    // not an avih header
-        return 1;
-	}
 
-	// then we should have a size
-    dstream >> blksize;
-
-    // check the size is the same as the data we're after
-
-	// now grab the data
-    avih = true;
-
+    // not a valid avih?
+    if (memcmp(charbuf1, sig_avih, 4) != 0) {
+        kdDebug(7034) << "Chunk ID error, expected avih, got: " << charbuf1 << "\n";
+        return false;
+    }
+        
+    // read all the avih fields
     dstream >> avih_microsecperframe;
     dstream >> avih_maxbytespersec;
     dstream >> avih_reserved1;
@@ -187,27 +227,20 @@ unsigned short KAviPlugin::readList_hdrl()
     dstream >> avih_rate;
     dstream >> avih_start;
     dstream >> avih_length;
-
-    return 1;
+    
+    done_avih = true;
+    
+    return true;
 }
 
 
-unsigned short KAviPlugin::readList_strl()
+bool KAviPlugin::read_strl()
 {
-	// FIXME: we only currently support one set of strf/strh!
-
-    // defs for block markers
-	static const unsigned short mlen = 4;
-    //static const char *sig_strl = "strl";   // ...list
-    static const char *sig_strh = "strh";   // ...header
-    //static const char *sig_strf = "strf";   // ...format
-    
+    static const char *sig_strh = "strh";
+    static const char *sig_strf = "strf";
     static const char *sig_vids = "vids";   // ...video
     static const char *sig_auds = "auds";   // ...audio
 
-    // defs for strh data fields
-    uint32_t strh_type;
-    uint32_t strh_handler;
     uint32_t strh_flags;
     uint32_t strh_reserved1;
     uint32_t strh_initialframes;
@@ -219,26 +252,35 @@ unsigned short KAviPlugin::readList_strl()
     uint32_t strh_quality;
     uint32_t strh_samplesize;
 
+    kdDebug(7034) << "in strl handler\n";
+    
+        
+    /*
+        strl lists contain exactly  two chunks - one strh and one strf
+    
+        // start with strh
+    */
 
-    kdDebug(7034) << "Reading strl\n";
-
-
-    // buffers for holding stuff we want to look at
+    
     uint32_t dwbuf1;
-    uint32_t dwbuf2;
+    char charbuf1[5];
+    char charbuf2[5];
 
-    dstream >> dwbuf1; // stream header
-    dstream >> dwbuf2; // // header structure length
-
-    // check the marker
-    if (memcmp(&dwbuf1, sig_strh, mlen) != 0) {
-        // we needed a strh!
-        return 1;
+    // read type and size
+    f.readBlock(charbuf1, 4);
+    dstream >> dwbuf1;
+    
+    // not a valid strh?
+    if (memcmp(charbuf1, sig_strh, 4) != 0) {
+        kdDebug(7034) << "Chunk ID error, expected strh, got: " << charbuf1 << "\n";
+        return false;
     }
+            
+    // get stream info type, and handler id
+    f.readBlock(charbuf1, 4);
+    f.readBlock(charbuf2, 4);
 
-    // now read the strh data
-    dstream >> strh_type;
-    dstream >> strh_handler;
+    // read the strh fields        
     dstream >> strh_flags;
     dstream >> strh_reserved1;
     dstream >> strh_initialframes;
@@ -249,21 +291,20 @@ unsigned short KAviPlugin::readList_strl()
     dstream >> strh_buffersize;
     dstream >> strh_quality;
     dstream >> strh_samplesize;
-
-    // are we video or audio??
-    if (memcmp(&strh_type, sig_vids, 4) == 0) {
+        
+    if (memcmp(&charbuf1, sig_vids, 4) == 0) {
         // we are video!
 
         // save the handler
-        memcpy(handler_vids, &strh_handler, 4);
+        memcpy(handler_vids, charbuf2, 4);
         kdDebug(7034) << "Video handler: " << handler_vids << "\n";
 
 
-    } else if (memcmp(&dwbuf1, sig_auds, 4) == 0) {
+    } else if (memcmp(&charbuf1, sig_auds, 4) == 0) {
         // we are audio!
 
         // save the handler
-        memcpy(handler_auds, &strh_handler, 4);
+        memcpy(handler_auds, charbuf2, 4);
         kdDebug(7034) << "Audio handler: " << handler_auds << "\n";
 
     } else {
@@ -271,8 +312,30 @@ unsigned short KAviPlugin::readList_strl()
 
     }
 
+    // do we need to skip ahead any more?  (usually yes , contrary to
+    // the AVI specs I've read...)
+    // note: 48 is 10 * uint32_t + 2*FOURCC; the 10 fields we read above, plus the two character fields
+    if (dwbuf1 > 48)
+        f.at( f.at() + (dwbuf1 - 48) );
+    
+    /*
+        now do strf
+    */
+    
+    // read type and size
+    f.readBlock(charbuf1, 4);
+    dstream >> dwbuf1;
 
-    return 0;
+    // not a valid strh?
+    if (memcmp(charbuf1, sig_strf, 4) != 0) {
+        kdDebug(7034) << "Chunk ID error, expected strf, got: " << charbuf1 << "\n";
+        return false;
+    }
+        
+    // skip the strf
+    f.at( f.at() + dwbuf1 );
+        
+    return true;    
 }
 
 
@@ -281,24 +344,23 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     /***************************************************/
     // prep
 
-    avih = false;
     memset(handler_vids, 0x00, 5);
     memset(handler_auds, 0x00, 5);
 
+    
     /***************************************************/
     // sort out the file
 
-    QFile file(info.path());
-
-
+    f.setName(info.path());
+    
     // open file, set up stream and set endianness
-    if (!file.open(IO_ReadOnly))
+    if (!f.open(IO_ReadOnly))
     {
         kdDebug(7034) << "Couldn't open " << QFile::encodeName(info.path()) << endl;
         return false;
     }
     //QDataStream dstream(&file);
-    dstream.setDevice(&file);
+    dstream.setDevice(&f);
 
     dstream.setByteOrder(QDataStream::LittleEndian);
 
@@ -306,12 +368,14 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     /***************************************************/
     // start reading stuff from it
 
-    readHeader();
+    if (!read_avi()) {
+        kdDebug(7034) << "read_avi() failed!" << endl;
+    }
 
     /***************************************************/
     // set up our output
 
-    if (avih) {
+    if (done_avih) {
 
         KFileMetaInfoGroup group = appendGroup(info, "Technical");
 
@@ -326,13 +390,13 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
         if (strlen(handler_vids) > 0)
             appendItem(group, "Video codec", handler_vids);
         else
-            appendItem(group, "Video codec", i18n("None"));
+            appendItem(group, "Video codec", i18n("Unknown"));
 
         /* we havent implemented this yet
         if (strlen(handler_auds) > 0)
             appendItem(group, "Audio codec", handler_auds);
         else
-            appendItem(group, "Audio codec", i18n("None"));
+            appendItem(group, "Audio codec", i18n("Unknown"));
         */
             
     }
