@@ -39,14 +39,14 @@
 
 #include <tag.h>
 #if (TAGLIB_MAJOR_VERSION>1) ||  \
-   ((TAGLIB_MAJOR_VERSION==1) && (TAGLIB_MINOR_VERSION>=2))
-#define TAGLIB_12
+   ((TAGLIB_MAJOR_VERSION==1) && (TAGLIB_MINOR_VERSION>=3))
+#define TAGLIB_13
 #endif
 
 #include <tstring.h>
 #include <tfile.h>
 #include <flacfile.h>
-#ifdef TAGLIB_12
+#ifdef TAGLIB_13
 #include <oggflacfile.h>
 #endif
 
@@ -63,7 +63,7 @@ KFlacPlugin::KFlacPlugin( QObject *parent, const char *name,
     kdDebug(7034) << "flac plugin\n";
 
     makeMimeTypeInfo( "audio/x-flac" );
-#ifdef TAGLIB_12
+#ifdef TAGLIB_13
     makeMimeTypeInfo( "audio/x-oggflac" );
 #endif
 
@@ -160,7 +160,7 @@ bool KFlacPlugin::readInfo( KFileMetaInfo& info, uint what )
 
     if (info.mimeType() == "audio/x-flac")
         file = new TagLib::FLAC::File(QFile::encodeName(info.path()).data(), readTech);
-#ifdef TAGLIB_12
+#ifdef TAGLIB_13
     else
         file = new TagLib::Ogg::FLAC::File(QFile::encodeName(info.path()).data(), readTech);
 #endif
@@ -237,7 +237,7 @@ bool KFlacPlugin::writeInfo(const KFileMetaInfo& info) const
 
     if (info.mimeType() == "audio/x-flac")
         file = new TagLib::FLAC::File(QFile::encodeName(info.path()).data(), false);
-#ifdef TAGLIB_12
+#ifdef TAGLIB_13
     else
         file = new TagLib::Ogg::FLAC::File(QFile::encodeName(info.path()).data(), false);
 #endif
