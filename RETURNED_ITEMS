@@ -13,15 +13,16 @@ String     Artist      +/+  only if id3v1 tag exists / max. 30 characters
 String     Album       +/+  only if id3v1 tag exists / max. 30 characters
 String     Comment     +/+  only if id3v1 tag exists / max. 28 characters
 String     Year        +/+  only if id3v1 tag exists / max.  4 characters
-Int        Track       +/+  only if id3v1.1 tag exists / 0-255
+Int        Tracknumber +/+  only if id3v1.1 tag exists / 0-255
 Bool       CRC         -/-
 Bool       Original    -/-
 Bool       Copyright   -/-
-QTime      Length      -/-  we might have a problem with this
+String     Length      -/- 
 Int        Bitrate     -/-  in kbps
 Int        Frequency   -/-  in Hz
 Int        Version     -/-  mpeg version, 1 or 2
 Int        Layer       -/-  2 or 3
+Int        Channels    -/-  number of audio channels, 1 for mono, 2 stereo
 
 type is the QVariant::type() of that key.
 W/A is writable/addable, - means no, + means yes. If a key is addable, it's
