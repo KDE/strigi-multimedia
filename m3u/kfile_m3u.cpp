@@ -35,7 +35,7 @@
 
 typedef KGenericFactory<KM3uPlugin> M3uFactory;
 
-K_EXPORT_COMPONENT_FACTORY( kfile_m3u, M3uFactory( "kfile_m3u" ) );
+K_EXPORT_COMPONENT_FACTORY( kfile_m3u, M3uFactory( "kfile_m3u" ) )
 
 KM3uPlugin::KM3uPlugin( QObject *parent, const char *name,
                         const QStringList &preferredItems )

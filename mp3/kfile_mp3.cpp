@@ -42,7 +42,7 @@ extern "C" {
 
 typedef KGenericFactory<KMp3Plugin> Mp3Factory;
 
-K_EXPORT_COMPONENT_FACTORY(kfile_mp3, Mp3Factory( "kfile_mp3" ));
+K_EXPORT_COMPONENT_FACTORY(kfile_mp3, Mp3Factory( "kfile_mp3" ))
 
 KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
                        const QStringList &args)

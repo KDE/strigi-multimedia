@@ -43,7 +43,7 @@ typedef unsigned long long uint64_t;
 
 typedef KGenericFactory<KAviPlugin> AviFactory;
 
-K_EXPORT_COMPONENT_FACTORY(kfile_avi, AviFactory( "kfile_avi" ));
+K_EXPORT_COMPONENT_FACTORY(kfile_avi, AviFactory( "kfile_avi" ))
 
 KAviPlugin::KAviPlugin(QObject *parent, const char *name,
                        const QStringList &args)
