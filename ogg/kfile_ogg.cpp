@@ -258,37 +258,5 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo::Internal& info) const
     
     return true;
 }
-  
-
-QValidator* KOggPlugin::createValidator(const KFileMetaInfoItem& item,
-                                        QObject *parent,
-                                        const char *name ) const
-{
-    if (item.isEditable())
-        return new QRegExpValidator(QRegExp(".*"), parent, name);
-    else 
-        return 0L;
-}
-
-#if 0
-
-QStringList KOggMetaInfo::supportedKeys() const
-{
-    QDictIterator<KFileMetaInfoItem> it(m_items);
-    QStringList list;
-    
-    for (; it.current(); ++it)
-    {
-        list.append(it.current()->key());
-    }
-    return list;
-}
-
-QStringList KOggMetaInfo::preferredKeys() const
-{
-    return supportedKeys();
-}
-
-#endif
 
 #include "kfile_ogg.moc"
