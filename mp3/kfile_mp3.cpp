@@ -122,7 +122,7 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info )
                 QVariant(QString::fromLocal8Bit(mp3.id3.comment)), true));
 
     // the key is "Tracknumber" here because it's in ogg, too
-//    if (mp3.id3.track[0])
+    if (mp3.id3.track[0])
     info.insert(KFileMetaInfoItem("Tracknumber", i18n("Track"),
                 QVariant((int)mp3.id3.track[0]), true));
         
