@@ -31,14 +31,14 @@ class KOggPlugin: public KFilePlugin
     Q_OBJECT
     
 public:
-    KOggPlugin( QObject *parent, const char *name,
-                const QStringList& preferredItems );
+    KOggPlugin( QObject *parent, const char *name, const QStringList& args );
     
-    virtual bool readInfo( KFileMetaInfo::Internal& info, int );
-    virtual bool writeInfo( const KFileMetaInfo::Internal& info ) const;
-    virtual QValidator* createValidator( const QString &key,
-                                         QObject* parent, const char* name,
-                                         const QString &group) const;
+    virtual bool readInfo( KFileMetaInfo& info, uint what);
+    virtual bool writeInfo( const KFileMetaInfo& info ) const;
+    virtual QValidator* createValidator( const QString& mimetype,
+                                         const QString &group,
+                                         const QString &key,
+                                         QObject* parent, const char* name) const;
 };
 
 

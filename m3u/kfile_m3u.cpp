@@ -41,14 +41,24 @@ KM3uPlugin::KM3uPlugin( QObject *parent, const char *name,
     : KFilePlugin( parent, name, preferredItems )
 {
     kdDebug(7034) << "m3u plugin\n";
+
+    KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/x-mpegurl" );
+
+    KFileMimeTypeInfo::GroupInfo* group;
+
+    // tracks group
+    group = addGroupInfo(info, "Tracks", i18n("Tracks"));
+    addVariableInfo(group, QVariant::String, 0);
 }
 
-bool KM3uPlugin::readInfo( KFileMetaInfo::Internal& info, int )
+bool KM3uPlugin::readInfo( KFileMetaInfo& info, uint )
 {
     QFile f(info.path());
     f.open(IO_ReadOnly);
     
-    // for now treat all lines like entries
+    KFileMetaInfoGroup group = appendGroup(info, "Tracks");
+    
+    // for now treat all lines that don't start with # like entries
     int num = 1;
     while (!f.atEnd())
     {
@@ -56,20 +66,12 @@ bool KM3uPlugin::readInfo( KFileMetaInfo::Internal& info, int )
         f.readLine(s, 1000);
         if (!s.startsWith("#"))
         {
-            QString key; key.sprintf("%04d", num);
             if (s.endsWith("\n")) s.truncate(s.length()-1);
-            info.insert(KFileMetaInfoItem(key, i18n("Track %1").arg(num),
-                                          QVariant(s)));
+            appendItem(group, QString("Track %1").arg(num, 3), s);
             num++;
         }
     }
     
-    info.setPreferredKeys(m_preferred);
-
-    QStringList supported(m_preferred);
-    supported.sort();
-    info.setSupportedKeys(supported);
-    info.setSupportsVariableKeys(false);
     return true;
 }
 
