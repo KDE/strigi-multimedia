@@ -31,10 +31,9 @@ class KM3uPlugin: public KFilePlugin
     Q_OBJECT
     
 public:
-    KM3uPlugin( QObject *parent, const char *name,
-                const QStringList& preferredItems );
+    KM3uPlugin( QObject *parent, const char *name, const QStringList& args );
     
-    virtual bool readInfo( KFileMetaInfo::Internal& info, int );
+    virtual bool readInfo( KFileMetaInfo& info, uint what );
 };
 
 #endif

@@ -40,4 +40,5 @@ Name[zu]=Ulwazi Loluhlu lokudlala M3U
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_m3u
 MimeType=audio/x-mpegurl
+PreferredGroups=Tracks
 PreferredItems=
