@@ -24,11 +24,12 @@
 #include <kurl.h>
 #include <kprocess.h>
 #include <klocale.h>
+#include <kgenericfactory.h>
 
 #include <qcstring.h>
 #include <qfile.h>
+#include <qtextstream.h>
 #include <qdatetime.h>
-#include <kgenericfactory.h>
 #include <qdict.h>
 #include <qvalidator.h>
 
@@ -55,15 +56,17 @@ bool KM3uPlugin::readInfo( KFileMetaInfo& info, uint )
 {
     QFile f(info.path());
     f.open(IO_ReadOnly);
+    QTextStream str(&f);
+    str.setEncoding(QTextStream::Locale);
+    
     
     KFileMetaInfoGroup group = appendGroup(info, "Tracks");
     
     // for now treat all lines that don't start with # like entries
     int num = 1;
-    while (!f.atEnd())
+    while (!str.atEnd())
     {
-        QString s;
-        f.readLine(s, 1000);
+        QString s = str.readLine();
         if (!s.startsWith("#"))
         {
             if (s.endsWith("\n")) s.truncate(s.length()-1);
