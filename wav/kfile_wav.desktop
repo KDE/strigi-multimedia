@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=WAV Info
+Name[af]=wav inligting
 Name[ar]=معلومات WAV
 Name[be]=Інфармацыя аб WAV
 Name[bg]=WAV Информация
@@ -36,4 +37,4 @@ ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_wav
 MimeType=audio/x-wav
 PreferredGrous=Technical
-PreferredItems=Length,Sample Rate,Sample Size,Channels
+PreferredItems=Length,SampleRate,SampleSize,Channels

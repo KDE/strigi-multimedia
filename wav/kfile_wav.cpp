@@ -57,11 +57,11 @@ KWavPlugin::KWavPlugin(QObject *parent, const char *name,
 
     KFileMimeTypeInfo::ItemInfo* item;
 
-    item = addItemInfo(group, "Sample Size", i18n("Sample Size"), QVariant::Int);
-    setSuffix(item, "bits");
+    item = addItemInfo(group, "SampleSize", i18n("Sample size"), QVariant::Int);
+    setSuffix(item, " bits");
 
-    item = addItemInfo(group, "Sample Rate", i18n("Sample Rate"), QVariant::Int);
-    setSuffix(item, "Hz");
+    item = addItemInfo(group, "SampleRate", i18n("Sample rate"), QVariant::Int);
+    setSuffix(item, " Hz");
 
     item = addItemInfo(group, "Channels", i18n("Channels"), QVariant::Int);
 
@@ -132,8 +132,8 @@ bool KWavPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     KFileMetaInfoGroup group = appendGroup(info, "Technical");
     
 
-    appendItem(group, "Sample Size", int(sample_size));
-    appendItem(group, "Sample Rate", int(sample_rate));
+    appendItem(group, "SampleSize", int(sample_size));
+    appendItem(group, "SampleRate", int(sample_rate));
     appendItem(group, "Channels", int(channel_count));
     unsigned int wav_seconds = data_size / bytes_per_second;
     appendItem(group, "Length", int(wav_seconds));
