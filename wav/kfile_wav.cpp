@@ -52,6 +52,7 @@ bool KWavPlugin::readInfo( KFileMetaInfo::Internal& info )
     uint32_t sample_rate;
     uint32_t bytes_per_second;
     uint16_t bytes_per_sample;
+    uint16_t sample_size;
     uint32_t data_size;
 
     if (!file.open(IO_ReadOnly))
@@ -70,17 +71,18 @@ bool KWavPlugin::readInfo( KFileMetaInfo::Internal& info )
     dstream >> sample_rate;
     dstream >> bytes_per_second;
     dstream >> bytes_per_sample;
+    dstream >> sample_size;
 
     // And now go for the DATA chunk
     file.at(40);
     dstream >> data_size;
 
-    // These will cause as crash, besides being downright illgeal
+    // Are downright illgeal
     if ((!channel_count) || (!bytes_per_second))
         return false;
 
     info.insert(KFileMetaInfoItem("Sample Size", i18n("Sample Size"),
-                QVariant(bytes_per_sample / channel_count * 8), false,
+                QVariant(sample_size), false,
                 QString::null, i18n("bits")));
 
     info.insert(KFileMetaInfoItem("Sample Rate", i18n("Sample Rate"),
