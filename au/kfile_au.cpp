@@ -41,7 +41,7 @@ typedef unsigned short uint16_t;
 
 typedef KGenericFactory<KAuPlugin> AuFactory;
 
-K_EXPORT_COMPONENT_FACTORY(kfile_au, AuFactory( "kfile_au" ));
+K_EXPORT_COMPONENT_FACTORY(kfile_au, AuFactory( "kfile_au" ))
 
 KAuPlugin::KAuPlugin(QObject *parent, const char *name,
                        const QStringList &args)

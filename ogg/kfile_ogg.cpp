@@ -59,7 +59,7 @@ static const char* const knownTranslations[] = {
 //  I18N_NOOP("Isrc") // dunno what an Isrc number is, the link is broken
 };    
 
-K_EXPORT_COMPONENT_FACTORY(kfile_ogg, KGenericFactory<KOggPlugin>("kfile_ogg"));
+K_EXPORT_COMPONENT_FACTORY(kfile_ogg, KGenericFactory<KOggPlugin>("kfile_ogg"))
 
 KOggPlugin::KOggPlugin( QObject *parent, const char *name,
                         const QStringList &args )

@@ -41,7 +41,7 @@ typedef unsigned int   uint32_t;
 
 typedef KGenericFactory<KWavPlugin> WavFactory;
 
-K_EXPORT_COMPONENT_FACTORY(kfile_wav, WavFactory( "kfile_wav" ));
+K_EXPORT_COMPONENT_FACTORY(kfile_wav, WavFactory( "kfile_wav" ))
 
 KWavPlugin::KWavPlugin(QObject *parent, const char *name,
                        const QStringList &args)
