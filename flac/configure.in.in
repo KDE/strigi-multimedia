@@ -1,0 +1,27 @@
+dnl libflac is used for loading flac files
+AC_DEFUN([AC_CHECK_LIBFLAC],
+[
+  AC_LANG_SAVE
+  AC_LANG_C
+  kde_has_flac_lib=no
+  AC_CHECK_HEADER(FLAC/metadata.h,
+  [ 
+     kde_has_flac_lib=yes
+    ])
+  if test "x$kde_has_flac_lib" = "xyes"; then
+      LIBFLAC="-lFLAC"
+      AC_DEFINE(HAVE_LIBFLAC, 1,
+        [Define if you have libFLAC (required for getting FLAC metadata)])
+  fi
+  AC_SUBST(LIBFLAC)
+  AC_LANG_RESTORE
+])
+
+AC_DEFUN(KDE_CHECK_FLAC_SUBDIR,
+[
+ AC_REQUIRE([AC_CHECK_LIBFLAC])
+ # add the flac file meta info plugin only if the test succeeded
+ AM_CONDITIONAL(include_flac_SUBDIR, test x$kde_has_flac_lib = xyes)
+])
+
+KDE_CHECK_FLAC_SUBDIR
