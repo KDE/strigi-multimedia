@@ -171,9 +171,11 @@ bool KFlacPlugin::readInfo( KFileMetaInfo& info, uint what )
     	    appendItem(techgroup, "Channels", int(si->channels));
             appendItem(techgroup, "Sample Rate", int(si->sample_rate));
             appendItem(techgroup, "Sample Width", int(si->bits_per_sample));
-    	    int slen = si->total_samples/ si->sample_rate; // length in seconds
-            appendItem(techgroup, "Length", slen);
-	    appendItem(techgroup, "Bitrate", int(buf.st_size/(slen*125))); // 8/1000 = 1/125
+	    int slen = si->total_samples/ si->sample_rate; // length in seconds
+    	    if (slen) {
+                appendItem(techgroup, "Length", slen);
+	        appendItem(techgroup, "Bitrate", int(buf.st_size/(slen*125))); // 8/1000 = 1/125
+	    }
 	}
 	else
 	if (FLAC__metadata_simple_iterator_get_block_type(simp) == FLAC__METADATA_TYPE_VORBIS_COMMENT &&
