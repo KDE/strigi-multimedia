@@ -158,9 +158,13 @@ bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
         appendItem(id3group, "Album",       TStringToQString(file.tag()->album()));
 	if (file.tag()->year() > 0 )
 	    appendItem(id3group, "Date",    	QString::number(file.tag()->year()));
+	else
+	    appendItem(id3group, "Date",    	QString::null);
         appendItem(id3group, "Comment",     TStringToQString(file.tag()->comment()));
 	if (file.tag()->track() > 0 )
 	    appendItem(id3group, "Tracknumber", QString::number(file.tag()->track()));
+	else 
+	    appendItem(id3group, "Tracknumber", QString::null);
         appendItem(id3group, "Genre",       TStringToQString(file.tag()->genre()));
     }
     
