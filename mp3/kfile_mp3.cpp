@@ -140,7 +140,7 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info )
     // end of the id3 part
     
     info.insert(KFileMetaInfoItem("Version", i18n("Version"),
-                QVariant(mp3.header.version), false, i18n("MPEG")));
+                QVariant(::header_version(&mp3.header)), false, i18n("MPEG")));
     
     info.insert(KFileMetaInfoItem("Layer",
         i18n("Layer"), QVariant(::header_layer(&mp3.header))));

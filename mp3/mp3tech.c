@@ -30,15 +30,28 @@
 
 #include "mp3info.h"
 
-
 int layer_tab[4]= {0, 3, 2, 1};
 
-int frequencies[2][4] = {
+int frequencies[4][4] = {
+   {11025,12000,8000,50000},   /* MPEG 2.5 */
+   {0,0,0,0},                  /* Reserved */
    {22050,24000,16000,50000},  /* MPEG 2.0 */
    {44100,48000,32000,50000}   /* MPEG 1.0 */
 };
 
-int bitrate[2][3][14] = { 
+int bitrate[4][3][14] = { 
+  { /* MPEG 2.5 */
+    {32,48,56,64,80,96,112,128,144,160,176,192,224,256},  /* layer 1 */
+    {8,16,24,32,40,48,56,64,80,96,112,128,144,160},       /* layer 2 */
+    {8,16,24,32,40,48,56,64,80,96,112,128,144,160}        /* layer 3 */
+  },
+
+  { /* Reserverd */
+    {32,48,56,64,80,96,112,128,144,160,176,192,224,256},  /* layer 1 */
+    {8,16,24,32,40,48,56,64,80,96,112,128,144,160},       /* layer 2 */
+    {8,16,24,32,40,48,56,64,80,96,112,128,144,160}        /* layer 3 */
+  },
+
   { /* MPEG 2.0 */
     {32,48,56,64,80,96,112,128,144,160,176,192,224,256},  /* layer 1 */
     {8,16,24,32,40,48,56,64,80,96,112,128,144,160},       /* layer 2 */
@@ -223,16 +236,31 @@ int get_header(FILE *file,mp3header *header)
 	header->sync=0;
 	return 0;
     }
-    header->sync=((int)buffer[0] + (256*(buffer[1] >> 4)));
-    header->version=(buffer[1] >> 3) & 1;
+    header->sync=((int)buffer[0] + (256*(buffer[1] >> 5)));
+    header->version=(buffer[1] >> 3) & 3;
+
+    if (header->version == 1) {
+	header->sync=0;
+        return 0;
+    }
+
     header->layer=(buffer[1] >> 1) & 3;
-    if((header->sync != 0xFFF) || (header->layer != 1)) {
+
+    if (header->sync != 0x7FF) {
 	header->sync=0;
 	return 0;
     }
+
     header->crc=buffer[1] & 1;
     header->bitrate=(buffer[2] >> 4) & 0x0F;
     header->freq=(buffer[2] >> 2) & 0x3;
+
+    // Reserved value, illegal
+    if (header->freq == 3) {
+	header->sync=0;
+        return 0;
+    }
+
     header->padding=(buffer[2] >>1) & 0x1;
     header->extension=(buffer[2]) & 0x1;
     header->mode=(buffer[3] >> 6) & 0x3;
@@ -241,11 +269,17 @@ int get_header(FILE *file,mp3header *header)
     header->original=(buffer[3] >> 2) & 0x1;
     header->emphasis=(buffer[3]) & 0x3;
     
+    // Reserved value, illegal
+    if (header->emphasis == 2) {
+	header->sync=0;
+        return 0;
+     }
+
     return ((fl=frame_length(header)) >= MIN_FRAME_SIZE ? fl : 0); 
 }
 
 int frame_length(mp3header *header) {
-	return header->sync == 0xFFF ? 
+	return header->sync == 0x7FF ? 
 		    (frame_size_index[3-header->layer]*(header->version+1)*
 		    header_bitrate(header)/header_frequency(header))+header->padding
 		    : 1;
@@ -267,6 +301,19 @@ char *header_emphasis(mp3header *h) {
 
 char *header_mode(mp3header *h) {
 	return mode_text[h->mode];
+}
+
+double header_version(mp3header *h) {
+	switch (h->version) {
+	case 0:
+		return 2.5;
+	case 2:
+		return 2.0;
+	case 3:
+		return 1.0;
+	default:
+		return 0.0;
+	}
 }
 
 int sameConstant(mp3header *h1, mp3header *h2) {

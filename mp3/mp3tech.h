@@ -83,6 +83,7 @@ int get_header(FILE *file,mp3header *header);
 int frame_length(mp3header *header);
 int header_layer(mp3header *h);
 int header_bitrate(mp3header *h);
+double header_version(mp3header *h);
 int sameConstant(mp3header *h1, mp3header *h2);
 int get_mp3_info(mp3info *mp3,int scantype, int fullscan_vbr);
 int get_id3(mp3info *mp3);
