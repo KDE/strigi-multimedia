@@ -26,6 +26,7 @@
 #include <qdatetime.h>
 #include <qdict.h>
 #include <qvalidator.h>
+#include <qfileinfo.h>
 
 #include <kdebug.h>
 #include <kurl.h>
@@ -268,11 +269,21 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
         
     }
     
+    QString filename;
+    
+    QFileInfo fileinfo(info.path());
+    
+    // follow symlinks
+    if (fileinfo.isSymLink())
+        filename = fileinfo.readLink();
+    else
+        filename = info.path();
+    
     // nothing in Qt or KDE to get the mode as an int?
     struct stat s;
-    stat(QFile::encodeName(info.path()), &s);
-
-    KSaveFile sf(info.path(), s.st_mode);
+    stat(QFile::encodeName(filename), &s);
+    
+    KSaveFile sf(filename, s.st_mode);
     FILE* outfile = sf.fstream();
 
     if ( sf.status() || !outfile)
