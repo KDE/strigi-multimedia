@@ -163,8 +163,11 @@ bool KOggPlugin::readInfo( KFileMetaInfo::Internal& info )
                           .arg(QString::number(playsec).rightJustify(2,'0') );
     
     info.insert(KFileMetaInfoItem("Length", i18n("Length"), QVariant(str)));
+    info.setSupportsVariableKeys(true);
   
     ov_clear(&vf);
+
+    return true;
 }
 
 bool KOggPlugin::writeInfo(const KFileMetaInfo::Internal& info) const
