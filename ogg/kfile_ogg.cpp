@@ -121,7 +121,7 @@ bool KOggPlugin::readInfo( KFileMetaInfo::Internal& info )
         info.insert(KFileMetaInfoItem("Channels", i18n("Channels"),
                                       QVariant(vi->channels)));
 
-        info.insert(KFileMetaInfoItem("Frequency", i18n("Frequency"),
+        info.insert(KFileMetaInfoItem("Sample Rate", i18n("Sample Rate"),
                                       QVariant((int)vi->rate)));
 
         if (vi->bitrate_upper != -1) 

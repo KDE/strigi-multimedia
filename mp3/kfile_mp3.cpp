@@ -152,7 +152,7 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info )
                 QVariant(::header_bitrate(&mp3.header)), false,
                 QString::null, i18n("kbps")));
     
-    info.insert(KFileMetaInfoItem("Frequency", i18n("Frequency"),
+    info.insert(KFileMetaInfoItem("Sample Rate", i18n("Sample Rate"),
                 QVariant(::header_frequency(&mp3.header)), false,
                 QString::null, i18n("Hz")));
     
