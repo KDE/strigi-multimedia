@@ -85,9 +85,16 @@ bool KWavPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     uint16_t bytes_per_sample;
     uint16_t sample_size;
     uint32_t data_size;
+    uint32_t unknown_chunk_size;
+    uint16_t unknown_chunk16;
+    bool have_fmt = false;
+    bool have_data = false;
+    QIODevice::Offset file_length;
 
     const char *riff_signature = "RIFF";
     const char *wav_signature = "WAVE";
+    const char *fmt_signature = "fmt ";
+    const char *data_signature = "data";
     char signature_buffer[4];
 
     if (!file.open(IO_ReadOnly))
@@ -96,6 +103,7 @@ bool KWavPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
         return false;
     }    
 
+    file_length = file.size() - 100; // a bit of insurance
     QDataStream dstream(&file);
 
     // WAV files are little-endian
@@ -114,21 +122,39 @@ bool KWavPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     if (memcmp(signature_buffer, wav_signature, 4))
          return false;
 
-    // Read the needed parts of the FORMAT chunk
-    file.at(16);
-    dstream >> format_size;
-    dstream >> format_tag;
-    dstream >> channel_count;
-    dstream >> sample_rate;
-    dstream >> bytes_per_second;
-    dstream >> bytes_per_sample;
-    dstream >> sample_size;
+    // pretty dumb scanner, but better than what we had!
+    do
+    {
+	dstream.readRawBytes(signature_buffer, 4);
+	if (!memcmp(signature_buffer, fmt_signature, 4)) {
+	    dstream >> format_size;
+	    dstream >> format_tag;
+	    dstream >> channel_count;
+	    dstream >> sample_rate;
+	    dstream >> bytes_per_second;
+	    dstream >> bytes_per_sample;
+	    dstream >> sample_size;
+	    have_fmt = true;
+	    if ( format_size > 16 ) {
+		for (unsigned int i = 0; i < (format_size-16+1)/2; i++)
+		    dstream >> unknown_chunk16;
+	    }
+	} else if (!memcmp(signature_buffer, data_signature, 4)) {
+	    dstream >> data_size;
+	    have_data = true;
+	} else {
+	    dstream >> unknown_chunk_size;
+	    for (unsigned int i = 0; i < (unknown_chunk_size+1)/2; i++)
+		dstream >> unknown_chunk16;
+	}
+	if (have_data && have_fmt)
+	    break;
+    } while (file.at() < file_length);
 
-    // And now read the DATA chunk
-    file.at(24 + format_size);
-    dstream >> data_size;
+    if ( (!have_data) || (!have_fmt) )
+	return false;
 
-    // These values are downright illgeal
+    // These values are downright illegal
     if ((!channel_count) || (!bytes_per_second))
         return false;
     
