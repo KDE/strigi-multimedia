@@ -145,7 +145,7 @@ bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
     TagLib::MPEG::File file(QFile::encodeName(info.path()).data(), readTech);
 
     if(!file.isOpen())  {
-        kdDebug(7034) << "Couldn't open " << file.name() << endl;
+        kdDebug(7034) << "Couldn't open " << TStringToQString(file.name()) << endl;
         return false;
     }
 
