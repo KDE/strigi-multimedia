@@ -85,7 +85,32 @@ KOggPlugin::KOggPlugin( QObject *parent, const char *name,
     item = addItemInfo(group, "Title", i18n("Title"), QVariant::String);
     setHint(item, KFileMimeTypeInfo::Name);
     setAttributes(item, KFileMimeTypeInfo::Modifiable);
-   
+
+    item = addItemInfo(group, "Album", i18n("Album"), QVariant::String);
+    setAttributes(item, KFileMimeTypeInfo::Modifiable);
+
+    item = addItemInfo(group, "Genre", i18n("Genre"), QVariant::String);
+    setAttributes(item, KFileMimeTypeInfo::Modifiable);
+
+    item = addItemInfo(group, "Tracknumber", i18n("Track Number"), QVariant::String);
+    setAttributes(item, KFileMimeTypeInfo::Modifiable);
+
+    item = addItemInfo(group, "Date", i18n("Date"), QVariant::String);
+    setAttributes(item, KFileMimeTypeInfo::Modifiable);
+
+    item = addItemInfo(group, "Description", i18n("Description"), QVariant::String);
+    setAttributes(item, KFileMimeTypeInfo::Modifiable);
+
+    item = addItemInfo(group, "Organization", i18n("Organization"), QVariant::String);
+    setAttributes(item, KFileMimeTypeInfo::Modifiable);
+
+    item = addItemInfo(group, "Location", i18n("Location"), QVariant::String);
+    setAttributes(item, KFileMimeTypeInfo::Modifiable);
+
+    item = addItemInfo(group, "Copyright", i18n("Copyright"), QVariant::String);
+    setAttributes(item, KFileMimeTypeInfo::Modifiable);
+
+
     addVariableInfo(group, QVariant::String, KFileMimeTypeInfo::Addable |
                                              KFileMimeTypeInfo::Removable |
                                              KFileMimeTypeInfo::Modifiable); 
