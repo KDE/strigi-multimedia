@@ -124,7 +124,8 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     group->addItemInfo("Channels", i18n("Channels"), QVariant::Int);
     group->addItemInfo("Copyright", i18n("Copyright"), QVariant::Bool);
     group->addItemInfo("Original", i18n("Original"), QVariant::Bool);
-    group->addItemInfo("Length", i18n("Length"), QVariant::Int);
+    group->addItemInfo("Length", i18n("Length"), QVariant::Int, 0,
+                       KFileMimeTypeInfo::Seconds);
     group->addItemInfo("Emphasis", i18n("Emphasis"), QVariant::String);
 }
 
