@@ -12,7 +12,7 @@ String     Title       +/+  only if id3v1 tag exists / max. 30 characters
 String     Artist      +/+  only if id3v1 tag exists / max. 30 characters
 String     Album       +/+  only if id3v1 tag exists / max. 30 characters
 String     Comment     +/+  only if id3v1 tag exists / max. 28 characters
-String     Year        +/+  only if id3v1 tag exists / max.  4 characters
+String     Date        +/+  only if id3v1 tag exists / max.  4 characters
 Int        Tracknumber +/+  only if id3v1.1 tag exists / 0-255
 Bool       CRC         -/-
 Bool       Original    -/-

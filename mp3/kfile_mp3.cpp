@@ -112,7 +112,7 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info, int )
         info.insert(KFileMetaInfoItem("Album", i18n("Album"),
                     QVariant(QString::fromLocal8Bit(mp3.id3.album)), true));
 
-        info.insert(KFileMetaInfoItem("Year", i18n("Year"),
+        info.insert(KFileMetaInfoItem("Date", i18n("Year"),
                     QVariant(QString::fromLocal8Bit(mp3.id3.year)), true));
 
          info.insert(KFileMetaInfoItem("Comment", i18n("Comment"),
@@ -220,7 +220,7 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo::Internal& info) const
     strncpy(mp3.id3.title,  info["Title"]  .value().toString().local8Bit(), 31);
     strncpy(mp3.id3.artist, info["Artist"] .value().toString().local8Bit(), 31);
     strncpy(mp3.id3.album,  info["Album"]  .value().toString().local8Bit(), 31);
-    strncpy(mp3.id3.year,   info["Year"]   .value().toString().local8Bit(),  5);
+    strncpy(mp3.id3.year,   info["Date"]   .value().toString().local8Bit(),  5);
     strncpy(mp3.id3.comment,info["Comment"].value().toString().local8Bit(), 29);
 
     KFileMetaInfoItem track = info["Tracknumber"];
@@ -241,27 +241,28 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo::Internal& info) const
     return success;
 }
 
-QValidator* KMp3Plugin::createValidator(const KFileMetaInfoItem& item,
-                                        QObject* parent, const char* name) const
+QValidator* KMp3Plugin::createValidator(const QString &key,
+                                        QObject* parent, const char* name,
+                                        const QString &/*group*/) const
 {
-    if ((item.key() == "Title") || (item.key() == "Artist")||
-        (item.key() == "Album"))
+    if ((key == "Title") || (key == "Artist")||
+        (key == "Album"))
     {
         return new MyValidator(30, parent, name);
     }
-    else if (item.key() == "Year")
+    else if (key == "Date")
     {
         return new MyValidator(4, parent, name);
     }
-    else if (item.key() == "Comment")
+    else if (key == "Comment")
     {
         return new MyValidator(28, parent, name);
     }
-    else if (item.key() == "Tracknumber")
+    else if (key == "Tracknumber")
     {
         return new QIntValidator(0, 255, parent, name);
     }
-    else if (item.key() == "Genre")
+    else if (key == "Genre")
     {
         QStringList list;
         for (int index = 0; index <= MAXGENRE; index++)
