@@ -68,8 +68,11 @@ bool KM3uPlugin::readInfo( KFileMetaInfo& info, uint )
         if (!s.startsWith("#"))
         {
             if (s.endsWith("\n")) s.truncate(s.length()-1);
-            appendItem(group, QString("Track %1").arg(num, 3), s);
-            num++;
+
+            if (!s.stripWhiteSpace().isEmpty()) {
+                appendItem(group, QString("Track %1").arg(num, 3), s);
+                num++;
+            }
         }
     }
     
