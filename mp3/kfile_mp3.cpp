@@ -230,7 +230,14 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo::Internal& info) const
 
     for (mp3.id3.genre[0] = 0; mp3.id3.genre[0] <= MAXGENRE; mp3.id3.genre[0]++)
     {
-        if (s == ::typegenre[mp3.id3.genre[0]]) break;
+        if (s == ::typegenre[mp3.id3.genre[0]])
+            break;
+    }
+
+    // Could we find a valid genre?
+    if (mp3.id3.genre[0] > MAXGENRE) {
+         // No, set it to 12 ("Other")
+         mp3.id3.genre[0] = 12;
     }
       
     bool success = ::write_tag(&mp3);
