@@ -65,11 +65,8 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     KFileMimeTypeInfo::GroupInfo* group = 0L;
 
     // id3 group
-#ifdef HAVE_TAGLIB
     group = addGroupInfo(info, "id3", i18n("ID3 Tag"));
-#else
-    group = addGroupInfo(info, "id3v1.1", i18n("ID3V1 Tag"));
-#endif
+
     setAttributes(group, KFileMimeTypeInfo::Addable | 
                          KFileMimeTypeInfo::Removable);
 
@@ -279,7 +276,7 @@ bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
   
     if (mp3.id3_isvalid && readId3)
     {
-        KFileMetaInfoGroup id3group = appendGroup(info, "id3v1.1");
+        KFileMetaInfoGroup id3group = appendGroup(info, "id3");
         
         appendItem(id3group, "Title", QString::fromLocal8Bit(mp3.id3.title));
         appendItem(id3group, "Artist", QString::fromLocal8Bit(mp3.id3.artist));
@@ -350,7 +347,7 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo& info) const
 
     ::get_mp3_info(&mp3, ::SCAN_NONE, ::VBR_VARIABLE);
     
-    if (!info.groups().contains("id3v1.1") || !info["id3v1.1"].isValid() )
+    if (!info.groups().contains("id3") || !info["id3"].isValid() )
     {
         fclose(mp3.file);
         // that's how original mp3info does it
@@ -360,21 +357,21 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo& info) const
         return true;
     }
     
-    strncpy(mp3.id3.title,  info["id3v1.1"]["Title"]  .value().toString().local8Bit(), 31);
+    strncpy(mp3.id3.title,  info["id3"]["Title"]  .value().toString().local8Bit(), 31);
     mp3.id3.title[ 30 ] = '\0';
-    strncpy(mp3.id3.artist, info["id3v1.1"]["Artist"] .value().toString().local8Bit(), 31);
+    strncpy(mp3.id3.artist, info["id3"]["Artist"] .value().toString().local8Bit(), 31);
     mp3.id3.artist[ 30 ] = '\0';
-    strncpy(mp3.id3.album,  info["id3v1.1"]["Album"]  .value().toString().local8Bit(), 31);
+    strncpy(mp3.id3.album,  info["id3"]["Album"]  .value().toString().local8Bit(), 31);
     mp3.id3.album[ 30 ] = '\0';
-    strncpy(mp3.id3.year,   info["id3v1.1"]["Date"]   .value().toString().local8Bit(),  5);
+    strncpy(mp3.id3.year,   info["id3"]["Date"]   .value().toString().local8Bit(),  5);
     mp3.id3.year[ 4 ] = '\0';
-    strncpy(mp3.id3.comment,info["id3v1.1"]["Comment"].value().toString().local8Bit(), 29);
+    strncpy(mp3.id3.comment,info["id3"]["Comment"].value().toString().local8Bit(), 29);
     mp3.id3.comment[ 28 ] = '\0';
 
-    KFileMetaInfoItem track = info["id3v1.1"]["Tracknumber"];
+    KFileMetaInfoItem track = info["id3"]["Tracknumber"];
     if (track.isValid()) mp3.id3.track[0] = track.value().toInt();
     
-    QString s = info["id3v1.1"]["Genre"].value().toString();
+    QString s = info["id3"]["Genre"].value().toString();
 
     for (mp3.id3.genre[0] = 0; mp3.id3.genre[0] <= MAXGENRE; mp3.id3.genre[0]++)
     {
