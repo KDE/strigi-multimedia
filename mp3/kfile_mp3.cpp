@@ -199,6 +199,10 @@ bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
     return true;
 }
 
+/**
+ * Do translation between KFileMetaInfo items and TagLib::String in a tidy way.
+ */
+
 class Translator
 {
 public:
@@ -226,7 +230,7 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo& info) const
 
     Translator t(info);
 
-    file.tag()->setTitle(t["title"]);
+    file.tag()->setTitle(t["Title"]);
     file.tag()->setArtist(t["Artist"]);
     file.tag()->setAlbum(t["Album"]);
     file.tag()->setYear(t.toInt("Date"));
@@ -399,6 +403,27 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo& info) const
 
 #endif // HAVE_TAGLIB
 
+/**
+ * A validator that will suggest a list of strings, but allow for free form
+ * strings as well.
+ */
+
+class ComboValidator : public KStringListValidator
+{
+public:
+    ComboValidator(const QStringList &list, bool rejecting,
+                   bool fixupEnabled, QObject *parent, const char *name) :
+        KStringListValidator(list, rejecting, fixupEnabled, parent, name)
+    {
+
+    }
+
+    virtual QValidator::State validate(QString &, int &) const
+    {
+        return QValidator::Acceptable;
+    }
+};
+
 QValidator* KMp3Plugin::createValidator(const QString& /* mimetype */,
                                         const QString &group, const QString &key,
                                         QObject* parent, const char* name) const
@@ -407,6 +432,10 @@ QValidator* KMp3Plugin::createValidator(const QString& /* mimetype */,
 
 #if HAVE_TAGLIB
 
+    if (key == "Tracknumber" || key == "Date")
+    {
+        return new QIntValidator(0, 9999, parent, name);
+    }
     if (key == "Genre")
     {
         QStringList l;
@@ -415,8 +444,7 @@ QValidator* KMp3Plugin::createValidator(const QString& /* mimetype */,
         {
 	    l.append(TStringToQString((*it)));
         }
-
-        return new KStringListValidator(l, false, true, parent, name);
+        return new ComboValidator(l, false, true, parent, name);
     }
 
 #else
