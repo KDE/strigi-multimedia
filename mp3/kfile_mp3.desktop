@@ -1,4 +1,5 @@
 [Desktop Entry]
+Encoding=UTF-8
 Type=Service
 Name=MP3 Info
 Name[af]=mp3 inligting
@@ -7,9 +8,11 @@ Name[cs]=MP3 info
 Name[da]=MP3-info
 Name[de]=MP3-Info
 Name[es]=Info MP3
+Name[fi]=MP3 tiedot
 Name[fr]=Informations Mpeg3
 Name[he]=מידע MP3
 Name[hu]=MP3-jellemzők
+Name[lt]=MP3 informacija
 Name[nn]=MP3-info
 Name[pt]=Informação do MP3
 Name[pt_BR]=Informação do MP3

@@ -1,6 +1,18 @@
 [Desktop Entry]
+Encoding=UTF-8
 Type=Service
 Name=WAV Info
+Name[da]=WAV-info
+Name[de]=WAV-Info
+Name[es]=Info WAV
+Name[fr]=Informations Wave
+Name[he]=מידע WAV
+Name[hu]=WAV-jellemzők
+Name[lt]=WAV informacija
+Name[pt]=Informação do WAV
+Name[pt_BR]=Informação do WAV
+Name[sv]=Wav-information
+Name[xx]=xx
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_wav
 MimeType=audio/wav

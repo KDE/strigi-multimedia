@@ -1,6 +1,24 @@
 [Desktop Entry]
+Encoding=UTF-8
 Type=Service
 Name=OGG Info
+Name[af]=ogg inligting
+Name[ar]=معلومات OGG
+Name[cs]=3GG info
+Name[da]=OGG-info
+Name[de]=OGG-Info
+Name[es]=Info OGG
+Name[fi]=OGG tiedot
+Name[fr]=Informations Ogg Vorbis
+Name[he]=מידע OGG
+Name[hu]=OGG-jellemzők
+Name[lt]=OGG informacija
+Name[nn]=OGG-info
+Name[pt]=Informação do OGG
+Name[pt_BR]=Informação do OGG
+Name[sl]=OGG informacije
+Name[sv]=Ogg-information
+Name[xx]=xx
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_ogg
 MimeType=application/x-ogg

@@ -1,6 +1,27 @@
 [Desktop Entry]
+Encoding=UTF-8
 Type=Service
 Name=M3U Playlist Info
+Name[af]=m3u liedjielys inligting
+Name[ar]=معلومات قوائم M3U
+Name[az]=MP3 Mahnı Siyahısı İnfosu
+Name[da]=M3U-spilleliste-info
+Name[de]=M3U-Abspiellisten-Info
+Name[es]=Información de lista de reproducción M3U
+Name[fi]=M3U soittolistan tiedot
+Name[fr]=Informations sur une liste de lecture M3U
+Name[he]=מידע על רשימות ניגון של M3U
+Name[hu]=Az M3U lejátszási lista jellemzői
+Name[lt]=M3U gaidaraščio eksportas
+Name[lv]=M3U Plejlistu Info
+Name[nl]=M3U Speellijst Info
+Name[nn]=M3U-spelelisteinfo
+Name[pt]=Informação da lista de músicas M3U
+Name[pt_BR]=Informação da lista de músicas M3U
+Name[sk]=Informácie o playliste M3U
+Name[sl]=M3U informacije seznama posnetkov
+Name[sv]=Information om M3U-spellista
+Name[xx]=xx
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_m3u
 MimeType=audio/x-mpegurl
