@@ -106,39 +106,41 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info )
     if (!mp3.id3_isvalid)
         memset(&mp3.id3, sizeof(id3tag), 0);
 
-    info.insert(KFileMetaInfoItem("Title", i18n("Title"),
-                QVariant(QString::fromLocal8Bit(mp3.id3.title)), true));
+    if (mp3.id3_isvalid) {
+        info.insert(KFileMetaInfoItem("Title", i18n("Title"),
+                    QVariant(QString::fromLocal8Bit(mp3.id3.title)), true));
 
-    info.insert(KFileMetaInfoItem("Artist", i18n("Artist"),
-                QVariant(QString::fromLocal8Bit(mp3.id3.artist)), true));
+        info.insert(KFileMetaInfoItem("Artist", i18n("Artist"),
+                    QVariant(QString::fromLocal8Bit(mp3.id3.artist)), true));
 
-    info.insert(KFileMetaInfoItem("Album", i18n("Album"),
-                QVariant(QString::fromLocal8Bit(mp3.id3.album)), true));
+        info.insert(KFileMetaInfoItem("Album", i18n("Album"),
+                    QVariant(QString::fromLocal8Bit(mp3.id3.album)), true));
 
-    info.insert(KFileMetaInfoItem("Year", i18n("Year"),
-                QVariant(QString::fromLocal8Bit(mp3.id3.year)), true));
+        info.insert(KFileMetaInfoItem("Year", i18n("Year"),
+                    QVariant(QString::fromLocal8Bit(mp3.id3.year)), true));
 
-    info.insert(KFileMetaInfoItem("Comment", i18n("Comment"),
-                QVariant(QString::fromLocal8Bit(mp3.id3.comment)), true));
+         info.insert(KFileMetaInfoItem("Comment", i18n("Comment"),
+                    QVariant(QString::fromLocal8Bit(mp3.id3.comment)), true));
 
-    // the key is "Tracknumber" here because it's in ogg, too
-    if (mp3.id3.track[0])
-    info.insert(KFileMetaInfoItem("Tracknumber", i18n("Track"),
-                QVariant((int)mp3.id3.track[0]), true));
+         // the key is "Tracknumber" here because it's in ogg, too
+        if (mp3.id3.track[0])
+            info.insert(KFileMetaInfoItem("Tracknumber", i18n("Track"),
+                        QVariant((int)mp3.id3.track[0]), true));
         
-    if (mp3.id3.genre[0]>MAXGENRE)
-        mp3.id3.genre[0] = 0;
+        if (mp3.id3.genre[0]>MAXGENRE)
+            mp3.id3.genre[0] = 0;
 
-    if (!mp3.id3_isvalid) {
-        info.insert(KFileMetaInfoItem("Genre", i18n("Genre"),
+        if (!mp3.id3_isvalid) {
+            info.insert(KFileMetaInfoItem("Genre", i18n("Genre"),
                     QVariant(QString("")), true));
-    }
-    else  {
-        info.insert(KFileMetaInfoItem("Genre", i18n("Genre"),
-                    QVariant(QString::fromLocal8Bit(
-                    ::typegenre[mp3.id3.genre[0]])), true));
-    }
-         
+        }
+        else  {
+            info.insert(KFileMetaInfoItem("Genre", i18n("Genre"),
+                        QVariant(QString::fromLocal8Bit(
+                        ::typegenre[mp3.id3.genre[0]])), true));
+        }
+    }    
+     
     // end of the id3 part
     
     info.insert(KFileMetaInfoItem("Version", i18n("Version"),
