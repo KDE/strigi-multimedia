@@ -17,7 +17,7 @@
  *
  */
 
- 
+
 #include <config.h>
 #include "kfile_avi.h"
 
@@ -81,50 +81,50 @@ bool KAviPlugin::read_avi()
 
     done_avih = false;
     done_audio = false;
-        
+
     // read AVI header
     char charbuf1[5];
     charbuf1[4] = '\0';
-    
+
     // this must be RIFF
     f.readBlock(charbuf1, 4);
     if (memcmp(charbuf1, sig_riff, 4) != 0)
-        return false;    
-    
+        return false;
+
     dstream >> dwbuf1;
-    
+
     // this must be AVI
     f.readBlock(charbuf1, 4);
     if (memcmp(charbuf1, sig_avi, 4) != 0)
-        return false;    
-    
-            
+        return false;
+
+
     // start reading AVI file
     int counter = 0;
-    bool done = false;    
+    bool done = false;
     do {
-        
+
         // read header
-        f.readBlock(charbuf1, 4);    
-        
+        f.readBlock(charbuf1, 4);
+
         kdDebug(7034) << "about to handle chunk with ID: " << charbuf1 << "\n";
-        
+
         if (memcmp(charbuf1, sig_list, 4) == 0) {
             // if list
             if (!read_list())
                 return false;
-        
+
         } else if (memcmp(charbuf1, sig_junk, 4) == 0) {
             // if junk
 
             // read chunk size
             dstream >> dwbuf1;
-            
+
             kdDebug(7034) << "Skipping junk chunk length: " << dwbuf1 << "\n";
-                    
+
             // skip junk
             f.at( f.at() + dwbuf1 );
-            
+
         } else {
             // something we dont understand yet
             kdDebug(7034) << "Unknown chunk header found: " << charbuf1 << "\n";
@@ -132,20 +132,20 @@ bool KAviPlugin::read_avi()
         };
 
         if (
-          ((done_avih) && (strlen(handler_vids) > 0) && (done_audio)) || 
+          ((done_avih) && (strlen(handler_vids) > 0) && (done_audio)) ||
           f.atEnd()) {
             kdDebug(7034) << "We're done!\n";
             done = true;
         }
-           
+
         // make sure we dont stay here forever
         ++counter;
         if (counter > 10)
             done = true;
-                 
+
     } while (!done);
 
-    return true;                        
+    return true;
 }
 
 
@@ -154,17 +154,17 @@ bool KAviPlugin::read_list()
     static const char sig_hdrl[] = "hdrl";   // header list
     static const char sig_strl[] = "strl";   // ...list
     static const char sig_movi[] = "movi";   // movie list
-    
+
     uint32_t dwbuf1;
     char charbuf1[5];
     charbuf1[4] = '\0';
 
     kdDebug(7034) << "In read_list()\n";
-    
+
     // read size & list type
     dstream >> dwbuf1;
     f.readBlock(charbuf1, 4);
-        
+
     // read the relevant bits of the list
     if (memcmp(charbuf1, sig_hdrl, 4) == 0) {
         // should be the main AVI header
@@ -180,15 +180,15 @@ bool KAviPlugin::read_list()
         // movie list
 
         kdDebug(7034) << "Skipping movi chunk length: " << dwbuf1 << "\n";
-        
+
         // skip past it
         f.at( f.at() + dwbuf1 );
-            
+
     } else {
         // unknown list type
         kdDebug(7034) << "Unknown list type found: " << charbuf1 << "\n";
-    }            
-    
+    }
+
     return true;
 }
 
@@ -209,7 +209,7 @@ bool KAviPlugin::read_avih()
         kdDebug(7034) << "Chunk ID error, expected avih, got: " << charbuf1 << "\n";
         return false;
     }
-        
+
     // read all the avih fields
     dstream >> avih_microsecperframe;
     dstream >> avih_maxbytespersec;
@@ -225,9 +225,9 @@ bool KAviPlugin::read_avih()
     dstream >> avih_rate;
     dstream >> avih_start;
     dstream >> avih_length;
-    
+
     done_avih = true;
-    
+
     return true;
 }
 
@@ -240,35 +240,35 @@ bool KAviPlugin::read_strl()
     static const char sig_strn[] = "strn";
     static const char sig_list[] = "LIST";
     static const char sig_junk[] = "JUNK";
-    
+
     kdDebug(7034) << "in strl handler\n";
-        
+
     uint32_t dwbuf1;    // buffer for block sizes
     char charbuf1[5];
-        
+
     // loop through blocks
     int counter = 0;
     while (true) {
-            
+
         // read type and size
         f.readBlock(charbuf1, 4);   // type
         dstream >> dwbuf1;          // size
-        
+
         // detect type
         if (memcmp(charbuf1, sig_strh, 4) == 0) {
             // got strh - stream header
             kdDebug(7034) << "Found strh, calling read_strh()\n";
             read_strh(dwbuf1);
-            
+
         } else if (memcmp(charbuf1, sig_strf, 4) == 0) {
             // got strf - stream format
             kdDebug(7034) << "Found strf, calling read_strf()\n";
             read_strf(dwbuf1);
-            
+
         } else if (memcmp(charbuf1, sig_strn, 4) == 0) {
-            // we ignore strn, but it can be recorded incorrectly so we have to cope especially  
-            
-            // skip it        
+            // we ignore strn, but it can be recorded incorrectly so we have to cope especially
+
+            // skip it
             kdDebug(7034) << "Skipping strn chunk length: " << dwbuf1 << "\n";
             f.at( f.at() + dwbuf1 );
 
@@ -279,7 +279,7 @@ bool KAviPlugin::read_strl()
 
             I'll clean/optimise this a touch soon
             */
-            
+
             bool done = false;
             unsigned char counter = 0;
             while (!done) {
@@ -306,30 +306,30 @@ bool KAviPlugin::read_strl()
 
         } else if ((memcmp(charbuf1, sig_list, 4) == 0) || (memcmp(charbuf1, sig_junk, 4) == 0)) {
             // we have come to the end of our stay here in strl, time to leave
-            
+
             kdDebug(7034) << "Found LIST/JUNK, returning...\n";
-            
+
             // rollback before the id and size
             f.at( f.at() - 8 );
-        
+
             // return back to the main avi parser
             return true;
-        
+
         } else {
-            // we have some other unrecognised block type 
-         
+            // we have some other unrecognised block type
+
             kdDebug(7034) << "Sskipping unrecognised block\n";
             // just skip over it
-            f.at( f.at() + dwbuf1);   
-            
+            f.at( f.at() + dwbuf1);
+
         } /* switch block type */
-    
+
         ++counter;
         if (counter > 10)
             return true;
-        
+
     } /* while (true) */
-            
+
     // we should never get here
 }
 
@@ -338,7 +338,7 @@ bool KAviPlugin::read_strh(uint32_t blocksize)
 {
     static const char sig_vids[] = "vids";   // ...video
     static const char sig_auds[] = "auds";   // ...audio
-    
+
     uint32_t strh_flags;
     uint32_t strh_reserved1;
     uint32_t strh_initialframes;
@@ -352,13 +352,13 @@ bool KAviPlugin::read_strh(uint32_t blocksize)
 
     char charbuf1[5];
     char charbuf2[5];
-    
-                
+
+
     // get stream info type, and handler id
     f.readBlock(charbuf1, 4);
     f.readBlock(charbuf2, 4);
 
-    // read the strh fields        
+    // read the strh fields
     dstream >> strh_flags;
     dstream >> strh_reserved1;
     dstream >> strh_initialframes;
@@ -369,7 +369,7 @@ bool KAviPlugin::read_strh(uint32_t blocksize)
     dstream >> strh_buffersize;
     dstream >> strh_quality;
     dstream >> strh_samplesize;
-        
+
     if (memcmp(&charbuf1, sig_vids, 4) == 0) {
         // we are video!
 
@@ -387,7 +387,7 @@ bool KAviPlugin::read_strh(uint32_t blocksize)
 
         // we want strf to get the audio codec
         wantstrf = true;
-        
+
     } else {
         // we are something that we don't understand
 
@@ -408,7 +408,7 @@ bool KAviPlugin::read_strf(uint32_t blocksize)
     // do we want to do the strf?
     if (wantstrf) {
         // yes.  we want the audio codec identifier out of it
-        
+
         // get the 16bit audio codec ID
         dstream >> handler_audio;
         kdDebug(7034) << "Read audio codec ID: " << handler_audio << "\n";
@@ -416,8 +416,8 @@ bool KAviPlugin::read_strf(uint32_t blocksize)
         f.at( f.at() + blocksize - 2);
         // we have audio
         done_audio = true;
-        
-    } else { 
+
+    } else {
         // no, skip the strf
         f.at( f.at() + blocksize );
     }
@@ -430,7 +430,7 @@ bool KAviPlugin::read_strf(uint32_t blocksize)
 const char * KAviPlugin::resolve_audio(uint16_t id)
 {
     /*
-        this really wants to use some sort of KDE global 
+        this really wants to use some sort of KDE global
         list.  To avoid bloat for the moment it only does
         a few common codecs
     */
@@ -471,7 +471,7 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     memset(handler_vids, 0x00, 5);
     memset(handler_auds, 0x00, 5);
 
-    
+
     /***************************************************/
     // sort out the file
 
@@ -479,7 +479,7 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
         f.close();
 
     f.setName(info.path());
-    
+
     // open file, set up stream and set endianness
     if (!f.open(IO_ReadOnly))
     {
@@ -496,7 +496,7 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     // start reading stuff from it
 
     wantstrf = false;
-    
+
     if (!read_avi()) {
         kdDebug(7034) << "read_avi() failed!" << endl;
     }
@@ -525,9 +525,10 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
             appendItem(group, "Audio codec", i18n(resolve_audio(handler_audio)));
         else
             appendItem(group, "Audio codec", i18n("None"));
-            
+
     }
 
+    f.close();
     return true;
 }
 
