@@ -57,10 +57,10 @@ KWavPlugin::KWavPlugin(QObject *parent, const char *name,
 
     KFileMimeTypeInfo::ItemInfo* item;
 
-    item = addItemInfo(group, "Sample Size", i18n("Sample size"), QVariant::Int);
+    item = addItemInfo(group, "Sample Size", i18n("Sample Size"), QVariant::Int);
     setSuffix(item, i18n(" bits"));
 
-    item = addItemInfo(group, "Sample Rate", i18n("Sample rate"), QVariant::Int);
+    item = addItemInfo(group, "Sample Rate", i18n("Sample Rate"), QVariant::Int);
     setSuffix(item, i18n(" Hz"));
 
     item = addItemInfo(group, "Channels", i18n("Channels"), QVariant::Int);

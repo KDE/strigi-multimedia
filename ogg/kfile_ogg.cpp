@@ -123,22 +123,22 @@ KOggPlugin::KOggPlugin( QObject *parent, const char *name,
     addItemInfo(group, "Version", i18n("Version"), QVariant::Int);
     addItemInfo(group, "Channels", i18n("Channels"), QVariant::Int);
 
-    item = addItemInfo(group, "Sample Rate", i18n("Sample rate"), QVariant::Int);
+    item = addItemInfo(group, "Sample Rate", i18n("Sample Rate"), QVariant::Int);
     setSuffix(item, i18n(" Hz"));
 
-    item = addItemInfo(group, "UpperBitrate", i18n("Upper bitrate"),
+    item = addItemInfo(group, "UpperBitrate", i18n("Upper Bitrate"),
                        QVariant::Int);
     setSuffix(item, i18n(" kbps"));
     
-    item = addItemInfo(group, "LowerBitrate", i18n("Lower bitrate"),
+    item = addItemInfo(group, "LowerBitrate", i18n("Lower Bitrate"),
                        QVariant::Int);
     setSuffix(item, i18n(" kbps"));
 
-    item = addItemInfo(group, "NominalBitrate", i18n("Nominal bitrate"),
+    item = addItemInfo(group, "NominalBitrate", i18n("Nominal Bitrate"),
                        QVariant::Int);
     setSuffix(item, i18n(" kbps"));
     
-    item = addItemInfo(group, "Bitrate", i18n("Average bitrate"), 
+    item = addItemInfo(group, "Bitrate", i18n("Average Bitrate"), 
                        QVariant::Int);
     setAttributes(item, KFileMimeTypeInfo::Averaged);
     setHint(item, KFileMimeTypeInfo::Bitrate);

@@ -63,11 +63,11 @@ KAviPlugin::KAviPlugin(QObject *parent, const char *name,
 
     item = addItemInfo(group, "Resolution", i18n("Resolution"), QVariant::Size);
 
-    item = addItemInfo(group, "Frame rate", i18n("Frame rate"), QVariant::Int);
+    item = addItemInfo(group, "Frame rate", i18n("Frame Rate"), QVariant::Int);
     setSuffix(item, i18n("fps"));
 
-    item = addItemInfo(group, "Video codec", i18n("Video codec"), QVariant::String);
-    item = addItemInfo(group, "Audio codec", i18n("Audio codec"), QVariant::String);
+    item = addItemInfo(group, "Video codec", i18n("Video Codec"), QVariant::String);
+    item = addItemInfo(group, "Audio codec", i18n("Audio Codec"), QVariant::String);
 
 }
 

@@ -118,13 +118,13 @@ KFlacPlugin::KFlacPlugin( QObject *parent, const char *name,
 
     addItemInfo(group, "Channels", i18n("Channels"), QVariant::Int);
 
-    item = addItemInfo(group, "Sample Rate", i18n("Sample rate"), QVariant::Int);
+    item = addItemInfo(group, "Sample Rate", i18n("Sample Rate"), QVariant::Int);
     setSuffix(item, i18n(" Hz"));
 
-    item = addItemInfo(group, "Sample Width", i18n("Sample width"), QVariant::Int);
+    item = addItemInfo(group, "Sample Width", i18n("Sample Width"), QVariant::Int);
     setSuffix(item, i18n(" bits"));
 
-    item = addItemInfo(group, "Bitrate", i18n("Average bitrate"),
+    item = addItemInfo(group, "Bitrate", i18n("Average Bitrate"),
                        QVariant::Int);
     setAttributes(item, KFileMimeTypeInfo::Averaged);
     setHint(item, KFileMimeTypeInfo::Bitrate);
