@@ -1,0 +1,8 @@
+
+AC_DEFUN(KDE_CHECK_OGG_SUBDIR,
+[
+ AC_REQUIRE([KDE_CHECK_OGG])
+ # add the ogg-vorbis file meta info plugin only if the test succeeded
+ AM_CONDITIONAL(include_ogg_SUBDIR, test x$HAVE_VORBIS = x1)
+])
+
