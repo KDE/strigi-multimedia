@@ -235,13 +235,11 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
 
     if (oc && oc->vendor) 
     {
-        vc->vendor = new char[strlen(oc->vendor)+1];
-        strcpy(vc->vendor,oc->vendor);
+        vc->vendor = strdup(oc->vendor);
     }
     else
     {
-      vc->vendor = new char[1];
-      strcpy(vc->vendor,"");
+        vc->vendor = strdup("");
     }
     
     KFileMetaInfoGroup group = info["Comment"];
@@ -293,14 +291,16 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
         kdDebug(7034) << "couldn't create temp file\n";
         vcedit_clear(state); // frees comment entries and vendor
         sf.abort();
-        delete vc->vendor;
+        if (vc->vendor) free(vc->vendor);
+        vc->vendor = 0;
         return false;
     }
 
     
     vcedit_write(state,outfile); // calls vcedit_clear() itself so we don't free anything
 
-    delete vc->vendor;
+    if (vc->vendor) free(vc->vendor);
+    vc->vendor = 0;
 
     fclose(infile);
     sf.close();

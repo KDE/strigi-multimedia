@@ -132,13 +132,13 @@ bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
     memset(&mp3,0,sizeof(mp3info));
 
     QCString s = QFile::encodeName(info.path());
-    mp3.filename = new char[s.length()+1];
-    strcpy(mp3.filename, s);
+    mp3.filename = strdup(s);
         
     mp3.file = fopen(mp3.filename, "rb");
     if (!mp3.file)
     {
-        delete [] mp3.filename;
+        if (mp3.filename) free(mp3.filename);
+        mp3.filename = 0;
         kdDebug(7034) << "Couldn't open " << mp3.filename << endl;
         return false;
     }
@@ -195,7 +195,8 @@ bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
     fclose(mp3.file);
     kdDebug(7034) << "reading finished\n";
     
-    delete [] mp3.filename;
+    if (mp3.filename) free(mp3.filename);
+    mp3.filename = 0;
     
     return true;
 }
@@ -206,15 +207,15 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo& info) const
     memset(&mp3,0,sizeof(mp3info));
 
     QCString name = QFile::encodeName(info.path());
-    mp3.filename = new char[name.length()+1];
-    strcpy(mp3.filename, name);
+    mp3.filename = strdup(name);
 
     mp3.file = fopen(mp3.filename, "rb+");
     
     if (!mp3.file) 
     {
       kdDebug(7034) << "couldn't open " << info.path() << endl;
-      delete [] mp3.filename;
+      if (mp3.filename) free(mp3.filename);
+      mp3.filename = 0;
       return false;
     }
 
@@ -224,8 +225,9 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo& info) const
     {
         fclose(mp3.file);
         // that's how original mp3info does it
-    		truncate(mp3.filename,mp3.datasize);
-        delete [] mp3.filename;
+        truncate(mp3.filename,mp3.datasize);
+        if (mp3.filename) free(mp3.filename);
+        mp3.filename = 0;
         return true;
     }
     
@@ -255,7 +257,8 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo& info) const
     bool success = ::write_tag(&mp3);
     fclose(mp3.file);
     
-    delete [] mp3.filename;
+    if (mp3.filename) free(mp3.filename);
+    mp3.filename = 0;
   
     return success;
 }
