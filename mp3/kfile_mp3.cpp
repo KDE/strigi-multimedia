@@ -150,13 +150,13 @@ bool KMp3Plugin::readInfo(KFileMetaInfo &info, uint what)
         QString date  = file.tag()->year() > 0 ? QString::number(file.tag()->year()) : QString::null;
         QString track = file.tag()->track() > 0 ? QString::number(file.tag()->track()) : QString::null;
 
-        appendItem(id3group, "Title",       TStringToQString(file.tag()->title()));
-        appendItem(id3group, "Artist",      TStringToQString(file.tag()->artist()));
-        appendItem(id3group, "Album",       TStringToQString(file.tag()->album()));
+        appendItem(id3group, "Title",       TStringToQString(file.tag()->title()).stripWhiteSpace());
+        appendItem(id3group, "Artist",      TStringToQString(file.tag()->artist()).stripWhiteSpace());
+        appendItem(id3group, "Album",       TStringToQString(file.tag()->album()).stripWhiteSpace());
         appendItem(id3group, "Date",        date);
-        appendItem(id3group, "Comment",     TStringToQString(file.tag()->comment()));
+        appendItem(id3group, "Comment",     TStringToQString(file.tag()->comment()).stripWhiteSpace());
         appendItem(id3group, "Tracknumber", track);
-        appendItem(id3group, "Genre",       TStringToQString(file.tag()->genre()));
+        appendItem(id3group, "Genre",       TStringToQString(file.tag()->genre()).stripWhiteSpace());
     }
 
     if(readTech)
