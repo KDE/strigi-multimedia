@@ -205,7 +205,7 @@ bool KSidPlugin::writeInfo(const KFileMetaInfo& info) const
 
 failure:
     if (file) close(file);
-    kdDebug() << "something went wrong writing to sid file\n";
+    kdDebug(7034) << "something went wrong writing to sid file\n";
     return false;
 }
 
