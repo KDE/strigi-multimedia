@@ -445,8 +445,9 @@ const char * KAviPlugin::resolve_audio(uint16_t id)
     static const char codec_160[] = "WMA1";
     static const char codec_161[] = "WMA2";
     static const char codec_162[] = "WMA3";
+    static const char codec_2000[] = "DVM";
     switch (id) {
-    case 0x000 : return codec_00; break;
+    case 0x000 : return i18n(codec_00); break;
     case 0x001 : return codec_01; break;
     case 0x002 : return codec_02; break;
     case 0x050 : return codec_50; break;
@@ -455,7 +456,8 @@ const char * KAviPlugin::resolve_audio(uint16_t id)
     case 0x160 : return codec_160; break;
     case 0x161 : return codec_161; break;
     case 0x162 : return codec_162; break;
-    default : return codec_unknown;
+    case 0x2000 : return codec_2000; break;
+    default : return i18n(codec_unknown);
     }
 
     return NULL;
@@ -521,7 +523,7 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
             appendItem(group, "Video codec", i18n("Unknown"));
 
         if (done_audio)
-            appendItem(group, "Audio codec", i18n(resolve_audio(handler_audio)));
+            appendItem(group, "Audio codec", resolve_audio(handler_audio));
         else
             appendItem(group, "Audio codec", i18n("None"));
             
