@@ -296,7 +296,6 @@ int get_id3(mp3info *mp3) {
 
    if(mp3->datasize >= 128) {
 	if(fseek(mp3->file, -128, SEEK_END )) {
-	   fprintf(stderr,"ERROR: Couldn't read last 128 bytes of %s!!\n",mp3->filename);
 	   retcode |= 4;
 	} else {
 	   fread(fbuf,1,3,mp3->file); fbuf[3] = '\0';
