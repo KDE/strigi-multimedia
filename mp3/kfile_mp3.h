@@ -21,8 +21,7 @@ public:
                                           const char *name ) const;
 
     QVariant::Type type( const QString& key ) const;  
-    virtual KFileMetaInfoItem * addItem( const QString& key,
-                                         const QVariant& value );        
+
 private:
     char* m_path;
 };

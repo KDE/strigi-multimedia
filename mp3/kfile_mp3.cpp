@@ -50,37 +50,36 @@ KMp3MetaInfo::KMp3MetaInfo( const QString& path ) :
 
     QString value;
   
-    if (mp3.id3_isvalid)
-    {
-        m_items.insert("Title", new KFileMetaInfoItem("Title",
-            i18n("Title"), QVariant(QString::fromLocal8Bit(mp3.id3.title)), true));
+    if (!mp3.id3_isvalid)
+        memset(&mp3.id3, sizeof(id3tag), 0);
 
-        m_items.insert("Artist", new KFileMetaInfoItem("Artist",
-            i18n("Artist"), QVariant(QString::fromLocal8Bit(mp3.id3.artist)), true));
+    m_items.insert("Title", new KFileMetaInfoItem("Title",
+        i18n("Title"), QVariant(QString::fromLocal8Bit(mp3.id3.title)), true));
 
-        m_items.insert("Album", new KFileMetaInfoItem("Album",
-            i18n("Album"), QVariant(QString::fromLocal8Bit(mp3.id3.album)), true));
+    m_items.insert("Artist", new KFileMetaInfoItem("Artist",
+        i18n("Artist"), QVariant(QString::fromLocal8Bit(mp3.id3.artist)), true));
 
-        m_items.insert("Year", new KFileMetaInfoItem("Year",
-            i18n("Year"), QVariant(mp3.id3.year), true));
+    m_items.insert("Album", new KFileMetaInfoItem("Album",
+        i18n("Album"), QVariant(QString::fromLocal8Bit(mp3.id3.album)), true));
 
-        m_items.insert("Comment", new KFileMetaInfoItem("Comment",
-            i18n("Comment"), QVariant(QString::fromLocal8Bit(mp3.id3.comment)), true));
+    m_items.insert("Year", new KFileMetaInfoItem("Year",
+        i18n("Year"), QVariant(mp3.id3.year), true));
+
+    m_items.insert("Comment", new KFileMetaInfoItem("Comment",
+        i18n("Comment"), QVariant(QString::fromLocal8Bit(mp3.id3.comment)), true));
         
-        m_items.insert("Track", new KFileMetaInfoItem("Track",
-            i18n("Track"), QVariant(mp3.id3.track[0]), true));
+    m_items.insert("Track", new KFileMetaInfoItem("Track",
+        i18n("Track"), QVariant((int)mp3.id3.track[0]), true));
         
-        if (mp3.id3.genre[0]<=MAXGENRE)
-        {
-            m_items.insert("Genre", new KFileMetaInfoItem("Genre",
-                i18n("Genre"), QVariant(::typegenre[mp3.id3.genre[0]])));
+    if (mp3.id3.genre[0] > MAXGENRE)
+        mp3.id3.genre[0] = 0;
 
-            m_items.insert("GenreNo", new KFileMetaInfoItem("Genre No.",
-                i18n("Genre No."), QVariant(mp3.id3.genre[0]), true));
-        }
-        
-    }
-    
+    m_items.insert("Genre", new KFileMetaInfoItem("Genre",
+        i18n("Genre"), QVariant(::typegenre[mp3.id3.genre[0]])));
+
+    m_items.insert("GenreNo", new KFileMetaInfoItem("Genre No.",
+        i18n("Genre No."), QVariant(mp3.id3.genre[0]), true));
+            
     m_items.insert("Version", new KFileMetaInfoItem("Version",
         i18n("Version"), QVariant(mp3.header.version)));
     
@@ -151,15 +150,14 @@ QStringList KMp3MetaInfo::supportedKeys() const
 
 QStringList KMp3MetaInfo::preferredKeys() const
 {
-    QDictIterator<KFileMetaInfoItem> it(m_items);
     QStringList list;
     
-    for (; it.current(); ++it)
+    for (QDictIterator<KFileMetaInfoItem> it(m_items); it.current(); ++it)
     {
-        list.append(it.current()->key());
+         list.append(it.current()->key());
     }
 
-    // now move them up
+    // Move the preferred items up
     QStringList::Iterator all;
     QStringList::Iterator pref;
 
@@ -171,6 +169,22 @@ QStringList KMp3MetaInfo::preferredKeys() const
             QString tmp = *all;
             list.remove(all);
             list.prepend(tmp);
+        }
+    }
+
+    // Add NULL items to the end
+    for (QDictIterator<KFileMetaInfoItem> it(m_items); it.current(); ++it)
+    {
+        bool is_unset = false;
+
+        if ((*it)->value().type() == QVariant::Int) 
+            is_unset = !(*it)->value().toInt();
+        else if ((*it)->value().type() == QVariant::String) 
+            is_unset = (*it)->value().toString().isEmpty();
+	
+        if (is_unset) {
+             list.remove(it.current()->key());
+             list.append(it.current()->key());
         }
     }
 
@@ -204,31 +218,18 @@ void KMp3MetaInfo::applyChanges()
 
     memset(&mp3.id3, sizeof(id3tag), 0);
     
-    if (m_items["Title"])
-        strncpy(mp3.id3.title, m_items["Title"]->value().toString().local8Bit(), 31);
+    strncpy(mp3.id3.title, m_items["Title"]->value().toString().local8Bit(), 31);
+    strncpy(mp3.id3.artist, m_items["Artist"]->value().toString().local8Bit(), 31);
+    strncpy(mp3.id3.album, m_items["Album"]->value().toString().local8Bit(), 31);
+    strncpy(mp3.id3.year, m_items["Year"]->value().toString().local8Bit(), 5);
+    strncpy(mp3.id3.comment, m_items["Comment"]->value().toString().local8Bit(), 29);
+    mp3.id3.track[0] = m_items["Track"]->value().toInt();
 
-    if (m_items["Artist"])
-        strncpy(mp3.id3.artist, m_items["Artist"]->value().toString().local8Bit(), 31);
-
-    if (m_items["Album"])
-        strncpy(mp3.id3.album, m_items["Album"]->value().toString().local8Bit(), 31);
-
-    if (m_items["Year"])
-        strncpy(mp3.id3.year, m_items["Year"]->value().toString().local8Bit(), 5);
-
-    if (m_items["Comment"])
-        strncpy(mp3.id3.comment, m_items["Comment"]->value().toString().local8Bit(), 29);
-
-    if (m_items["Track"])
-        mp3.id3.track[0] = m_items["Track"]->value().toInt();
-
-    if (m_items["GenreNo"]) {
-        int genre = m_items["GenreNo"]->value().toInt();
-        if (genre<=MAXGENRE)
-        {
-            mp3.id3.genre[0] = genre;
-        }
-    } 
+    int genre = m_items["GenreNo"]->value().toInt();
+    if (genre<=MAXGENRE)
+    {
+        mp3.id3.genre[0] = genre;
+    }
     
     ::write_tag(&mp3);
     fclose(mp3.file);
@@ -285,17 +286,6 @@ QValidator * KMp3MetaInfo::createValidator( const QString& key, QObject *parent,
 QVariant::Type KMp3MetaInfo::type( const QString& key ) const
 {
     return m_items[key]->type();
-}
-
-KFileMetaInfoItem* KMp3MetaInfo::addItem( const QString& key, const QVariant& value ) {
-    KFileMetaInfoItem *info_item = new KFileMetaInfoItem(key, i18n(key.latin1()), value, true);
-
-    m_items.insert(key, info_item);
-
-    // Hack - setting the value again marks it as dirty, so it'll be written out
-    info_item->setValue(value);
-
-    return info_item;
 }
 
 #include "kfile_mp3.moc"
