@@ -35,7 +35,7 @@ KMp3MetaInfo::KMp3MetaInfo( const QString& path ) :
 {
     mp3info mp3;
 
-  	memset(&mp3,0,sizeof(mp3info));
+    memset(&mp3,0,sizeof(mp3info));
 
     QCString s = QFile::encodeName(path);
     mp3.filename = m_path = new char[s.length()+1];
@@ -174,27 +174,41 @@ void KMp3MetaInfo::applyChanges()
         }
     }
     
-    if (!doit) return;
+    if (!doit) {
+        return;
+    }
 
     mp3info mp3;
-  	memset(&mp3,0,sizeof(mp3info));
 
     mp3.filename = m_path;
+    mp3.file = fopen(mp3.filename, "a+b");
+    ::get_mp3_info(&mp3, ::SCAN_QUICK, ::VBR_VARIABLE);
+    
+    if (m_items["Title"])
+        strncpy(mp3.id3.title, m_items["Title"]->value().toString().local8Bit(), 31);
 
-    mp3.file = fopen(mp3.filename, "rb");
-    
-    strncpy(mp3.id3.title, m_items["Title"]->value().toString().local8Bit(), 31);
-    strncpy(mp3.id3.artist, m_items["Artist"]->value().toString().local8Bit(), 31);
-    strncpy(mp3.id3.album, m_items["Album"]->value().toString().local8Bit(), 31);
-    strncpy(mp3.id3.year, m_items["Year"]->value().toString().local8Bit(), 5);
-    strncpy(mp3.id3.comment, m_items["Comment"]->value().toString().local8Bit(), 29);
-    mp3.id3.track[0] = m_items["Track"]->value().toInt();
-    
-    int genre = m_items["Genre"]->value().toInt();
-    if (genre<=MAXGENRE)
-    {
-        mp3.id3.genre[0] = genre;
-    }
+    if (m_items["Artist"])
+        strncpy(mp3.id3.artist, m_items["Artist"]->value().toString().local8Bit(), 31);
+
+    if (m_items["Album"])
+        strncpy(mp3.id3.album, m_items["Album"]->value().toString().local8Bit(), 31);
+
+    if (m_items["Year"])
+        strncpy(mp3.id3.year, m_items["Year"]->value().toString().local8Bit(), 5);
+
+    if (m_items["Comment"])
+        strncpy(mp3.id3.comment, m_items["Comment"]->value().toString().local8Bit(), 29);
+
+    if (m_items["Track"])
+        mp3.id3.track[0] = m_items["Track"]->value().toInt();
+
+    if (m_items["GenreNo"]) {
+        int genre = m_items["GenreNo"]->value().toInt();
+        if (genre<=MAXGENRE)
+        {
+            mp3.id3.genre[0] = genre;
+        }
+    } 
     
     ::write_tag(&mp3);
     fclose(mp3.file);
@@ -251,6 +265,17 @@ QValidator * KMp3MetaInfo::createValidator( const QString& key, QObject *parent,
 QVariant::Type KMp3MetaInfo::type( const QString& key ) const
 {
     return m_items[key]->type();
+}
+
+KFileMetaInfoItem* KMp3MetaInfo::addItem( const QString& key, const QVariant& value ) {
+    KFileMetaInfoItem *info_item = new KFileMetaInfoItem(key, i18n(key.latin1()), value, true);
+
+    m_items.insert(key, info_item);
+
+    // Hack - setting the value again marks it as dirty, so it'll be written out
+    info_item->setValue(value);
+
+    return info_item;
 }
 
 #include "kfile_mp3.moc"
