@@ -129,11 +129,13 @@ KOggMetaInfo::KOggMetaInfo( const QString& path ) :
     }
 
     playtime = ov_time_total(&vf,-1);
-    playmin = ((long)playtime) / 60L;
-    playsec = ((long)playtime) % 60L;
-  
+    
+    // someone know a better way?
+    QTime time(0, 0, 0);
+    time = time.addSecs((int)playtime);
+    
     m_items.insert("Length", new KFileMetaInfoItem("Length",
-        i18n("Length"), QVariant(QString("%1:%02").arg(playmin).arg(playsec))));
+        i18n("Length"), QVariant(time)));
   
     ov_clear(&vf);
 }
