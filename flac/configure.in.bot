@@ -1,0 +1,6 @@
+if test "$kde_has_flac_lib" = no; then
+else
+        echo "    You are missing the FLAC++ headers and libraries"
+        echo "    The FLAC plugin won't be compiled."
+fi
+
