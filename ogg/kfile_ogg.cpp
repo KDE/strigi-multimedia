@@ -246,7 +246,6 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo::Internal& info) const
     delete vc->vendor;
 
     fclose(infile);
-    fclose(outfile);
     sf.close();
     
     return true;
