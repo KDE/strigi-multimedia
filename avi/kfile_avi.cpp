@@ -17,15 +17,6 @@
  *
  */
 
- /*
- * this plugin isnt finished yet - there are some flaws in the parsing
- * structure; the end result being that it can't continue and find the
- * audio strh/strf blocks
- *
- * however, it works and is useful already ;)
- */
- 
- 
  
 #include <config.h>
 #include "kfile_avi.h"
