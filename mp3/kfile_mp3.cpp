@@ -82,42 +82,52 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/x-mp3", sg, sg);
 
     // id3 group
-    KFileMimeTypeInfo::GroupInfo group = info.groupInfo("id3v1.1");
+    KFileMimeTypeInfo::GroupInfo* group = info->groupInfo("id3v1.1");
     // ### set group properties somewhere
     
-    group.addItemInfo("Title", i18n("Title"), QVariant::String, Modifiable,
-                      NoUnit, KFileMetaInfo::Name);
-    group.addItemInfo("Artist", i18n("Artist"), QVariant::String, Modifiable,
-                      NoUnit, KFileMetaInfo::Author);
-    group.addItemInfo("Album", i18n("Album"), QVariant::String, Modifiable);
-    group.addItemInfo("Year", i18n("Year"), QVariant::String, Modifiable);
-    group.addItemInfo("Comment", i18n("Comment"), QVariant::String, Modifiable,
-                      NoUnit, KFileMetaInfo::Description);
-    group.addItemInfo("Tracknumber", i18n("Track"), QVariant::Int, Modifiable);
-    group.addItemInfo("Genre", i18n("Genre"), QVariant::String, Modifiable);
+    group->addItemInfo("Title", i18n("Title"), QVariant::String,
+                       KFileMimeTypeInfo::Modifiable, KFileMimeTypeInfo::NoUnit,
+                       KFileMimeTypeInfo::Name);
+    group->addItemInfo("Artist", i18n("Artist"), QVariant::String,
+                       KFileMimeTypeInfo::Modifiable,
+                       KFileMimeTypeInfo::NoUnit, KFileMimeTypeInfo::Author);
+    group->addItemInfo("Album", i18n("Album"), QVariant::String,
+                       KFileMimeTypeInfo::Modifiable);
+    group->addItemInfo("Year", i18n("Year"), QVariant::String,
+                      KFileMimeTypeInfo::Modifiable);
+    group->addItemInfo("Comment", i18n("Comment"), QVariant::String,
+                       KFileMimeTypeInfo::Modifiable, KFileMimeTypeInfo::NoUnit,
+                       KFileMimeTypeInfo::Description);
+    group->addItemInfo("Tracknumber", i18n("Track"), QVariant::Int,
+                       KFileMimeTypeInfo::Modifiable);
+    group->addItemInfo("Genre", i18n("Genre"), QVariant::String,
+                       KFileMimeTypeInfo::Modifiable);
 
     // technical group
-    KFileMimeTypeInfo::GroupInfo group = info.groupInfo("Technical");
+    group = info->groupInfo("Technical");
 
-    group.addItemInfo("Version", i18n("Version"), QVariant::Int, 0, 0, NoUnit,
-                      NoHint, i18n("MPEG"));
+    group->addItemInfo("Version", i18n("Version"), QVariant::Int, 0,
+                      KFileMimeTypeInfo:: NoUnit,
+                      KFileMimeTypeInfo::NoHint, i18n("MPEG"));
 
-    group.addItemInfo("Layer", i18n("Layer"), QVariant::Int);
-    group.addItemInfo("CRC", i18n("CRC"), QVariant::Bool);
-    group.addItemInfo("Bitrate", i18n("Bitrate"), QVariant::Int, 0, 0, NoUnit,
-                      NoHint, QString::null, i18n("kbps"));
+    group->addItemInfo("Layer", i18n("Layer"), QVariant::Int);
+    group->addItemInfo("CRC", i18n("CRC"), QVariant::Bool);
+    group->addItemInfo("Bitrate", i18n("Bitrate"), QVariant::Int, 0, 
+                      KFileMimeTypeInfo::NoUnit,
+                      KFileMimeTypeInfo::NoHint, QString::null, i18n("kbps"));
 
-    group.addItemInfo("Sample Rate", i18n("Sample Rate"), QVariant::Int, 0, 0,
-                      NoUnit, NoHint, QString::null, i18n("Hz"));
+    group->addItemInfo("Sample Rate", i18n("Sample Rate"), QVariant::Int, 0,
+                      KFileMimeTypeInfo::NoUnit, 
+                      KFileMimeTypeInfo::NoHint, QString::null, i18n("Hz"));
     
-    group.addItemInfo("Channels", i18n("Channels"), QVariant::Int);
-    group.addItemInfo("Copyright", i18n("Copyright"), QVariant::Bool);
-    group.addItemInfo("Original", i18n("Original"), QVariant::Bool);
-    group.addItemInfo("Length", i18n("Length"), QVariant::Int);
-    group.addItemInfo("Emphasis", i18n("Emphasis"), QVariant::String);
+    group->addItemInfo("Channels", i18n("Channels"), QVariant::Int);
+    group->addItemInfo("Copyright", i18n("Copyright"), QVariant::Bool);
+    group->addItemInfo("Original", i18n("Original"), QVariant::Bool);
+    group->addItemInfo("Length", i18n("Length"), QVariant::Int);
+    group->addItemInfo("Emphasis", i18n("Emphasis"), QVariant::String);
 }
 
-bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info, uint what )
+bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
 {
     kdDebug(7034) << "mp3 plugin readInfo\n";
     
@@ -155,7 +165,7 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info, uint what )
         id3group.appendItem("Comment", QString::fromLocal8Bit(mp3.id3.comment));
 
         if (mp3.id3.track[0])
-            id3group.appendItem("Tracknumber", fromLocal8Bit(mp3.id3.track[0]));
+            id3group.appendItem("Tracknumber", mp3.id3.track[0]);
         
       	// Could we find a valid genre?
         if (mp3.id3.genre[0]>MAXGENRE) {
@@ -199,12 +209,6 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info, uint what )
     kdDebug(7034) << "reading finished\n";
     
     delete [] mp3.filename;
-    
-    kdDebug(7034) << "the preferredItems contain " << m_preferred.size() << endl;
-    
-//    info.setPreferredKeys(m_preferred);
-//    info.setSupportedKeys(m_preferred);
-//    info.setSupportsVariableKeys(false);
     
     return true;
 }
