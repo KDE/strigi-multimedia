@@ -114,7 +114,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     group = addGroupInfo(info, "Technical", i18n("Technical Details"));
 
     item = addItemInfo(group, "Version", i18n("Version"), QVariant::Int);
-    setSuffix(item,  i18n("MPEG"));
+    setPrefix(item,  i18n("MPEG"));
 
     item = addItemInfo(group, "Layer", i18n("Layer"), QVariant::Int);
     item = addItemInfo(group, "CRC", i18n("CRC"), QVariant::Bool);
