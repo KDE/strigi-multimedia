@@ -10,5 +10,9 @@ if include_mp3_SUBDIR
 KFILE_MP3_SUBDIR=mp3
 endif
 
-SUBDIRS=m3u $(KFILE_MP3_SUBDIR) au avi wav sid $(KFILE_OGG_SUBDIR) \
+if include_mpc_SUBDIR
+KFILE_MPC_SUBDIR=mpc
+endif
+
+SUBDIRS=m3u $(KFILE_MP3_SUBDIR) $(KFILE_MPC_SUBDIR) au avi wav sid $(KFILE_OGG_SUBDIR) \
         $(KFILE_FLAC_SUBDIR)
