@@ -73,10 +73,10 @@ KAviPlugin::KAviPlugin(QObject *parent, const char *name,
 
 bool KAviPlugin::read_avi()
 {
-    static const char *sig_riff = "RIFF";
-    static const char *sig_avi  = "AVI ";
-    static const char *sig_list = "LIST";
-    static const char *sig_junk = "JUNK";
+    static const char sig_riff[] = "RIFF";
+    static const char sig_avi[]  = "AVI ";
+    static const char sig_list[] = "LIST";
+    static const char sig_junk[] = "JUNK";
     uint32_t dwbuf1;
 
     done_avih = false;
@@ -151,9 +151,9 @@ bool KAviPlugin::read_avi()
 
 bool KAviPlugin::read_list()
 {
-    static const char *sig_hdrl = "hdrl";   // header list
-    static const char *sig_strl = "strl";   // ...list
-    static const char *sig_movi = "movi";   // movie list
+    static const char sig_hdrl[] = "hdrl";   // header list
+    static const char sig_strl[] = "strl";   // ...list
+    static const char sig_movi[] = "movi";   // movie list
     
     uint32_t dwbuf1;
     char charbuf1[5];
@@ -195,7 +195,7 @@ bool KAviPlugin::read_list()
 
 bool KAviPlugin::read_avih()
 {
-    static const char *sig_avih = "avih";   // header list
+    static const char sig_avih[] = "avih";   // header list
 
     uint32_t dwbuf1;
     char charbuf1[5];
@@ -234,18 +234,17 @@ bool KAviPlugin::read_avih()
 
 bool KAviPlugin::read_strl()
 {
-    static const char *sig_strh = "strh";
-    static const char *sig_strf = "strf";
-    static const char *sig_strd = "strd";
-    static const char *sig_strn = "strn";
-    static const char *sig_list = "LIST";
-    static const char *sig_junk = "JUNK";
+    static const char sig_strh[] = "strh";
+    static const char sig_strf[] = "strf";
+    //static const char sig_strd[] = "strd";
+    static const char sig_strn[] = "strn";
+    static const char sig_list[] = "LIST";
+    static const char sig_junk[] = "JUNK";
     
     kdDebug(7034) << "in strl handler\n";
         
     uint32_t dwbuf1;    // buffer for block sizes
     char charbuf1[5];
-    char charbuf2[5];
         
     // loop through blocks
     int counter = 0;
@@ -337,8 +336,8 @@ bool KAviPlugin::read_strl()
 
 bool KAviPlugin::read_strh(uint32_t blocksize)
 {
-    static const char *sig_vids = "vids";   // ...video
-    static const char *sig_auds = "auds";   // ...audio
+    static const char sig_vids[] = "vids";   // ...video
+    static const char sig_auds[] = "auds";   // ...audio
     
     uint32_t strh_flags;
     uint32_t strh_reserved1;
@@ -436,16 +435,16 @@ const char * KAviPlugin::resolve_audio(uint16_t id)
         a few common codecs
     */
 
-    static const char * codec_unknown = "Unknown";
-    static const char * codec_00 = "Unknown wave format";
-    static const char * codec_01 = "Wave (PCM)";
-    static const char * codec_02 = "Wave (ADPCM)";
-    static const char * codec_50 = "MPEG";
-    static const char * codec_55 = "MP3";
-    static const char * codec_92 = "AC3";
-    static const char * codec_160 = "WMA1";
-    static const char * codec_161 = "WMA2";
-    static const char * codec_162 = "WMA3";
+    static const char codec_unknown[] = "Unknown";
+    static const char codec_00[]  = "Unknown wave format";
+    static const char codec_01[]  = "Wave (PCM)";
+    static const char codec_02[]  = "Wave (ADPCM)";
+    static const char codec_50[]  = "MPEG";
+    static const char codec_55[]  = "MP3";
+    static const char codec_92[]  = "AC3";
+    static const char codec_160[] = "WMA1";
+    static const char codec_161[] = "WMA2";
+    static const char codec_162[] = "WMA3";
     switch (id) {
     case 0x000 : return codec_00; break;
     case 0x001 : return codec_01; break;
