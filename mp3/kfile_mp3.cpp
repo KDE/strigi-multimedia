@@ -278,7 +278,7 @@ QValidator * KMp3MetaInfo::createValidator( const QString& key, QObject *parent,
 {
     if ((key == "Title") || (key == "Artist")|| (key == "Album"))
     {
-        return new MyValidator(31, parent, name);
+        return new MyValidator(30, parent, name);
     }
     else if (key == "Year")
     {
@@ -286,7 +286,7 @@ QValidator * KMp3MetaInfo::createValidator( const QString& key, QObject *parent,
     }
     else if (key == "Comment")
     {
-        return new MyValidator(29, parent, name);
+        return new MyValidator(28, parent, name);
     }
     else if (key == "Track")
     {
