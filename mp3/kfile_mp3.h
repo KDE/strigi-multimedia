@@ -14,8 +14,6 @@
  * along with this program; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- *  $Id$
  */
 
 #ifndef __KFILE_MP3_H__
@@ -30,14 +28,14 @@ class KMp3Plugin: public KFilePlugin
     Q_OBJECT
     
 public:
-    KMp3Plugin( QObject *parent, const char *name, const QStringList& args );
+    KMp3Plugin(QObject *parent, const char *name, const QStringList &args);
     
     virtual bool readInfo( KFileMetaInfo& info, uint what );
     virtual bool writeInfo( const KFileMetaInfo& info) const;
-    virtual QValidator* createValidator( const QString& mimetype,
-                                         const QString &group,
-                                         const QString &key,
-                                         QObject* parent, const char* name) const;
+    virtual QValidator *createValidator(const QString &mimetype,
+					const QString &group,
+					const QString &key,
+					QObject *parent, const char *name) const;
 };
 
 #endif
