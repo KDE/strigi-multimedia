@@ -1,5 +1,4 @@
 #include "kfile_mp3.h"
-#include <kurl.h>
 #include <kprocess.h>
 #include <klocale.h>
 #include <qcstring.h>

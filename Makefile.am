@@ -6,7 +6,7 @@ INCLUDES         = $(all_includes)
 # these are the headers for your project
 noinst_HEADERS   = kfile_mp3.h mp3tech.h mp3info.h
 
-lib_LTLIBRARIES = kfile_mp3.la
+kde_module_LTLIBRARIES = kfile_mp3.la
 
 kfile_mp3_la_SOURCES = kfile_mp3.cpp mp3tech.c
 kfile_mp3_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)

@@ -2,7 +2,6 @@
 #define __KMIME_MP3_H__
 
 #include <kfilemetainfo.h>
-#include <kurl.h>
 
 class QString;
 
@@ -29,7 +28,7 @@ private:
 
 class KMp3Plugin: public KFilePlugin
 {
-//    Q_OBJECT
+    Q_OBJECT
     
 public:
     KMp3Plugin( QObject *parent, const char *name,
