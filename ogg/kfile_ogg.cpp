@@ -27,6 +27,7 @@
 #include <qdict.h>
 #include <qvalidator.h>
 
+#include <kdebug.h>
 #include <kurl.h>
 #include <kprocess.h>
 #include <klocale.h>

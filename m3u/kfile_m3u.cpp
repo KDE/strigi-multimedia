@@ -20,6 +20,7 @@
 
 #include "kfile_m3u.h"
 
+#include <kdebug.h>
 #include <kurl.h>
 #include <kprocess.h>
 #include <klocale.h>
