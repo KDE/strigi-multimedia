@@ -100,7 +100,7 @@ bool KOggPlugin::readInfo( KFileMetaInfo::Internal& info )
     // get the vorbis comments
     for (i=0; i < vc->comments; i++)
     {
-        kdDebug(7034) << vc->user_comments[i];
+        kdDebug(7034) << vc->user_comments[i] << endl;
         QStringList split = QStringList::split(QRegExp("="), vc->user_comments[i]);
         split[0] = split[0].lower();
         split[0][0] = split[0][0].upper();
