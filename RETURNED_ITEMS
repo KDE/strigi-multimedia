@@ -48,3 +48,15 @@ first one is called "Artist", the second one (not yet) "Artist(2)" and so on.
 Common keys that are recommended in the vorbiscomment docs:
 Title, Version, Album, Tracknumber, Artist, Organization, Description, Genre,
 Date, Location, Copyright, Isirc
+
+
+
+au plugin:
+===========
+
+type       key         W/A        details
+------------------------------------------------------------------------
+Int        Length      -/-  Length in seconds
+Int        Sample Rate -/-  Sample rate of sample in Hz
+Int        Channels    -/-  No. of channels
+String     Encoding    -/-  Data encoding (e.g. 8-bit ISDN u-law)
