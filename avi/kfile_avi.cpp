@@ -514,6 +514,8 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
 
         if (done_audio)
             appendItem(group, "Audio codec", i18n(resolve_audio(handler_audio)));
+        else
+            appendItem(group, "Audio codec", i18n("None"));
             
     }
 
