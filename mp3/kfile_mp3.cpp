@@ -63,7 +63,7 @@ KMp3MetaInfo::KMp3MetaInfo( const QString& path ) :
         i18n("Album"), QVariant(QString::fromLocal8Bit(mp3.id3.album)), true));
 
     m_items.insert("Year", new KFileMetaInfoItem("Year",
-        i18n("Year"), QVariant(mp3.id3.year), true));
+        i18n("Year"), QVariant(QString::fromLocal8Bit(mp3.id3.year)), true));
 
     m_items.insert("Comment", new KFileMetaInfoItem("Comment",
         i18n("Comment"), QVariant(QString::fromLocal8Bit(mp3.id3.comment)), true));
@@ -223,6 +223,7 @@ void KMp3MetaInfo::applyChanges()
     strncpy(mp3.id3.album, m_items["Album"]->value().toString().local8Bit(), 31);
     strncpy(mp3.id3.year, m_items["Year"]->value().toString().local8Bit(), 5);
     strncpy(mp3.id3.comment, m_items["Comment"]->value().toString().local8Bit(), 29);
+
     mp3.id3.track[0] = m_items["Track"]->value().toInt();
 
     int genre = m_items["GenreNo"]->value().toInt();
@@ -264,8 +265,7 @@ QValidator * KMp3MetaInfo::createValidator( const QString& key, QObject *parent,
     }
     else if (key == "Year")
     {
-        // perhaps we should make the range smaller?
-        return new QIntValidator(0, 4000, parent, name);
+        return new MyValidator(4, parent, name);
     }
     else if (key == "Comment")
     {
