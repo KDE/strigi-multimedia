@@ -93,19 +93,19 @@ KOggPlugin::KOggPlugin( QObject *parent, const char *name,
     item = addItemInfo(group, "Sample Rate", i18n("Sample Rate"), QVariant::Int);
     setSuffix(item, i18n("Hz"));
 
-    item = addItemInfo(group, "Bitrate upper", i18n("Bitrate upper"),
+    item = addItemInfo(group, "Upper Bitrate", i18n("Upper Bitrate"),
                        QVariant::Int);
     setSuffix(item, i18n("kbps"));
     
-    item = addItemInfo(group, "Bitrate lower", i18n("Bitrate lower"),
+    item = addItemInfo(group, "Lower Bitrate", i18n("Lower Bitrate"),
                        QVariant::Int);
     setSuffix(item, i18n("kbps"));
 
-    item = addItemInfo(group, "Bitrate nominal", i18n("Bitrate nominal"),
+    item = addItemInfo(group, "Nominal Bitrate", i18n("Nominal Bitrate"),
                        QVariant::Int);
     setSuffix(item, i18n("kbps"));
     
-    item = addItemInfo(group, "Bitrate", i18n("Bitrate average"), QVariant::Int);
+    item = addItemInfo(group, "Bitrate", i18n("Average Bitrate"), QVariant::Int);
     setAttributes(item, KFileMimeTypeInfo::Averaged);
     setHint(item, KFileMimeTypeInfo::Bitrate);
     setSuffix(item, i18n("kbps"));
@@ -184,13 +184,13 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
             appendItem(techgroup, "Sample Rate", int(vi->rate));
 
             if (vi->bitrate_upper > 0) 
-                appendItem(techgroup, "Bitrate upper",
+                appendItem(techgroup, "Upper Bitrate",
                            int(vi->bitrate_upper+500)/1000);
             if (vi->bitrate_lower > 0) 
-                appendItem(techgroup, "Bitrate lower",
+                appendItem(techgroup, "Lower Bitrate",
                            int(vi->bitrate_lower+500)/1000);
             if (vi->bitrate_nominal > 0) 
-                appendItem(techgroup, "Bitrate nominal",
+                appendItem(techgroup, "Nominal Bitrate",
                            int(vi->bitrate_nominal+500)/1000);
 
             appendItem(techgroup, "Bitrate", int(ov_bitrate(&vf,-1)+500)/1000);
