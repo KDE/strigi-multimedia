@@ -51,19 +51,19 @@ KMp3MetaInfo::KMp3MetaInfo( const QString& path ) :
     if (mp3.id3_isvalid)
     {
         m_items.insert("Title", new KFileMetaInfoItem("Title",
-            i18n("Title"), QVariant(mp3.id3.title), true));
+            i18n("Title"), QVariant(QString::fromLocal8Bit(mp3.id3.title)), true));
 
         m_items.insert("Artist", new KFileMetaInfoItem("Artist",
-            i18n("Artist"), QVariant(mp3.id3.artist), true));
+            i18n("Artist"), QVariant(QString::fromLocal8Bit(mp3.id3.artist)), true));
 
         m_items.insert("Album", new KFileMetaInfoItem("Album",
-            i18n("Album"), QVariant(mp3.id3.album), true));
+            i18n("Album"), QVariant(QString::fromLocal8Bit(mp3.id3.album)), true));
 
         m_items.insert("Year", new KFileMetaInfoItem("Year",
             i18n("Year"), QVariant(mp3.id3.year), true));
 
         m_items.insert("Comment", new KFileMetaInfoItem("Comment",
-            i18n("Comment"), QVariant(mp3.id3.comment), true));
+            i18n("Comment"), QVariant(QString::fromLocal8Bit(mp3.id3.comment)), true));
         
         m_items.insert("Track", new KFileMetaInfoItem("Track",
             i18n("Track"), QVariant(mp3.id3.track[0]), true));
@@ -179,11 +179,11 @@ void KMp3MetaInfo::applyChanges()
 
     mp3.file = fopen(mp3.filename, "rb");
     
-    strncpy(mp3.id3.title, m_items["Title"]->value().toString().latin1(), 31);
-    strncpy(mp3.id3.artist, m_items["Artist"]->value().toString().latin1(), 31);
-    strncpy(mp3.id3.album, m_items["Album"]->value().toString().latin1(), 31);
-    strncpy(mp3.id3.year, m_items["Year"]->value().toString().latin1(), 5);
-    strncpy(mp3.id3.comment, m_items["Comment"]->value().toString().latin1(), 29);
+    strncpy(mp3.id3.title, m_items["Title"]->value().toString().local8Bit(), 31);
+    strncpy(mp3.id3.artist, m_items["Artist"]->value().toString().local8Bit(), 31);
+    strncpy(mp3.id3.album, m_items["Album"]->value().toString().local8Bit(), 31);
+    strncpy(mp3.id3.year, m_items["Year"]->value().toString().local8Bit(), 5);
+    strncpy(mp3.id3.comment, m_items["Comment"]->value().toString().local8Bit(), 29);
     mp3.id3.track[0] = m_items["Track"]->value().toInt();
     
     int genre = m_items["Genre"]->value().toInt();
