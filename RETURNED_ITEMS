@@ -71,3 +71,16 @@ Int        Length      -/-  Length in seconds/minutes/hours
 Size       Resolution  -/-  Resolution in pixels
 Int        Frame rate  -/-  Frame rate
 String     Video codec -/-  The video codec symbol (e.g. mp42 or div3)
+
+
+theora plugin:
+===========
+
+type       key         W/A        details
+------------------------------------------------------------------------
+Int        Length      -/-  Length in seconds/minutes/hours
+Size       Resolution  -/-  Resolution in pixels
+Int        Frame rate  -/-  Frame rate
+Int        Quality     -/-  Quality of the encoding
+Int        Channels    -/-  Number of audio channels
+Int        Sample rate -/-  Sample rate of sample in Hz
