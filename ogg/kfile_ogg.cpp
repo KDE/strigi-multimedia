@@ -67,7 +67,7 @@ KOggPlugin::KOggPlugin( QObject *parent, const char *name,
 {
     kdDebug(7034) << "ogg plugin\n";
     
-    KFileMimeTypeInfo* info = addMimeTypeInfo( "application/ogg" );
+    KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/vorbis" );
 
     KFileMimeTypeInfo::GroupInfo* group = 0;
 
