@@ -34,11 +34,18 @@
 #include <kgenericfactory.h>
 #include <ksavefile.h>
 
+#include <tag.h>
+#if (TAGLIB_MAJOR_VERSION>1) ||  \
+   ((TAGLIB_MAJOR_VERSION==1) && (TAGLIB_MINOR_VERSION>=2))
+#define TAGLIB_12
+#endif
+
 #include <tstring.h>
 #include <tfile.h>
 #include <flacfile.h>
+#ifdef TAGLIB_12
 #include <oggflacfile.h>
-#include <tag.h>
+#endif
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -53,7 +60,9 @@ KFlacPlugin::KFlacPlugin( QObject *parent, const char *name,
     kdDebug(7034) << "flac plugin\n";
 
     makeMimeTypeInfo( "audio/x-flac" );
+#ifdef TAGLIB_12
     makeMimeTypeInfo( "audio/x-oggflac" );
+#endif
 
 }
 
@@ -144,14 +153,16 @@ bool KFlacPlugin::readInfo( KFileMetaInfo& info, uint what )
                 KFileMetaInfo::DontCare |
                 KFileMetaInfo::TechnicalInfo)) readTech = true;
 
-    TagLib::File *file;
+    TagLib::File *file = 0;
 
     if (info.mimeType() == "audio/x-flac")
         file = new TagLib::FLAC::File(QFile::encodeName(info.path()).data(), readTech);
+#ifdef TAGLIB_12
     else
         file = new TagLib::Ogg::FLAC::File(QFile::encodeName(info.path()).data(), readTech);
+#endif
 
-    if (!file->isOpen())
+    if (!file || !file->isOpen())
     {
         kdDebug(7034) << "Couldn't open " << file->name() << endl;
         delete file;
@@ -223,8 +234,10 @@ bool KFlacPlugin::writeInfo(const KFileMetaInfo& info) const
 
     if (info.mimeType() == "audio/x-flac")
         file = new TagLib::FLAC::File(QFile::encodeName(info.path()).data(), false);
+#ifdef TAGLIB_12
     else
         file = new TagLib::Ogg::FLAC::File(QFile::encodeName(info.path()).data(), false);
+#endif
 
     if(!file->isOpen())
     {
