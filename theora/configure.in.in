@@ -1,0 +1,9 @@
+
+AC_DEFUN([KDE_CHECK_THEORA_SUBDIR],
+[
+ AC_REQUIRE([KDE_CHECK_THEORA])
+ # add the ogg-vorbis file meta info plugin only if the test succeeded
+ AM_CONDITIONAL(include_theora_SUBDIR, test x$oggv_have_theora = x1)
+])
+
+KDE_CHECK_THEORA_SUBDIR

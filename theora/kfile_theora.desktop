@@ -1,0 +1,18 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Service
+Name=theora Info
+Name[da]=theora info
+Name[et]=theora info
+Name[pt_BR]=Informações de theora
+Name[sv]=theora information
+Name[ta]=theora தகவல்
+Name[xx]=xxtheora Infoxx
+ServiceTypes=KFilePlugin
+X-KDE-Library=kfile_theora
+# change MimeType here! (example: inode/directory)
+MimeType=video/x-theora
+# change PreferredGroups here! (example: FolderInfo)
+PreferredGroups=
+# change PreferredItems here! (example: Items;Size)
+PreferredItems=Size,Length
