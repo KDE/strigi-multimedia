@@ -61,13 +61,61 @@ static const char* knownTranslations[] = {
 K_EXPORT_COMPONENT_FACTORY(kfile_ogg, KGenericFactory<KOggPlugin>("kfile_ogg"));
 
 KOggPlugin::KOggPlugin( QObject *parent, const char *name,
-                        const QStringList &preferredItems )
-    : KFilePlugin( parent, name, preferredItems )
+                        const QStringList &args )
+    : KFilePlugin( parent, name, args )
 {
     kdDebug(7034) << "ogg plugin\n";
+    
+    KFileMimeTypeInfo* info = addMimeTypeInfo( "application/x-ogg" );
+
+    KFileMimeTypeInfo::GroupInfo* group = 0;
+
+    // comment group
+    group = info->addGroupInfo("Comment", i18n("Comment"),
+                               KFileMimeTypeInfo::Addable |
+                               KFileMimeTypeInfo::Removable);
+
+
+    group->addVariableInfo(QVariant::String, KFileMimeTypeInfo::Addable |
+                                             KFileMimeTypeInfo::Removable |
+                                             KFileMimeTypeInfo::Modifiable);
+    
+
+
+    // technical group
+    group = info->addGroupInfo("Technical", i18n("Technical details"), 0);
+
+    
+    
+    group->addItemInfo("Version", i18n("Version"), QVariant::Int);
+    group->addItemInfo("Channels", i18n("Channels"), QVariant::Int);
+    group->addItemInfo("Sample Rate", i18n("Sample Rate"), QVariant::Int, 0,
+                      KFileMimeTypeInfo::NoUnit,  KFileMimeTypeInfo::NoHint,
+                      QString::null, i18n("Hz"));
+
+    group->addItemInfo("Bitrate upper", i18n("Bitrate upper"), QVariant::Int,
+                       0, KFileMimeTypeInfo::NoUnit,
+                       KFileMimeTypeInfo::NoHint, QString::null, i18n("kbps"));
+
+    group->addItemInfo("Bitrate lower", i18n("Bitrate lower"), QVariant::Int,
+                       0, KFileMimeTypeInfo::NoUnit,
+                       KFileMimeTypeInfo::NoHint, QString::null, i18n("kbps"));
+
+    group->addItemInfo("Bitrate nominal", i18n("Bitrate nominal"), QVariant::Int,
+                       0, KFileMimeTypeInfo::NoUnit,
+                       KFileMimeTypeInfo::NoHint, QString::null, i18n("kbps"));
+
+    group->addItemInfo("Bitrate", i18n("Bitrate average"), QVariant::Int,
+                       KFileMimeTypeInfo::Averaged, 
+                       KFileMimeTypeInfo::NoUnit, KFileMimeTypeInfo::Bitrate, 
+                       QString::null, i18n("kbps"));
+
+    group->addItemInfo("Length", i18n("Length"), QVariant::Int, 
+                       KFileMimeTypeInfo::Cummulative,
+                       KFileMimeTypeInfo::Seconds);
 }
 
-bool KOggPlugin::readInfo( KFileMetaInfo::Internal& info, int )
+bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
 {
     // parts of this code taken from ogginfo.c of the vorbis-tools v1.0rc2
     FILE *fp;
@@ -75,8 +123,16 @@ bool KOggPlugin::readInfo( KFileMetaInfo::Internal& info, int )
     int rc,i;
     vorbis_comment *vc;
     vorbis_info *vi;
-    double playtime;
-    int playmin,playsec;
+    
+    bool readComment = false;
+    bool readTech = false;
+    if (what & (KFileMetaInfo::Fastest | 
+                KFileMetaInfo::DontCare |
+                KFileMetaInfo::ContentInfo)) readComment = true;
+    
+    if (what & (KFileMetaInfo::Fastest | 
+                KFileMetaInfo::DontCare |
+                KFileMetaInfo::TechnicalInfo)) readTech = true;
 
     memset(&vf,0,sizeof(OggVorbis_File));
   
@@ -98,70 +154,59 @@ bool KOggPlugin::readInfo( KFileMetaInfo::Internal& info, int )
 //                                  QVariant(QString(vi->vendor))));
 
     // get the vorbis comments
-    for (i=0; i < vc->comments; i++)
+    if (readComment)
     {
-        kdDebug(7034) << vc->user_comments[i] << endl;
-        QStringList split = QStringList::split(QRegExp("="), QString::fromUtf8(vc->user_comments[i]));
-        split[0] = split[0].lower();
-        split[0][0] = split[0][0].upper();
+        for (i=0; i < vc->comments; i++)
+        {
+            kdDebug(7034) << vc->user_comments[i] << endl;
+            QStringList split = QStringList::split(QRegExp("="), QString::fromUtf8(vc->user_comments[i]));
+            split[0] = split[0].lower();
+            split[0][0] = split[0][0].upper();
         
-        // we have to be sure that the i18n() string always has the same
-        // case. Oh, and is UTF8 ok here?
-        info.insert(KFileMetaInfoItem(split[0], i18n(split[0].utf8()),
-                                      QVariant(split[1]), true));
-    }
-    
-    // get other information about the file
-    vi = ov_info(&vf,-1);
-    if (vi)
-    {
-        info.insert(KFileMetaInfoItem("Version", i18n("Version"),
-                                      QVariant(vi->version)));
-    
-        info.insert(KFileMetaInfoItem("Channels", i18n("Channels"),
-                                      QVariant(vi->channels)));
-
-        info.insert(KFileMetaInfoItem("Sample Rate", i18n("Sample Rate"),
-                                      QVariant((int)vi->rate)));
-
-        if (vi->bitrate_upper > 0) 
-            info.insert(KFileMetaInfoItem("Bitrate upper", i18n("Bitrate upper"),
-                              QVariant((int)(vi->bitrate_upper+500)/1000),
-                              false, QString::null, i18n("kbps")));
-
-
-        if (vi->bitrate_lower > 0) 
-            info.insert(KFileMetaInfoItem("Bitrate lower", i18n("Bitrate lower"),
-                              QVariant((int)(vi->bitrate_lower+500)/1000),
-                              false, QString::null, i18n("kbps")));
-
-    
-        if (vi->bitrate_nominal > 0) 
-            info.insert(KFileMetaInfoItem("Bitrate nominal", i18n("Bitrate nominal"),
-                              QVariant((int)(vi->bitrate_nominal+500)/1000),
-                              false, QString::null, i18n("kbps")));
+            // we have to be sure that the i18n() string always has the same
+            // case. Oh, and is UTF8 ok here?
+            KFileMetaInfoGroup commentGroup = info.appendGroup("Comment");
             
-       info.insert(KFileMetaInfoItem("Bitrate", i18n("Bitrate average"),
-                          QVariant((int)(ov_bitrate(&vf,-1)+500)/1000),
-                          false, QString::null, i18n("kbps")));
+            commentGroup.appendItem(split[0].utf8(), split[1]);
+        }
+    }
+    
+    if (readTech)
+    {  
+        KFileMetaInfoGroup techgroup = info.appendGroup("Technical");
+        // get other information about the file
+        vi = ov_info(&vf,-1);
+        if (vi)
+        {
+
+            techgroup.appendItem("Version", int(vi->version));
+            techgroup.appendItem("Channels", int(vi->channels));
+            techgroup.appendItem("Sample Rate", int(vi->rate));
+
+            if (vi->bitrate_upper > 0) 
+                techgroup.appendItem("Bitrate upper",
+                                     int(vi->bitrate_upper+500)/1000);
+            if (vi->bitrate_lower > 0) 
+                techgroup.appendItem("Bitrate lower",
+                                     int(vi->bitrate_lower+500)/1000);
+            if (vi->bitrate_nominal > 0) 
+                techgroup.appendItem("Bitrate nominal",
+                                     int(vi->bitrate_nominal+500)/1000);
+
+            techgroup.appendItem("Bitrate",
+                                     int(ov_bitrate(&vf,-1)+500)/1000);
+            
+        }
+        
+        techgroup.appendItem("Length", int(ov_time_total(&vf,-1)));
     }
 
-    playtime = ov_time_total(&vf,-1);
-    playmin = (int)playtime / 60;
-    playsec = (int)playtime % 60;
-    QString str;
-    str = QString("%0:%1").arg(playmin)
-                          .arg(QString::number(playsec).rightJustify(2,'0') );
-    
-    info.insert(KFileMetaInfoItem("Length", i18n("Length"), QVariant(str)));
-    info.setSupportsVariableKeys(true);
-  
     ov_clear(&vf);
 
     return true;
 }
 
-bool KOggPlugin::writeInfo(const KFileMetaInfo::Internal& info) const
+bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
 {
     // todo: add writing support
     FILE*   infile;
@@ -197,12 +242,14 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo::Internal& info) const
       vc->vendor = new char[1];
       strcpy(vc->vendor,"");
     }
+    
+    KFileMetaInfoGroup group = info["Comment"];
 
-    QStringList keys = info.keys();
+    QStringList keys = group.keys();
     QStringList::Iterator it;
     for (it = keys.begin(); it!=keys.end(); ++it)
     {
-        KFileMetaInfoItem item = info[*it];
+        KFileMetaInfoItem item = group[*it];
         
         if (!item.isEditable() || !(item.type()==QVariant::String) ) 
             continue;
@@ -250,9 +297,8 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo::Internal& info) const
     return true;
 }
 
-QValidator* KOggPlugin::createValidator( const QString &,
-                                     QObject* parent, const char* name,
-                                     const QString &) const {
+QValidator* KOggPlugin::createValidator( const QString &, const QString &,
+                                         QObject* parent, const char* name) const {
 	return new QRegExpValidator(QRegExp(".*"), parent, name);
 }
 
