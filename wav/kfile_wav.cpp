@@ -48,6 +48,8 @@ bool KWavPlugin::readInfo( KFileMetaInfo::Internal& info )
 {
     QFile file(info.path());
 
+    uint32_t format_size;
+    uint16_t format_tag;
     uint16_t channel_count;
     uint32_t sample_rate;
     uint32_t bytes_per_second;
@@ -66,7 +68,9 @@ bool KWavPlugin::readInfo( KFileMetaInfo::Internal& info )
     dstream.setByteOrder(QDataStream::LittleEndian);
 
     // Read the needed parts of the FORMAT chunk
-    file.at(22);
+    file.at(16);
+    dstream >> format_size;
+    dstream >> format_tag;
     dstream >> channel_count;
     dstream >> sample_rate;
     dstream >> bytes_per_second;
@@ -74,7 +78,7 @@ bool KWavPlugin::readInfo( KFileMetaInfo::Internal& info )
     dstream >> sample_size;
 
     // And now go for the DATA chunk
-    file.at(40);
+    file.at(24 + format_size);
     dstream >> data_size;
 
     // Are downright illgeal
