@@ -36,7 +36,7 @@ KSidPlugin::KSidPlugin(QObject *parent, const char *name,
 {
     kdDebug(7034) << "sid plugin\n";
     
-    KFileMimeTypeInfo* info = addMimeTypeInfo("audio/prv.sid");
+    KFileMimeTypeInfo* info = addMimeTypeInfo("audio/prs.sid");
 
     KFileMimeTypeInfo::GroupInfo* group = 0L;
 

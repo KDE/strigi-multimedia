@@ -5,6 +5,6 @@ Name=SID Info
 Name[de]=SID-Info
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_sid
-MimeType=audio/prv.sid
+MimeType=audio/prs.sid
 PreferredGroups=General,Technical
 PreferredItems=Title,Artist,Copyright,Number of Songs,Version
