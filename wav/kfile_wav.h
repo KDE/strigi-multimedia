@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef __KFILE_MP3_H__
-#define __KFILE_MP3_H__
+#ifndef __KFILE_WAV_H__
+#define __KFILE_WAV_H__
 
 #include <kfilemetainfo.h>
 
@@ -29,10 +29,9 @@ class KWavPlugin: public KFilePlugin
     Q_OBJECT
     
 public:
-    KWavPlugin( QObject *parent, const char *name,
-                const QStringList& preferredItems );
+    KWavPlugin( QObject *parent, const char *name, const QStringList& args );
     
-    virtual bool readInfo( KFileMetaInfo::Internal& info, int );
+    virtual bool readInfo( KFileMetaInfo& info, uint what);
 };
 
 #endif

@@ -44,13 +44,33 @@ typedef KGenericFactory<KWavPlugin> WavFactory;
 K_EXPORT_COMPONENT_FACTORY(kfile_wav, WavFactory( "kfile_wav" ));
 
 KWavPlugin::KWavPlugin(QObject *parent, const char *name,
-                       const QStringList &preferredItems)
+                       const QStringList &args)
     
-    : KFilePlugin(parent, name, preferredItems)
+    : KFilePlugin(parent, name, args)
 {
+    KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/x-wav" );
+
+    KFileMimeTypeInfo::GroupInfo* group = 0L;
+
+    // "the" group
+    group = addGroupInfo(info, "Technical", i18n("Technical Details"));
+
+    KFileMimeTypeInfo::ItemInfo* item;
+
+    item = addItemInfo(group, "Sample Size", i18n("Sample Size"), QVariant::Int);
+    setSuffix(item, "bits");
+
+    item = addItemInfo(group, "Sample Rate", i18n("Sample Rate"), QVariant::Int);
+    setSuffix(item, "Hz");
+
+    item = addItemInfo(group, "Channels", i18n("Channels"), QVariant::Int);
+
+    item = addItemInfo(group, "Length", i18n("Length"), QVariant::Int);
+    setAttributes(item,  KFileMimeTypeInfo::Cummulative);
+    setUnit(item, KFileMimeTypeInfo::Seconds);
 }
 
-bool KWavPlugin::readInfo( KFileMetaInfo::Internal& info, int )
+bool KWavPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
 {
     QFile file(info.path());
 
@@ -108,35 +128,16 @@ bool KWavPlugin::readInfo( KFileMetaInfo::Internal& info, int )
     // These values are downright illgeal
     if ((!channel_count) || (!bytes_per_second))
         return false;
+    
+    KFileMetaInfoGroup group = appendGroup(info, "Technical");
+    
 
-    info.insert(KFileMetaInfoItem("Sample Size", i18n("Sample Size"),
-                QVariant(sample_size), false,
-                QString::null, i18n("bits")));
-
-    info.insert(KFileMetaInfoItem("Sample Rate", i18n("Sample Rate"),
-                QVariant(sample_rate), false,
-                QString::null, i18n("Hz")));
-
-    info.insert(KFileMetaInfoItem("Channels", i18n("Channels"),
-                QVariant(channel_count)));        
-
-    // Use the data size and bytes per second to figure out the audio length in minutes and seconds
+    appendItem(group, "Sample Size", int(sample_size));
+    appendItem(group, "Sample Rate", int(sample_rate));
+    appendItem(group, "Channels", int(channel_count));
     unsigned int wav_seconds = data_size / bytes_per_second;
-    unsigned int playmin = wav_seconds / 60;
-    unsigned int playsec = wav_seconds % 60;
+    appendItem(group, "Length", int(wav_seconds));
 
-    // And store that string under "Length"
-    QString str;
-    str = QString("%0:%1").arg(playmin)
-                          .arg(QString::number(playsec).rightJustify(2,'0') );
-
-    info.insert(KFileMetaInfoItem("Length", i18n("Length"),
-                QVariant(str), false, QString::null));
-    
-    info.setPreferredKeys(m_preferred);
-    info.setSupportedKeys(m_preferred);
-    info.setSupportsVariableKeys(false);
-    
     return true;
 }
 
