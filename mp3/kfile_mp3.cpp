@@ -112,8 +112,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     setAttributes(item, KFileMimeTypeInfo::Modifiable);
 
     // technical group
-//    group = addGroupInfo(info, "Technical", i18n("Technical Details"));
-    group = addGroupInfo(info, "Technical", "Technical Details");
+    group = addGroupInfo(info, "Technical", i18n("Technical Details"));
 
     item = addItemInfo(group, "Version", i18n("Version"), QVariant::Int);
     setPrefix(item,  i18n("MPEG"));
