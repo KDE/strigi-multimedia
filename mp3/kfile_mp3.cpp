@@ -113,7 +113,8 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
 
     group->addItemInfo("Layer", i18n("Layer"), QVariant::Int);
     group->addItemInfo("CRC", i18n("CRC"), QVariant::Bool);
-    group->addItemInfo("Bitrate", i18n("Bitrate"), QVariant::Int, 0, 
+    group->addItemInfo("Bitrate", i18n("Bitrate"), QVariant::Int,
+                      KFileMimeTypeInfo::Average, 
                       KFileMimeTypeInfo::NoUnit,
                       KFileMimeTypeInfo::NoHint, QString::null, i18n("kbps"));
 
@@ -124,7 +125,8 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     group->addItemInfo("Channels", i18n("Channels"), QVariant::Int);
     group->addItemInfo("Copyright", i18n("Copyright"), QVariant::Bool);
     group->addItemInfo("Original", i18n("Original"), QVariant::Bool);
-    group->addItemInfo("Length", i18n("Length"), QVariant::Int, 0,
+    group->addItemInfo("Length", i18n("Length"), QVariant::Int, 
+                       KFileMimeTypeInfo::Cummulative,
                        KFileMimeTypeInfo::Seconds);
     group->addItemInfo("Emphasis", i18n("Emphasis"), QVariant::String);
 }
