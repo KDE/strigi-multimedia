@@ -124,35 +124,26 @@ bool KOggPlugin::readInfo( KFileMetaInfo::Internal& info, int )
         info.insert(KFileMetaInfoItem("Sample Rate", i18n("Sample Rate"),
                                       QVariant((int)vi->rate)));
 
-        if (vi->bitrate_upper != -1) 
+        if (vi->bitrate_upper > 0) 
             info.insert(KFileMetaInfoItem("Bitrate upper", i18n("Bitrate upper"),
                               QVariant((int)(vi->bitrate_upper+500)/1000),
                               false, QString::null, i18n("kbps")));
-        else
-            info.insert(KFileMetaInfoItem("Bitrate upper", i18n("Bitrate upper"),
-                              QVariant(i18n("none"))));
 
 
-        if (vi->bitrate_lower != -1) 
+        if (vi->bitrate_lower > 0) 
             info.insert(KFileMetaInfoItem("Bitrate lower", i18n("Bitrate lower"),
                               QVariant((int)(vi->bitrate_lower+500)/1000),
                               false, QString::null, i18n("kbps")));
-        else
-            info.insert(KFileMetaInfoItem("Bitrate lower", i18n("Bitrate lower"),
-                              QVariant(i18n("none"))));
 
     
-        if (vi->bitrate_nominal != -1) 
+        if (vi->bitrate_nominal > 0) 
             info.insert(KFileMetaInfoItem("Bitrate nominal", i18n("Bitrate nominal"),
                               QVariant((int)(vi->bitrate_nominal+500)/1000),
                               false, QString::null, i18n("kbps")));
-        else
-            info.insert(KFileMetaInfoItem("Bitrate nominal", i18n("Bitrate nominal"),
-                              i18n("none")));
             
-            info.insert(KFileMetaInfoItem("Bitrate", i18n("Bitrate average"),
-                              QVariant((int)(ov_bitrate(&vf,-1)+500)/1000),
-                              false, QString::null, i18n("kbps")));
+       info.insert(KFileMetaInfoItem("Bitrate", i18n("Bitrate average"),
+                          QVariant((int)(ov_bitrate(&vf,-1)+500)/1000),
+                          false, QString::null, i18n("kbps")));
     }
 
     playtime = ov_time_total(&vf,-1);
@@ -257,6 +248,12 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo::Internal& info) const
     sf.close();
     
     return true;
+}
+
+QValidator* KOggPlugin::createValidator( const QString &,
+                                     QObject* parent, const char* name,
+                                     const QString &) const {
+	return new QRegExpValidator(QRegExp(".*"), parent, name);
 }
 
 #include "kfile_ogg.moc"

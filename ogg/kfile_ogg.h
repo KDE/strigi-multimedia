@@ -36,6 +36,9 @@ public:
     
     virtual bool readInfo( KFileMetaInfo::Internal& info, int );
     virtual bool writeInfo( const KFileMetaInfo::Internal& info ) const;
+    virtual QValidator* createValidator( const QString &key,
+                                         QObject* parent, const char* name,
+                                         const QString &group) const;
 };
 
 
