@@ -30,7 +30,7 @@
 /* MIN_CONSEC_GOOD_FRAMES defines how many consecutive valid MP3 frames
    we need to see before we decide we are looking at a real MP3 file */
 #define MIN_CONSEC_GOOD_FRAMES 4
-#define FRAME_HEADER_SIZE 3
+#define FRAME_HEADER_SIZE 4
 #define MIN_FRAME_SIZE 21
 #define NUM_SAMPLES 4
 
