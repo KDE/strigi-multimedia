@@ -117,8 +117,8 @@ bool KAuPlugin::readInfo( KFileMetaInfo& info, uint what)
 
     // add the info
     KFileMetaInfoGroup group = appendGroup(info, "Technical");
-    appendItem(group, "Sample Rate", samplerate);
-    appendItem(group, "Channels", channels);
+    appendItem(group, "Sample Rate", (uint) samplerate);
+    appendItem(group, "Channels", (uint) channels);
 
     // work out the encoding
     switch (encoding) {
@@ -162,7 +162,7 @@ bool KAuPlugin::readInfo( KFileMetaInfo& info, uint what)
     // work out length from bytespersample + channels + size
     if ((channels > 0) && (datasize > 0) && (datasize != 0xFFFFFFFF) && (bytespersample > 0) && (samplerate > 0)) {
         uint32_t length = datasize / channels / bytespersample / samplerate;
-        appendItem(group, "Length", length);
+        appendItem(group, "Length", (uint) length);
     } else {
         appendItem(group, "Length", "???");
     }

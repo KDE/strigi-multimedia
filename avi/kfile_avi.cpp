@@ -282,7 +282,7 @@ bool KAviPlugin::read_strl()
             */
             
             bool done = false;
-            uint8_t counter = 0;
+            unsigned char counter = 0;
             while (!done) {
                 // read next marker
                 f.readBlock(charbuf1, 4);
