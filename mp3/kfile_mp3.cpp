@@ -16,11 +16,13 @@ extern "C" {
 #undef __MAIN
 
 K_EXPORT_COMPONENT_FACTORY( kfile_mp3, KGenericFactory<KMp3Plugin>( "kfile_mp3" ) );
+static QStringList preferredItems;
 
 KMp3Plugin::KMp3Plugin( QObject *parent, const char *name,
                         const QStringList &preferredItems )
     : KFilePlugin( parent, name, preferredItems )
 {
+    ::preferredItems = preferredItems;
 }
 
 KFileMetaInfo* KMp3Plugin::createInfo( const QString& path )
@@ -156,6 +158,22 @@ QStringList KMp3MetaInfo::preferredKeys() const
     {
         list.append(it.current()->key());
     }
+
+    // now move them up
+    QStringList::Iterator all;
+    QStringList::Iterator pref;
+
+    for (pref=::preferredItems.end(); pref!=::preferredItems.begin(); --pref)
+    {
+        all = list.find(*pref);
+        if (all != list.end())
+        {
+            QString tmp = *all;
+            list.remove(all);
+            list.prepend(tmp);
+        }
+    }
+
     return list;
 }
 
