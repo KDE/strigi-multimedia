@@ -25,7 +25,7 @@ KFileMetaInfo* KM3uPlugin::createInfo( const QString& path )
 
 
 KM3uMetaInfo::KM3uMetaInfo( const QString& path ) :
-    KFileMetaInfo::KFileMetaInfo (path)
+    KFileMetaInfo (path)
 {
   
     QFile f(path);
