@@ -71,48 +71,47 @@ KOggPlugin::KOggPlugin( QObject *parent, const char *name,
     KFileMimeTypeInfo::GroupInfo* group = 0;
 
     // comment group
-    group = info->addGroupInfo("Comment", i18n("Comment"),
-                               KFileMimeTypeInfo::Addable |
-                               KFileMimeTypeInfo::Removable);
-
-
-    group->addVariableInfo(QVariant::String, KFileMimeTypeInfo::Addable |
-                                             KFileMimeTypeInfo::Removable |
-                                             KFileMimeTypeInfo::Modifiable);
+    group = addGroupInfo(info, "Comment", i18n("Comment"));
+    setAttributes(group, KFileMimeTypeInfo::Addable |
+                         KFileMimeTypeInfo::Removable);
     
-
+    addVariableInfo(group, QVariant::String, KFileMimeTypeInfo::Addable |
+                                             KFileMimeTypeInfo::Removable |
+                                             KFileMimeTypeInfo::Modifiable); 
 
     // technical group
-    group = info->addGroupInfo("Technical", i18n("Technical details"), 0);
 
+    group = addGroupInfo(info, "Technical", i18n("Technical details"));
+    setAttributes(group, 0);
+
+    KFileMimeTypeInfo::ItemInfo* item = 0;
     
+    addItemInfo(group, "Version", i18n("Version"), QVariant::Int);
+    addItemInfo(group, "Channels", i18n("Channels"), QVariant::Int);
+
+    item = addItemInfo(group, "Sample Rate", i18n("Sample Rate"), QVariant::Int);
+    setSuffix(item, i18n("Hz"));
+
+    item = addItemInfo(group, "Bitrate upper", i18n("Bitrate upper"),
+                       QVariant::Int);
+    setSuffix(item, i18n("kbps"));
     
-    group->addItemInfo("Version", i18n("Version"), QVariant::Int);
-    group->addItemInfo("Channels", i18n("Channels"), QVariant::Int);
-    group->addItemInfo("Sample Rate", i18n("Sample Rate"), QVariant::Int, 0,
-                      KFileMimeTypeInfo::NoUnit,  KFileMimeTypeInfo::NoHint,
-                      QString::null, i18n("Hz"));
+    item = addItemInfo(group, "Bitrate lower", i18n("Bitrate lower"),
+                       QVariant::Int);
+    setSuffix(item, i18n("kbps"));
 
-    group->addItemInfo("Bitrate upper", i18n("Bitrate upper"), QVariant::Int,
-                       0, KFileMimeTypeInfo::NoUnit,
-                       KFileMimeTypeInfo::NoHint, QString::null, i18n("kbps"));
+    item = addItemInfo(group, "Bitrate nominal", i18n("Bitrate nominal"),
+                       QVariant::Int);
+    setSuffix(item, i18n("kbps"));
+    
+    item = addItemInfo(group, "Bitrate", i18n("Bitrate average"), QVariant::Int);
+    setAttributes(item, KFileMimeTypeInfo::Averaged);
+    setHint(item, KFileMimeTypeInfo::Bitrate);
+    setSuffix(item, i18n("kbps"));
 
-    group->addItemInfo("Bitrate lower", i18n("Bitrate lower"), QVariant::Int,
-                       0, KFileMimeTypeInfo::NoUnit,
-                       KFileMimeTypeInfo::NoHint, QString::null, i18n("kbps"));
-
-    group->addItemInfo("Bitrate nominal", i18n("Bitrate nominal"), QVariant::Int,
-                       0, KFileMimeTypeInfo::NoUnit,
-                       KFileMimeTypeInfo::NoHint, QString::null, i18n("kbps"));
-
-    group->addItemInfo("Bitrate", i18n("Bitrate average"), QVariant::Int,
-                       KFileMimeTypeInfo::Averaged, 
-                       KFileMimeTypeInfo::NoUnit, KFileMimeTypeInfo::Bitrate, 
-                       QString::null, i18n("kbps"));
-
-    group->addItemInfo("Length", i18n("Length"), QVariant::Int, 
-                       KFileMimeTypeInfo::Cummulative,
-                       KFileMimeTypeInfo::Seconds);
+    item = addItemInfo(group, "Length", i18n("Length"), QVariant::Int);
+    setAttributes(item, KFileMimeTypeInfo::Cummulative);
+    setUnit(item, KFileMimeTypeInfo::Seconds);
 }
 
 bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
@@ -155,8 +154,8 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
     if (readComment)
     {
         vc = ov_comment(&vf,-1);
-
-        KFileMetaInfoGroup commentGroup = info.appendGroup("Comment");
+        
+        KFileMetaInfoGroup commentGroup = appendGroup(info, "Comment");
             
         for (i=0; i < vc->comments; i++)
         {
@@ -167,38 +166,37 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
         
             // we have to be sure that the i18n() string always has the same
             // case. Oh, and is UTF8 ok here?
-            commentGroup.appendItem(split[0].utf8(), split[1]);
+            appendItem(commentGroup, split[0], split[1]);
         }
     }
     
     if (readTech)
     {  
-        KFileMetaInfoGroup techgroup = info.appendGroup("Technical");
+        KFileMetaInfoGroup techgroup = appendGroup(info, "Technical");
         // get other information about the file
         vi = ov_info(&vf,-1);
         if (vi)
         {
 
-            techgroup.appendItem("Version", int(vi->version));
-            techgroup.appendItem("Channels", int(vi->channels));
-            techgroup.appendItem("Sample Rate", int(vi->rate));
+            appendItem(techgroup, "Version", int(vi->version));
+            appendItem(techgroup, "Channels", int(vi->channels));
+            appendItem(techgroup, "Sample Rate", int(vi->rate));
 
             if (vi->bitrate_upper > 0) 
-                techgroup.appendItem("Bitrate upper",
-                                     int(vi->bitrate_upper+500)/1000);
+                appendItem(techgroup, "Bitrate upper",
+                           int(vi->bitrate_upper+500)/1000);
             if (vi->bitrate_lower > 0) 
-                techgroup.appendItem("Bitrate lower",
-                                     int(vi->bitrate_lower+500)/1000);
+                appendItem(techgroup, "Bitrate lower",
+                           int(vi->bitrate_lower+500)/1000);
             if (vi->bitrate_nominal > 0) 
-                techgroup.appendItem("Bitrate nominal",
-                                     int(vi->bitrate_nominal+500)/1000);
+                appendItem(techgroup, "Bitrate nominal",
+                           int(vi->bitrate_nominal+500)/1000);
 
-            techgroup.appendItem("Bitrate",
-                                     int(ov_bitrate(&vf,-1)+500)/1000);
+            appendItem(techgroup, "Bitrate", int(ov_bitrate(&vf,-1)+500)/1000);
             
         }
         
-        techgroup.appendItem("Length", int(ov_time_total(&vf,-1)));
+        appendItem(techgroup, "Length", int(ov_time_total(&vf,-1)));
     }
 
     ov_clear(&vf);
@@ -297,7 +295,8 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
     return true;
 }
 
-QValidator* KOggPlugin::createValidator( const QString &, const QString &,
+QValidator* KOggPlugin::createValidator( const QString&, 
+                                         const QString &, const QString &,
                                          QObject* parent, const char* name) const {
 	return new QRegExpValidator(QRegExp(".*"), parent, name);
 }
