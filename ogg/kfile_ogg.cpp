@@ -148,14 +148,16 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
         return false;
     }
   
-    vc = ov_comment(&vf,-1);
-
 //    info.insert(KFileMetaInfoItem("Vendor", i18n("Vendor"),
 //                                  QVariant(QString(vi->vendor))));
 
     // get the vorbis comments
     if (readComment)
     {
+        vc = ov_comment(&vf,-1);
+
+        KFileMetaInfoGroup commentGroup = info.appendGroup("Comment");
+            
         for (i=0; i < vc->comments; i++)
         {
             kdDebug(7034) << vc->user_comments[i] << endl;
@@ -165,8 +167,6 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
         
             // we have to be sure that the i18n() string always has the same
             // case. Oh, and is UTF8 ok here?
-            KFileMetaInfoGroup commentGroup = info.appendGroup("Comment");
-            
             commentGroup.appendItem(split[0].utf8(), split[1]);
         }
     }
