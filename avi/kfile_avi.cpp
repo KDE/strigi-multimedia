@@ -435,10 +435,9 @@ const char * KAviPlugin::resolve_audio(uint16_t id)
         a few common codecs
     */
 
-    static const char codec_unknown[] = "Unknown";
-    static const char codec_00[]  = "Unknown wave format";
-    static const char codec_01[]  = "Wave (PCM)";
-    static const char codec_02[]  = "Wave (ADPCM)";
+    static const char codec_unknown[] = I18N_NOOP("Unknown");
+    static const char codec_01[]  = "Microsoft PCM";
+    static const char codec_02[]  = "Microsoft ADPCM";
     static const char codec_50[]  = "MPEG";
     static const char codec_55[]  = "MP3";
     static const char codec_92[]  = "AC3";
@@ -447,7 +446,7 @@ const char * KAviPlugin::resolve_audio(uint16_t id)
     static const char codec_162[] = "WMA3";
     static const char codec_2000[] = "DVM";
     switch (id) {
-    case 0x000 : return codec_00; break;
+    case 0x000 : return codec_unknown; break;
     case 0x001 : return codec_01; break;
     case 0x002 : return codec_02; break;
     case 0x050 : return codec_50; break;
