@@ -167,14 +167,14 @@ bool KFlacPlugin::readInfo( KFileMetaInfo& info, uint what )
         file = new TagLib::Ogg::FLAC::File(QFile::encodeName(info.path()).data(), readTech);
 #endif
 
-    if (!file || !file->isOpen())
+    if (!file || !file->isValid())
     {
         kdDebug(7034) << "Couldn't open " << file->name() << endl;
         delete file;
         return false;
     }
 
-    if(readComment)
+    if(readComment && file->tag())
     {
         KFileMetaInfoGroup commentgroup = appendGroup(info, "Comment");
 
@@ -190,7 +190,7 @@ bool KFlacPlugin::readInfo( KFileMetaInfo& info, uint what )
         appendItem(commentgroup, "Genre",       TStringToQString(file->tag()->genre()).stripWhiteSpace());
     }
 
-    if (readTech)
+    if (readTech && file->audioProperties())
     {
         KFileMetaInfoGroup techgroup = appendGroup(info, "Technical");
         TagLib::FLAC::Properties *properties =
