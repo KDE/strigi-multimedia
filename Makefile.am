@@ -6,4 +6,8 @@ if include_flac_SUBDIR
 KFILE_FLAC_SUBDIR=flac
 endif
 
-SUBDIRS=m3u mp3 au avi wav $(KFILE_OGG_SUBDIR) $(KFILE_FLAC_SUBDIR)
+if include_mp3_SUBDIR
+KFILE_MP3_SUBDIR=mp3
+endif
+
+SUBDIRS=m3u $(KFILE_MP3_SUBDIR) au avi wav $(KFILE_OGG_SUBDIR) $(KFILE_FLAC_SUBDIR)
