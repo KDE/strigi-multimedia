@@ -222,7 +222,7 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo::Internal& info) const
     strncpy(mp3.id3.year,   info["Year"]   .value().toString().local8Bit(),  5);
     strncpy(mp3.id3.comment,info["Comment"].value().toString().local8Bit(), 29);
 
-    KFileMetaInfoItem track = info["Track"];
+    KFileMetaInfoItem track = info["Tracknumber"];
     if (track.isValid()) mp3.id3.track[0] = track.value().toInt();
     
     QString s = info["Genre"].value().toString();
@@ -256,7 +256,7 @@ QValidator* KMp3Plugin::createValidator(const KFileMetaInfoItem& item,
     {
         return new MyValidator(28, parent, name);
     }
-    else if (item.key() == "Track")
+    else if (item.key() == "Tracknumber")
     {
         return new QIntValidator(0, 255, parent, name);
     }
@@ -267,7 +267,7 @@ QValidator* KMp3Plugin::createValidator(const KFileMetaInfoItem& item,
         {
            list += ::typegenre[galphagenreindex[index]];
          }
-         
+
         return new KStringListValidator(list, false, true, parent, name);
     }
     else return 0;
