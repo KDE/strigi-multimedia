@@ -59,11 +59,11 @@ class MyValidator: public QValidator
 
     virtual State validate ( QString & input, int & /*pos*/ ) const
     {
-      if (input.length()>m_maxlen) return Invalid;
+      if (input.utf8().length() > m_maxlen) return Invalid;
       return Acceptable;
     }
   private:
-      int m_maxlen;
+      unsigned int m_maxlen;
 };
 
 
@@ -104,19 +104,19 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info, int )
 
     if (mp3.id3_isvalid) {
         info.insert(KFileMetaInfoItem("Title", i18n("Title"),
-                    QVariant(QString::fromLocal8Bit(mp3.id3.title)), true));
+                    QVariant(QString::fromUtf8(mp3.id3.title)), true));
 
         info.insert(KFileMetaInfoItem("Artist", i18n("Artist"),
-                    QVariant(QString::fromLocal8Bit(mp3.id3.artist)), true));
+                    QVariant(QString::fromUtf8(mp3.id3.artist)), true));
 
         info.insert(KFileMetaInfoItem("Album", i18n("Album"),
-                    QVariant(QString::fromLocal8Bit(mp3.id3.album)), true));
+                    QVariant(QString::fromUtf8(mp3.id3.album)), true));
 
         info.insert(KFileMetaInfoItem("Date", i18n("Year"),
-                    QVariant(QString::fromLocal8Bit(mp3.id3.year)), true));
+                    QVariant(QString::fromUtf8(mp3.id3.year)), true));
 
          info.insert(KFileMetaInfoItem("Comment", i18n("Comment"),
-                    QVariant(QString::fromLocal8Bit(mp3.id3.comment)), true));
+                    QVariant(QString::fromUtf8(mp3.id3.comment)), true));
 
          // the key is "Tracknumber" here because it's in ogg, too
         if (mp3.id3.track[0])
@@ -132,7 +132,7 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info, int )
         }
         else  {
             info.insert(KFileMetaInfoItem("Genre", i18n("Genre"),
-                        QVariant(QString::fromLocal8Bit(
+                        QVariant(QString::fromUtf8(
                         ::typegenre[mp3.id3.genre[0]])), true));
         }
     }    
@@ -217,11 +217,11 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo::Internal& info) const
 
     ::get_mp3_info(&mp3, ::SCAN_NONE, ::VBR_VARIABLE);
     
-    strncpy(mp3.id3.title,  info["Title"]  .value().toString().local8Bit(), 31);
-    strncpy(mp3.id3.artist, info["Artist"] .value().toString().local8Bit(), 31);
-    strncpy(mp3.id3.album,  info["Album"]  .value().toString().local8Bit(), 31);
-    strncpy(mp3.id3.year,   info["Date"]   .value().toString().local8Bit(),  5);
-    strncpy(mp3.id3.comment,info["Comment"].value().toString().local8Bit(), 29);
+    strncpy(mp3.id3.title,  info["Title"]  .value().toString().utf8(), 31);
+    strncpy(mp3.id3.artist, info["Artist"] .value().toString().utf8(), 31);
+    strncpy(mp3.id3.album,  info["Album"]  .value().toString().utf8(), 31);
+    strncpy(mp3.id3.year,   info["Date"]   .value().toString().utf8(),  5);
+    strncpy(mp3.id3.comment,info["Comment"].value().toString().utf8(), 29);
 
     KFileMetaInfoItem track = info["Tracknumber"];
     if (track.isValid()) mp3.id3.track[0] = track.value().toInt();
