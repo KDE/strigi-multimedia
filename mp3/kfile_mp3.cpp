@@ -80,7 +80,8 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     KFileMimeTypeInfo::GroupInfo* group = 0L;
 
     // id3 group
-    group = addGroupInfo(info, "id3v1.1", i18n("ID3V1 Tag"));
+//    group = addGroupInfo(info, "id3v1.1", i18n("ID3V1 Tag"));
+    group = addGroupInfo(info, "id3v1.1", "ID3V1 Tag");
     setAttributes(group, KFileMimeTypeInfo::Addable | 
                          KFileMimeTypeInfo::Removable);
 
@@ -111,7 +112,8 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     setAttributes(item, KFileMimeTypeInfo::Modifiable);
 
     // technical group
-    group = addGroupInfo(info, "Technical", i18n("Technical Details"));
+//    group = addGroupInfo(info, "Technical", i18n("Technical Details"));
+    group = addGroupInfo(info, "Technical", "Technical Details");
 
     item = addItemInfo(group, "Version", i18n("Version"), QVariant::Int);
     setPrefix(item,  i18n("MPEG"));
