@@ -1,1 +1,5 @@
-AM_CONDITIONAL(include_mpc_SUBDIR, test "x$have_taglib" = "xtrue")
+if test "x$have_taglib" = "xtrue"; then
+  have_taglib_mpc=false
+  KDE_CHECK_HEADER(taglib/mpcfile.h, have_taglib_mpc=true)
+fi
+AM_CONDITIONAL(include_mpc_SUBDIR, test "x$have_taglib_mpc" = "xtrue")
