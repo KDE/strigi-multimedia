@@ -82,7 +82,7 @@ KOggPlugin::KOggPlugin( QObject *parent, const char *name,
 
     // technical group
 
-    group = addGroupInfo(info, "Technical", i18n("Technical details"));
+    group = addGroupInfo(info, "Technical", i18n("Technical Details"));
     setAttributes(group, 0);
 
     KFileMimeTypeInfo::ItemInfo* item = 0;
@@ -90,25 +90,29 @@ KOggPlugin::KOggPlugin( QObject *parent, const char *name,
     addItemInfo(group, "Version", i18n("Version"), QVariant::Int);
     addItemInfo(group, "Channels", i18n("Channels"), QVariant::Int);
 
-    item = addItemInfo(group, "Sample Rate", i18n("Sample Rate"), QVariant::Int);
-    setSuffix(item, i18n("Hz"));
+    item = addItemInfo(group, "SampleRate", i18n("Sample rate"), QVariant::Int);
+    setSuffix(item, i18n(" Hz"));
 
-    item = addItemInfo(group, "Upper Bitrate", i18n("Upper Bitrate"),
+    item = addItemInfo(group, "UpperBitrate", i18n("Upper bitrate"),
                        QVariant::Int);
-    setSuffix(item, i18n("kbps"));
+    setHint(item, KFileMimeTypeInfo::Bitrate);
+    setSuffix(item, i18n(" kbps"));
     
-    item = addItemInfo(group, "Lower Bitrate", i18n("Lower Bitrate"),
+    item = addItemInfo(group, "LowerBitrate", i18n("Lower bitrate"),
                        QVariant::Int);
-    setSuffix(item, i18n("kbps"));
+    setHint(item, KFileMimeTypeInfo::Bitrate);
+    setSuffix(item, i18n(" kbps"));
 
-    item = addItemInfo(group, "Nominal Bitrate", i18n("Nominal Bitrate"),
+    item = addItemInfo(group, "NominalBitrate", i18n("Nominal bitrate"),
                        QVariant::Int);
-    setSuffix(item, i18n("kbps"));
+    setHint(item, KFileMimeTypeInfo::Bitrate);
+    setSuffix(item, i18n(" kbps"));
     
-    item = addItemInfo(group, "Bitrate", i18n("Average Bitrate"), QVariant::Int);
+    item = addItemInfo(group, "Bitrate", i18n("Average bitrate"), 
+                       QVariant::Int);
     setAttributes(item, KFileMimeTypeInfo::Averaged);
     setHint(item, KFileMimeTypeInfo::Bitrate);
-    setSuffix(item, i18n("kbps"));
+    setSuffix(item, i18n( " kbps"));
 
     item = addItemInfo(group, "Length", i18n("Length"), QVariant::Int);
     setAttributes(item, KFileMimeTypeInfo::Cummulative);
@@ -134,7 +138,7 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
                 KFileMetaInfo::DontCare |
                 KFileMetaInfo::TechnicalInfo)) readTech = true;
 
-    memset(&vf,0,sizeof(OggVorbis_File));
+    memset(&vf, 0, sizeof(OggVorbis_File));
   
     fp = fopen(QFile::encodeName(info.path()),"rb");
     if (!fp) return false;
@@ -161,16 +165,16 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
         for (i=0; i < vc->comments; i++)
         {
             kdDebug(7034) << vc->user_comments[i] << endl;
-            QStringList split = QStringList::split(QRegExp("="), QString::fromUtf8(vc->user_comments[i]));
+            QStringList split = QStringList::split("=", QString::fromUtf8(vc->user_comments[i]));
             split[0] = split[0].lower();
             split[0][0] = split[0][0].upper();
-        
+ 
             // we have to be sure that the i18n() string always has the same
             // case. Oh, and is UTF8 ok here?
             appendItem(commentGroup, split[0], split[1]);
         }
     }
-    
+ 
     if (readTech)
     {  
         KFileMetaInfoGroup techgroup = appendGroup(info, "Technical");
@@ -181,16 +185,16 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
 
             appendItem(techgroup, "Version", int(vi->version));
             appendItem(techgroup, "Channels", int(vi->channels));
-            appendItem(techgroup, "Sample Rate", int(vi->rate));
+            appendItem(techgroup, "SampleRate", int(vi->rate));
 
             if (vi->bitrate_upper > 0) 
-                appendItem(techgroup, "Upper Bitrate",
+                appendItem(techgroup, "UpperBitrate",
                            int(vi->bitrate_upper+500)/1000);
             if (vi->bitrate_lower > 0) 
-                appendItem(techgroup, "Lower Bitrate",
+                appendItem(techgroup, "LowerBitrate",
                            int(vi->bitrate_lower+500)/1000);
             if (vi->bitrate_nominal > 0) 
-                appendItem(techgroup, "Nominal Bitrate",
+                appendItem(techgroup, "NominalBitrate",
                            int(vi->bitrate_nominal+500)/1000);
 
             appendItem(techgroup, "Bitrate", int(ov_bitrate(&vf,-1)+500)/1000);
