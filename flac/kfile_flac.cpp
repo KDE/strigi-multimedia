@@ -1,6 +1,6 @@
 /*  KFile FLAC-plugin
 
-    Copyright (C) 2003 Allan Sandfeld Jensen <kde@carewolf.com>
+    Copyright (C) 2003-2004 Allan Sandfeld Jensen <kde@carewolf.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -34,27 +34,15 @@
 #include <kgenericfactory.h>
 #include <ksavefile.h>
 
-// The C API is more powerful, and we need the extra power
-#include <FLAC/metadata.h>
+#include <tstring.h>
+#include <tfile.h>
+#include <flacfile.h>
+#include <oggflacfile.h>
+#include <tag.h>
 
 #include <sys/stat.h>
 #include <unistd.h>
 #include <ctype.h>
-
-// known translations for common ogg/vorbis keys
-// from http://www.ogg.org/ogg/vorbis/doc/v-comment.html
-static const char* const knownTranslations[] = {
-  I18N_NOOP("Title"),
-  I18N_NOOP("Album"),
-  I18N_NOOP("Tracknumber"),
-  I18N_NOOP("Artist"),
-  I18N_NOOP("Organization"),
-  I18N_NOOP("Description"),
-  I18N_NOOP("Genre"),
-  I18N_NOOP("Date"),
-  I18N_NOOP("Location"),
-  I18N_NOOP("Copyright")
-};
 
 K_EXPORT_COMPONENT_FACTORY(kfile_flac, KGenericFactory<KFlacPlugin>("kfile_flac"))
 
@@ -64,7 +52,14 @@ KFlacPlugin::KFlacPlugin( QObject *parent, const char *name,
 {
     kdDebug(7034) << "flac plugin\n";
 
-    KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/x-flac" );
+    makeMimeTypeInfo( "audio/x-flac" );
+    makeMimeTypeInfo( "audio/x-oggflac" );
+
+}
+
+void KFlacPlugin::makeMimeTypeInfo(const QString& mimeType)
+{
+    KFileMimeTypeInfo* info = addMimeTypeInfo( mimeType );
 
     KFileMimeTypeInfo::GroupInfo* group = 0;
 
@@ -149,130 +144,120 @@ bool KFlacPlugin::readInfo( KFileMetaInfo& info, uint what )
                 KFileMetaInfo::DontCare |
                 KFileMetaInfo::TechnicalInfo)) readTech = true;
 
+    TagLib::File *file;
 
+    if (info.mimeType() == "audio/x-flac")
+        file = new TagLib::FLAC::File(QFile::encodeName(info.path()).data(), readTech);
+    else
+        file = new TagLib::Ogg::FLAC::File(QFile::encodeName(info.path()).data(), readTech);
 
-    FLAC__Metadata_SimpleIterator *simp;
-    simp = FLAC__metadata_simple_iterator_new();
-
-        if (!FLAC__metadata_simple_iterator_init(simp, QFile::encodeName(info.path()), true, true) )
+    if (!file->isOpen())
+    {
+        kdDebug(7034) << "Couldn't open " << file->name() << endl;
+        delete file;
         return false;
+    }
 
-    do {
-        if (FLAC__metadata_simple_iterator_get_block_type(simp) == FLAC__METADATA_TYPE_STREAMINFO && readTech)
-        {
-    	    struct stat buf;
-    	    int ret = stat(QFile::encodeName(info.path()), &buf); // To get file-size
-    	    if (ret) return false;
+    if(readComment)
+    {
+        KFileMetaInfoGroup commentgroup = appendGroup(info, "Comment");
 
-	    KFileMetaInfoGroup techgroup = appendGroup(info, "Technical");
-	    const FLAC__StreamMetadata *block = FLAC__metadata_simple_iterator_get_block(simp);
-	    const FLAC__StreamMetadata_StreamInfo *si = &block->data.stream_info;
+        QString date  = file->tag()->year() > 0 ? QString::number(file->tag()->year()) : QString::null;
+        QString track = file->tag()->track() > 0 ? QString::number(file->tag()->track()) : QString::null;
 
-    	    appendItem(techgroup, "Channels", int(si->channels));
-            appendItem(techgroup, "Sample Rate", int(si->sample_rate));
-            appendItem(techgroup, "Sample Width", int(si->bits_per_sample));
-	    int slen = si->total_samples/ si->sample_rate; // length in seconds
-    	    if (slen) {
-                appendItem(techgroup, "Length", slen);
-	        appendItem(techgroup, "Bitrate", int(buf.st_size/(slen*125))); // 8/1000 = 1/125
-	    }
-	}
-	else
-	if (FLAC__metadata_simple_iterator_get_block_type(simp) == FLAC__METADATA_TYPE_VORBIS_COMMENT &&
-		    readComment)
-	{
-	    KFileMetaInfoGroup commentgroup = appendGroup(info, "Comment");
-	    const FLAC__StreamMetadata *block = FLAC__metadata_simple_iterator_get_block(simp);
-	    const FLAC__StreamMetadata_VorbisComment *vc = &block->data.vorbis_comment;
-	    for(unsigned int i=0; i< vc->num_comments;i++) {
-		const FLAC__StreamMetadata_VorbisComment_Entry *ent = &vc->comments[i];
-		QString entry = QString::fromUtf8((const char*)ent->entry, ent->length);
-		QString name  = entry.section('=', 0, 0);
-		QString value = entry.section('=', 1, 1);
-                name[0] = name[0].upper(); // artist==Artist
-		appendItem(commentgroup, name, value);
-	    }
-	}
+        appendItem(commentgroup, "Title",       TStringToQString(file->tag()->title()).stripWhiteSpace());
+        appendItem(commentgroup, "Artist",      TStringToQString(file->tag()->artist()).stripWhiteSpace());
+        appendItem(commentgroup, "Album",       TStringToQString(file->tag()->album()).stripWhiteSpace());
+        appendItem(commentgroup, "Date",        date);
+        appendItem(commentgroup, "Comment",     TStringToQString(file->tag()->comment()).stripWhiteSpace());
+        appendItem(commentgroup, "Tracknumber", track);
+        appendItem(commentgroup, "Genre",       TStringToQString(file->tag()->genre()).stripWhiteSpace());
+    }
 
-    } while (FLAC__metadata_simple_iterator_next(simp));
+    if (readTech)
+    {
+        KFileMetaInfoGroup techgroup = appendGroup(info, "Technical");
+        TagLib::FLAC::Properties *properties =
+                   (TagLib::FLAC::Properties*)(file->audioProperties());
 
+        appendItem(techgroup, "Bitrate",      properties->bitrate());
+        appendItem(techgroup, "Sample Rate",  properties->sampleRate());
+        appendItem(techgroup, "Sample Width", properties->sampleWidth());
+        appendItem(techgroup, "Channels",     properties->channels());
+        appendItem(techgroup, "Length",       properties->length());
+    }
+
+    delete file;
     return true;
 
 }
 
+/**
+ * Do translation between KFileMetaInfo items and TagLib::String in a tidy way.
+ */
+
+class Translator
+{
+public:
+    Translator(const KFileMetaInfo &info) : m_info(info) {}
+    TagLib::String operator[](const char *key) const
+    {
+        return QStringToTString(m_info["Comment"][key].value().toString());
+    }
+    int toInt(const char *key) const
+    {
+        return m_info["Comment"][key].value().toInt();
+    }
+private:
+    const KFileMetaInfo &m_info;
+};
+
 bool KFlacPlugin::writeInfo(const KFileMetaInfo& info) const
 {
-    FLAC__Metadata_SimpleIterator *simp;
-    simp = FLAC__metadata_simple_iterator_new();
+    TagLib::File *file;
 
-    FLAC__StreamMetadata *vc = 0;
-    bool new_block = false;
-
-    if(!FLAC__metadata_simple_iterator_init(
-	    simp, QFile::encodeName(info.path()), false, true)
-       ) return false;
-
-    if (!FLAC__metadata_simple_iterator_is_writable(simp))
-	return false;
-
-    do {
-	FLAC__MetadataType type = FLAC__metadata_simple_iterator_get_block_type(simp);
-	if ( type == FLAC__METADATA_TYPE_VORBIS_COMMENT ) {
-	    vc = FLAC__metadata_simple_iterator_get_block(simp);
-	    break; // Leave iterator pointing at vc
-	}
-    } while (FLAC__metadata_simple_iterator_next(simp));
-
-    FLAC__StreamMetadata_VorbisComment_Entry ent;
-    if(!vc) { // No comment-block found. Create one
-	vc = FLAC__metadata_object_new(FLAC__METADATA_TYPE_VORBIS_COMMENT);
-	ent.entry = (FLAC__byte*)"KDE 3.2";
-	ent.length = 7;
-	FLAC__metadata_object_vorbiscomment_set_vendor_string(vc,ent,true);
-	new_block = true;
+    if (!TagLib::File::isWritable(QFile::encodeName(info.path()).data())) {
+        kdDebug(7034) << "can't write to " << info.path() << endl;
+        return false;
     }
 
-    KFileMetaInfoGroup group = info["Comment"];
-
-    int num_comments = vc->data.vorbis_comment.num_comments;
-
-    QStringList keys = group.keys();
-    QStringList::Iterator it;
-    for(it=keys.begin();it!=keys.end(); ++it) {
-	KFileMetaInfoItem item = group[*it];
-
-	if(!item.isModified() || !item.isEditable()) continue;
-	QString key = item.key();
-	QCString field = (key+"="+item.value().toString()).utf8();
-
-	int i = FLAC__metadata_object_vorbiscomment_find_entry_from(vc, 0, key.utf8());
-        ent.length = field.length();
-	ent.entry = (FLAC__byte*)field.data();
-
-	if (i<0) { // No such comment, insert
-	    FLAC__metadata_object_vorbiscomment_insert_comment
-		    (vc, num_comments++, ent, true);
-	}
-	else {
-	    FLAC__metadata_object_vorbiscomment_set_comment
-		    (vc, i, ent, true);
-	}
-    }
-
-    if (new_block) {
-    	FLAC__metadata_simple_iterator_insert_block_after(simp, vc, true);
-        FLAC__metadata_object_delete(vc);
-    }
+    if (info.mimeType() == "audio/x-flac")
+        file = new TagLib::FLAC::File(QFile::encodeName(info.path()).data(), false);
     else
-	FLAC__metadata_simple_iterator_set_block(simp, vc, true);
+        file = new TagLib::Ogg::FLAC::File(QFile::encodeName(info.path()).data(), false);
 
-    FLAC__metadata_simple_iterator_delete(simp);
+    if(!file->isOpen())
+    {
+        kdDebug(7034) << "couldn't open " << info.path() << endl;
+        delete file;
+        return false;
+    }
+
+    Translator t(info);
+
+    file->tag()->setTitle(t["Title"]);
+    file->tag()->setArtist(t["Artist"]);
+    file->tag()->setAlbum(t["Album"]);
+    file->tag()->setYear(t.toInt("Date"));
+    file->tag()->setComment(t["Comment"]);
+    file->tag()->setTrack(t.toInt("Tracknumber"));
+    file->tag()->setGenre(t["Genre"]);
+
+    file->save();
+
+    delete file;
     return true;
 }
 
 QValidator* KFlacPlugin::createValidator( const QString&,
-                                         const QString &, const QString &,
-                                         QObject* parent, const char* name) const {
+                                         const QString &group, const QString &key,
+                                         QObject* parent, const char* name) const
+{
+    if(key == "Tracknumber" || key == "Date")
+    {
+        return new QIntValidator(0, 9999, parent, name);
+    }
+    else
 	return new QRegExpValidator(QRegExp(".*"), parent, name);
 }
 

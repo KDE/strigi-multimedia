@@ -1,7 +1,7 @@
 /*  KFile FLAC-plugin
-    
+
     Copyright (C) 2003 Allan Sandfeld Jensen <kde@carewolf.com>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -29,16 +29,18 @@ class QStringList;
 class KFlacPlugin: public KFilePlugin
 {
     Q_OBJECT
-    
+
 public:
     KFlacPlugin( QObject *parent, const char *name, const QStringList& args );
-    
+
     virtual bool readInfo( KFileMetaInfo& info, uint what);
     virtual bool writeInfo( const KFileMetaInfo& info ) const;
     virtual QValidator* createValidator( const QString& mimetype,
                                          const QString &group,
                                          const QString &key,
                                          QObject* parent, const char* name) const;
+protected:
+    virtual void makeMimeTypeInfo(const QString& mimeType);
 };
 
 
