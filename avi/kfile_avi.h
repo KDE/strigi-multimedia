@@ -51,7 +51,10 @@ private:
     bool read_list();
     bool read_avih();
     bool read_strl();
-
+    
+    bool read_strf(uint32_t blocksize);
+    bool read_strh(uint32_t blocksize);
+    
     // methods to sort out human readable names for the codecs
     const char * resolve_audio(uint16_t id);
     
@@ -79,6 +82,8 @@ private:
     char handler_auds[5];
     uint16_t handler_audio; // the ID of the audio codec
     bool done_audio;
+    
+    bool wantstrf;
     
 };
 

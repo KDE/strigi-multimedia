@@ -100,6 +100,7 @@ bool KAviPlugin::read_avi()
     
             
     // start reading AVI file
+    int counter = 0;
     bool done = false;    
     do {
         
@@ -136,7 +137,12 @@ bool KAviPlugin::read_avi()
             kdDebug(7034) << "We're done!\n";
             done = true;
         }
-                    
+           
+        // make sure we dont stay here forever
+        ++counter;
+        if (counter > 10)
+            done = true;
+                 
     } while (!done);
 
     return true;                        
@@ -228,13 +234,112 @@ bool KAviPlugin::read_avih()
 
 bool KAviPlugin::read_strl()
 {
-    bool wantstrf = false;
-    
     static const char *sig_strh = "strh";
     static const char *sig_strf = "strf";
+    static const char *sig_strd = "strd";
+    static const char *sig_strn = "strn";
+    static const char *sig_list = "LIST";
+    static const char *sig_junk = "JUNK";
+    
+    kdDebug(7034) << "in strl handler\n";
+        
+    uint32_t dwbuf1;    // buffer for block sizes
+    char charbuf1[5];
+    char charbuf2[5];
+        
+    // loop through blocks
+    int counter = 0;
+    while (true) {
+            
+        // read type and size
+        f.readBlock(charbuf1, 4);   // type
+        dstream >> dwbuf1;          // size
+        
+        // detect type
+        if (memcmp(charbuf1, sig_strh, 4) == 0) {
+            // got strh - stream header
+            kdDebug(7034) << "Found strh, calling read_strh()\n";
+            read_strh(dwbuf1);
+            
+        } else if (memcmp(charbuf1, sig_strf, 4) == 0) {
+            // got strf - stream format
+            kdDebug(7034) << "Found strf, calling read_strf()\n";
+            read_strf(dwbuf1);
+            
+        } else if (memcmp(charbuf1, sig_strn, 4) == 0) {
+            // we ignore strn, but it can be recorded incorrectly so we have to cope especially  
+            
+            // skip it        
+            kdDebug(7034) << "Skipping strn chunk length: " << dwbuf1 << "\n";
+            f.at( f.at() + dwbuf1 );
+
+            /*
+            this is a pretty annoying hack; many AVIs incorrectly report the
+            length of the strn field by 1 byte.  Its possible that strn's
+            should be word aligned, but no mention in the specs...
+
+            I'll clean/optimise this a touch soon
+            */
+            
+            bool done = false;
+            uint8_t counter = 0;
+            while (!done) {
+                // read next marker
+                f.readBlock(charbuf1, 4);
+
+                // does it look ok?
+                if ((memcmp(charbuf1, sig_list, 4) == 0) ||
+                    (memcmp(charbuf1, sig_junk, 4) == 0)) {
+                    // yes, go back before it
+                    f.at( f.at() - 4);
+                    done = true;
+                } else {
+                    // no, skip one space forward from where we were
+                    f.at( f.at() - 3);
+                    kdDebug(7034) << "Working around incorrectly marked strn length..." << "\n";
+                }
+
+                // make sure we don't stay here too long
+                ++counter;
+                if (counter>10)
+                    done = true;
+            }
+
+        } else if ((memcmp(charbuf1, sig_list, 4) == 0) || (memcmp(charbuf1, sig_junk, 4) == 0)) {
+            // we have come to the end of our stay here in strl, time to leave
+            
+            kdDebug(7034) << "Found LIST/JUNK, returning...\n";
+            
+            // rollback before the id and size
+            f.at( f.at() - 8 );
+        
+            // return back to the main avi parser
+            return true;
+        
+        } else {
+            // we have some other unrecognised block type 
+         
+            kdDebug(7034) << "Sskipping unrecognised block\n";
+            // just skip over it
+            f.at( f.at() + dwbuf1);   
+            
+        } /* switch block type */
+    
+        ++counter;
+        if (counter > 10)
+            return true;
+        
+    } /* while (true) */
+            
+    // we should never get here
+}
+
+
+bool KAviPlugin::read_strh(uint32_t blocksize)
+{
     static const char *sig_vids = "vids";   // ...video
     static const char *sig_auds = "auds";   // ...audio
-
+    
     uint32_t strh_flags;
     uint32_t strh_reserved1;
     uint32_t strh_initialframes;
@@ -246,30 +351,10 @@ bool KAviPlugin::read_strl()
     uint32_t strh_quality;
     uint32_t strh_samplesize;
 
-    kdDebug(7034) << "in strl handler\n";
-    
-        
-    /*
-        strl lists contain exactly  two chunks - one strh and one strf
-    
-        // start with strh
-    */
-
-    
-    uint32_t dwbuf1;
     char charbuf1[5];
     char charbuf2[5];
-
-    // read type and size
-    f.readBlock(charbuf1, 4);
-    dstream >> dwbuf1;
     
-    // not a valid strh?
-    if (memcmp(charbuf1, sig_strh, 4) != 0) {
-        kdDebug(7034) << "Chunk ID error, expected strh, got: " << charbuf1 << "\n";
-        return false;
-    }
-            
+                
     // get stream info type, and handler id
     f.readBlock(charbuf1, 4);
     f.readBlock(charbuf2, 4);
@@ -312,23 +397,15 @@ bool KAviPlugin::read_strl()
     // do we need to skip ahead any more?  (usually yes , contrary to
     // the AVI specs I've read...)
     // note: 48 is 10 * uint32_t + 2*FOURCC; the 10 fields we read above, plus the two character fields
-    if (dwbuf1 > 48)
-        f.at( f.at() + (dwbuf1 - 48) );
-    
-    /*
-        now do strf
-    */
-    
-    // read type and size
-    f.readBlock(charbuf1, 4);
-    dstream >> dwbuf1;
+    if (blocksize > 48)
+        f.at( f.at() + (blocksize - 48) );
 
-    // not a valid strh?
-    if (memcmp(charbuf1, sig_strf, 4) != 0) {
-        kdDebug(7034) << "Chunk ID error, expected strf, got: " << charbuf1 << "\n";
-        return false;
-    }
-        
+    return true;
+}
+
+
+bool KAviPlugin::read_strf(uint32_t blocksize)
+{
     // do we want to do the strf?
     if (wantstrf) {
         // yes.  we want the audio codec identifier out of it
@@ -337,33 +414,16 @@ bool KAviPlugin::read_strl()
         dstream >> handler_audio;
         kdDebug(7034) << "Read audio codec ID: " << handler_audio << "\n";
         // skip past the rest of the stuff here for now
-        f.at( f.at() + dwbuf1 - 2);
+        f.at( f.at() + blocksize - 2);
         // we have audio
         done_audio = true;
         
     } else { 
         // no, skip the strf
-        f.at( f.at() + dwbuf1 );
+        f.at( f.at() + blocksize );
     }
 
-    
-    // do we have a strn?
-    static const char *sig_strn = "strn";
-    f.readBlock(charbuf1, 4);
-
-    if (memcmp(&charbuf1, sig_strn, 4) == 0) {
-        // yes, skip it
-        dstream >> dwbuf1;
-        kdDebug(7034) << "Skipping strn chunk length: " << dwbuf1 << "\n";
-        f.at( f.at() + dwbuf1 );
-        
-    } else {
-        // no, go back before the marker
-        f.at( f.at() - 4 );
-    }
-        
-            
-    return true;    
+    return true;
 }
 
 
@@ -384,14 +444,15 @@ const char * KAviPlugin::resolve_audio(uint16_t id)
     static const char * codec_55 = "MP3";
     static const char * codec_92 = "AC3";
     switch (id) {
-    case 0x00 : return codec_00; break;        
-    case 0x01 : return codec_01; break;        
-    case 0x02 : return codec_02; break;        
-    case 0x50 : return codec_50; break;        
-    case 0x55 : return codec_55; break;        
-    default : return codec_unknown;    
+    case 0x00 : return codec_00; break;
+    case 0x01 : return codec_01; break;
+    case 0x02 : return codec_02; break;
+    case 0x50 : return codec_50; break;
+    case 0x55 : return codec_55; break;
+    case 0x92 : return codec_92; break;
+    default : return codec_unknown;
     }
-    
+
     return NULL;
 }
 
@@ -425,6 +486,8 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     /***************************************************/
     // start reading stuff from it
 
+    wantstrf = false;
+    
     if (!read_avi()) {
         kdDebug(7034) << "read_avi() failed!" << endl;
     }
