@@ -469,6 +469,9 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     /***************************************************/
     // sort out the file
 
+    if (f.isOpen())
+        f.close();
+
     f.setName(info.path());
     
     // open file, set up stream and set endianness
