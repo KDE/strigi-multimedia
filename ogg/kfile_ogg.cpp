@@ -171,7 +171,11 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
     memset(&vf, 0, sizeof(OggVorbis_File));
   
     fp = fopen(QFile::encodeName(info.path()),"rb");
-    if (!fp) return false;
+    if (!fp)
+    {
+        kdDebug(7034) << "Unable to open " << QFile::encodeName(info.path()) << endl;
+        return false;
+    }
 
     rc = ov_open(fp,&vf,NULL,0);
 
