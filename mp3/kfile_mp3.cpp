@@ -136,18 +136,6 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info, int )
                         ::typegenre[mp3.id3.genre[0]])), true));
         }
     }    
-    else {
-         QStringList supported;
-
-         supported += "Title";
-         supported += "Album";
-         supported += "Year";
-         supported += "Comment";
-         supported += "Tracknumber";
-         supported += "Genre";
-
-         info.setSupportedKeys(supported);
-    } 
     
     // end of the id3 part
     
