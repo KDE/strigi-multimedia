@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Service
+Name=WAV Info
+ServiceTypes=KFilePlugin
+X-KDE-Library=kfile_wav
+MimeType=audio/wav
+PreferredItems=Length,Sample Rate,Sample Size,Channels
