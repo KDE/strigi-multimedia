@@ -2,7 +2,7 @@
     mp3tech.c - Functions for handling MP3 files and most MP3 data
                 structure manipulation.
 
-    Copyright (C) 2000  Cedric Tefft <cedric@earthling.net>
+    Copyright (C) 2000-2001  Cedric Tefft <cedric@earthling.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -30,28 +30,16 @@
 
 #include "mp3info.h"
 
+
 int layer_tab[4]= {0, 3, 2, 1};
 
-int frequencies[4][4] = {
-   {11025,12000,8000,50000},   /* MPEG 2.5 */
-   {0,0,0,0},                  /* Reserved */
+int frequencies[3][4] = {
    {22050,24000,16000,50000},  /* MPEG 2.0 */
-   {44100,48000,32000,50000}   /* MPEG 1.0 */
+   {44100,48000,32000,50000},  /* MPEG 1.0 */
+   {11025,12000,8000,50000}    /* MPEG 2.5 */
 };
 
-int bitrate[4][3][14] = { 
-  { /* MPEG 2.5 */
-    {32,48,56,64,80,96,112,128,144,160,176,192,224,256},  /* layer 1 */
-    {8,16,24,32,40,48,56,64,80,96,112,128,144,160},       /* layer 2 */
-    {8,16,24,32,40,48,56,64,80,96,112,128,144,160}        /* layer 3 */
-  },
-
-  { /* Reserverd */
-    {32,48,56,64,80,96,112,128,144,160,176,192,224,256},  /* layer 1 */
-    {8,16,24,32,40,48,56,64,80,96,112,128,144,160},       /* layer 2 */
-    {8,16,24,32,40,48,56,64,80,96,112,128,144,160}        /* layer 3 */
-  },
-
+int bitrate[2][3][14] = { 
   { /* MPEG 2.0 */
     {32,48,56,64,80,96,112,128,144,160,176,192,224,256},  /* layer 1 */
     {8,16,24,32,40,48,56,64,80,96,112,128,144,160},       /* layer 2 */
@@ -116,13 +104,14 @@ int get_mp3_info(mp3info *mp3,int scantype, int fullscan_vbr)
 			counter++;
 			
 		}
+		if(!(scantype == SCAN_FULL)) {
+			mp3->frames=(mp3->datasize-data_start)/(l=frame_length(&mp3->header));
+			mp3->seconds = (int)((float)(frame_length(&mp3->header)*mp3->frames)/
+				       (float)(header_bitrate(&mp3->header)*125)+0.5);
+			mp3->vbr_average = (float)header_bitrate(&mp3->header);
+		}
 	}
-	if(!(scantype == SCAN_FULL)) {
-		mp3->frames=(mp3->datasize-data_start)/(l=frame_length(&mp3->header));
-		mp3->seconds = (int)((float)(frame_length(&mp3->header)*mp3->frames)/
-			       (float)(header_bitrate(&mp3->header)*125)+0.5);
-		mp3->vbr_average = (float)header_bitrate(&mp3->header);
-	}
+
   }
 
   if(scantype == SCAN_FULL) {
@@ -154,7 +143,6 @@ int get_mp3_info(mp3info *mp3,int scantype, int fullscan_vbr)
 		}
 	}
   }
-
   return 0;
 }
 
@@ -169,16 +157,13 @@ int get_first_header(mp3info *mp3, long startpos)
   while (1) {
      while((c=fgetc(mp3->file)) != 255 && (c != EOF));
      if(c == 255) {
-        valid_start = ftell(mp3->file);
-        if((l = get_header(mp3->file,&h))) {
+        ungetc(c,mp3->file);
+        valid_start=ftell(mp3->file);
+        if((l=get_header(mp3->file,&h))) {
           fseek(mp3->file,l-FRAME_HEADER_SIZE,SEEK_CUR);
-	  for(k=1; (k < MIN_CONSEC_GOOD_FRAMES) && ((mp3->datasize - ftell(mp3->file)) >= FRAME_HEADER_SIZE); k++) {
-	    if(!(l=get_header(mp3->file,&h2)))
-                break;
-
-	    if (!sameConstant(&h,&h2))
-                break;
-
+	  for(k=1; (k < MIN_CONSEC_GOOD_FRAMES) && (mp3->datasize-ftell(mp3->file) >= FRAME_HEADER_SIZE); k++) {
+	    if(!(l=get_header(mp3->file,&h2))) break;
+	    if(!sameConstant(&h,&h2)) break;
 	    fseek(mp3->file,l-FRAME_HEADER_SIZE,SEEK_CUR);
 	  }
 	  if(k == MIN_CONSEC_GOOD_FRAMES) {
@@ -206,8 +191,8 @@ int get_next_header(mp3info *mp3)
   
    while(1) {
      while((c=fgetc(mp3->file)) != 255 && (ftell(mp3->file) < mp3->datasize)) skip_bytes++;
-
      if(c == 255) {
+        ungetc(c,mp3->file);
         if((l=get_header(mp3->file,&h))) {
 	  if(skip_bytes) mp3->badframes++;
           fseek(mp3->file,l-FRAME_HEADER_SIZE,SEEK_CUR);
@@ -219,7 +204,6 @@ int get_next_header(mp3info *mp3)
 	  if(skip_bytes) mp3->badframes++;
       	  return 0;
      }
-
   }
 }
 
@@ -239,58 +223,39 @@ int get_header(FILE *file,mp3header *header)
 	header->sync=0;
 	return 0;
     }
-
-    header->sync= buffer[0] >> 5;
-    if (header->sync != 0x7) {
+    header->sync=(((int)buffer[0]<<4) | ((int)(buffer[1]&0xE0)>>4));
+    if(buffer[1] & 0x10) header->version=(buffer[1] >> 3) & 1;
+                    else header->version=2;
+    header->layer=(buffer[1] >> 1) & 3;
+    if((header->sync != 0xFFE) || (header->layer != 1)) {
 	header->sync=0;
 	return 0;
     }
-
-    header->version=(buffer[0] >> 3) & 3;
-    if (header->version == 1) {
-	header->sync=0;
-        return 0;
-    }
-
-    header->layer=(buffer[0] >> 1) & 3;
-    header->crc=buffer[0] & 1;
-    header->bitrate=(buffer[1] >> 4) & 0x0F;
-    header->freq=(buffer[1] >> 2) & 0x3;
-
-    /* Reserved value, illegal */
-    if (header->freq == 3) {
-        header->sync=0;
-        return 0;
-    }
-
-    header->padding=(buffer[1] >>1) & 0x1;
-    header->extension=(buffer[1]) & 0x1;
-    header->mode=(buffer[2] >> 6) & 0x3;
-    header->mode_extension=(buffer[2] >> 4) & 0x3;
-    header->copyright=(buffer[2] >> 3) & 0x1;
-    header->original=(buffer[2] >> 2) & 0x1;
-    header->emphasis=(buffer[2]) & 0x3;
+    header->crc=buffer[1] & 1;
+    header->bitrate=(buffer[2] >> 4) & 0x0F;
+    header->freq=(buffer[2] >> 2) & 0x3;
+    header->padding=(buffer[2] >>1) & 0x1;
+    header->extension=(buffer[2]) & 0x1;
+    header->mode=(buffer[3] >> 6) & 0x3;
+    header->mode_extension=(buffer[3] >> 4) & 0x3;
+    header->copyright=(buffer[3] >> 3) & 0x1;
+    header->original=(buffer[3] >> 2) & 0x1;
+    header->emphasis=(buffer[3]) & 0x3;
     
-    /* Reserved value, illegal */
-    if (header->emphasis == 2) {
-	header->sync=0;
-        return 0;
-     }
-
     return ((fl=frame_length(header)) >= MIN_FRAME_SIZE ? fl : 0); 
 }
 
 int frame_length(mp3header *header) {
-	return header->sync == 0x7 ? 
-		    (frame_size_index[3-header->layer]*(header->version+1)*
-		    header_bitrate(header)/header_frequency(header))+header->padding
-		    : 1;
+	return header->sync == 0xFFE ? 
+		    (frame_size_index[3-header->layer]*((header->version&1)+1)*
+		    header_bitrate(header)/header_frequency(header))+
+		    header->padding : 1;
 }
 
 int header_layer(mp3header *h) {return layer_tab[h->layer];}
 
 int header_bitrate(mp3header *h) {
-	return bitrate[h->version][3-h->layer][h->bitrate-1];
+	return bitrate[h->version & 1][3-h->layer][h->bitrate-1];
 }
 
 int header_frequency(mp3header *h) {
@@ -307,19 +272,6 @@ const char *header_mode(mp3header *h) {
 
 int header_crc(mp3header *h) {
 	return (!h->crc);
-}
-
-double header_version(mp3header *h) {
-	switch (h->version) {
-	case 0:
-		return 2.5;
-	case 2:
-		return 2.0;
-	case 3:
-		return 1.0;
-	default:
-		return 0.0;
-	}
 }
 
 int sameConstant(mp3header *h1, mp3header *h2) {

@@ -44,7 +44,7 @@
 
 
 #ifdef __MAIN
-char *typegenre [MAXGENRE+2] = {
+const char *typegenre [MAXGENRE+2] = {
    "Blues","Classic Rock","Country","Dance","Disco","Funk","Grunge",
    "Hip-Hop","Jazz","Metal","New Age","Oldies","Other","Pop","R&B",
    "Rap","Reggae","Rock","Techno","Industrial","Alternative","Ska",
