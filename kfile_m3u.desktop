@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Service
+Name=M3U Playlist Info
+ServiceTypes=KFilePlugin
+X-KDE-Library=kfile_m3u
+MimeType=audio/x-mpegurl
+PreferredItems=

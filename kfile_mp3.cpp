@@ -21,6 +21,9 @@ KMp3Plugin::KMp3Plugin( QObject *parent, const char *name,
                         const QStringList &preferredItems )
     : KFilePlugin( parent, name, preferredItems )
 {
+    //how is this supposed to be done?
+    KInstance* instance = new KInstance("kfile_mp3");
+    KGlobal::locale()->insertCatalogue("kfile_mp3");
 }
 
 KFileMetaInfo* KMp3Plugin::createInfo( const QString& path )
@@ -78,9 +81,6 @@ KMp3MetaInfo::KMp3MetaInfo( const QString& path ) :
         }
         
     }
-    else
-        m_items.insert("Title", new KFileMetaInfoItem("Title",
-            i18n("Title"), QVariant(path)));
     
     m_items.insert("Version", new KFileMetaInfoItem("Version",
         i18n("Version"), QVariant(mp3.header.version)));
@@ -89,7 +89,7 @@ KMp3MetaInfo::KMp3MetaInfo( const QString& path ) :
         i18n("Layer"), QVariant(::header_layer(&mp3.header))));
     
     m_items.insert("CRC", new KFileMetaInfoItem("CRC",
-        i18n("CRC"), QVariant((bool)mp3.header.crc)));
+        i18n("CRC"), QVariant((bool)mp3.header.crc, 42)));
     
     m_items.insert("Bitrate", new KFileMetaInfoItem("Bitrate",
         i18n("Bitrate"), QVariant(::header_bitrate(&mp3.header)), false,
@@ -101,11 +101,11 @@ KMp3MetaInfo::KMp3MetaInfo( const QString& path ) :
     
     m_items.insert("Copyright", new KFileMetaInfoItem("Copyright",
         i18n("Copyright"),
-        QVariant((bool)mp3.header.copyright)));
+        QVariant((bool)mp3.header.copyright, 42)));
 
     m_items.insert("Original", new KFileMetaInfoItem("Original",
         i18n("Original"),
-        QVariant((bool)mp3.header.original)));
+        QVariant((bool)mp3.header.original, 42)));
 
     // someone know a better way?
     QTime time(0, 0, 0);
@@ -148,7 +148,14 @@ QStringList KMp3MetaInfo::supportedKeys() const
 
 QStringList KMp3MetaInfo::preferredKeys() const
 {
-    return supportedKeys();
+    QDictIterator<KFileMetaInfoItem> it(m_items);
+    QStringList list;
+    
+    for (; it.current(); ++it)
+    {
+        list.append(it.current()->key());
+    }
+    return list;
 }
 
 void KMp3MetaInfo::applyChanges()
@@ -192,21 +199,42 @@ void KMp3MetaInfo::applyChanges()
     fclose(mp3.file);
 }
 
+
+class MyValidator: public QValidator
+{
+  public:
+    MyValidator ( int maxlen, QObject * parent, const char * name = 0 )
+      : QValidator(parent, name)
+    {
+        m_maxlen = maxlen;
+    }
+
+    virtual State validate ( QString & input, int & pos ) const
+    {
+      if (input.length()>m_maxlen) return Invalid;
+      return Acceptable;
+    }
+  private:
+      int m_maxlen;
+};
+
+
 QValidator * KMp3MetaInfo::createValidator( const QString& key, QObject *parent,
                                             const char *name ) const
 {
     if ((key == "Title") || (key == "Artist")|| (key == "Album"))
     {
-        return new QRegExpValidator(QRegExp(".*{,31}"), parent, name);
+//        return new QRegExpValidator(QRegExp("*{,31}"), parent, name);
+        return new MyValidator(31, parent, name);
     }
     else if (key == "Year")
     {
         // perhaps we should make the range smaller?
-        return new QIntValidator(0, 9999, parent, name);
+        return new QIntValidator(0, 4000, parent, name);
     }
     else if (key == "Comment")
     {
-        return new QRegExpValidator(QRegExp(".*{,29}"), parent, name);
+        return new QRegExpValidator(QRegExp("*{,29}"), parent, name);
     }
     else if (key == "Track")
     {

@@ -1,0 +1,49 @@
+If you add a new plugin here, add the list of returned items to this file.
+
+The returned items are:
+
+
+mp3 plguin:
+===========
+
+type       key         W/A        details
+------------------------------------------------------------------------
+String     Title       +/+  only if id3v1 tag exitsts / max. 30 characters
+String     Artist      +/+  only if id3v1 tag exitsts / max. 30 characters
+String     Album       +/+  only if id3v1 tag exitsts / max. 30 characters
+String     Comment     +/+  only if id3v1 tag exitsts / max. 28 characters
+String     Year        +/+  only if id3v1 tag exitsts / max.  4 characters
+Int        Track       +/+  only if id3v1.1 tag exitsts / 0-255
+Bool       CRC         -/-
+Bool       Original    -/-
+Bool       Copyright   -/-
+QTime      Length      -/-  we might have a problem with this
+Int        Bitrate     -/-  in kbps
+Int        Frequency   -/-  in Hz
+Int        Version     -/-  mpeg version, 1 or 2
+Int        Layer       -/-  2 or 3
+
+type is the QVariant::type() of that key.
+W/A is writable/addable, - means no, + means yes. If a key is addable, it's
+also removable
+
+ogg plugin:
+===========
+
+type       key             W/A        details
+------------------------------------------------------------------------
+Int        Version         -/-
+Int        Channels        -/- 
+Int        Bitrate upper   -/-  might also be a string containing i18n("none")
+Int        Bitrate lower   -/-  might also be a string containing i18n("none")
+Int        Bitrate nominal -/-  might also be a string containing i18n("none")
+Int        Bitrate         -/-  average bitrate
+String     Length          -/-
+
+Other keys correcponding to the vorbis comment keys are returned as editable
+String. If there are several equal vorbis comment keys, e.g. 3 Artists, the
+first one is called "Artist", the second one (not yet) "Artist(2)" and so on.
+
+Common keys that are recommended in the vorbiscomment docs:
+Title, Version, Album, Tracknumber, Artist, Organization, Description, Genre,
+Date, Location, Copyright, Isirc

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Service
+Name=OGG Info
+ServiceTypes=KFilePlugin
+X-KDE-Library=kfile_ogg
+MimeType=application/x-ogg
+PreferredItems=Title,Artist,Album,Tracknumber,Genre,Bitrate,Length,Date,Description,Organization,Channels,Bitrate upper, Bitrate lower, Bitrate nominal,Location,Copyright,Version
