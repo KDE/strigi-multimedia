@@ -1,1 +1,0 @@
-SUBDIRS=m3u mp3 $(KFILE_OGG_SUBDIRS) wav
