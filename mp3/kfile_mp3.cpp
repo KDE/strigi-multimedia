@@ -98,7 +98,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     item = addItemInfo(group, "Bitrate", i18n("Bitrate"), QVariant::Int);
     setAttributes(item, KFileMimeTypeInfo::Averaged);
     setHint(item, KFileMimeTypeInfo::Bitrate);
-    setSuffix(item, i18n("kbps"));
+    setSuffix(item, i18n(" kbps"));
 
     item = addItemInfo(group, "Sample Rate", i18n("Sample Rate"), QVariant::Int);
     setSuffix(item, i18n("Hz"));
