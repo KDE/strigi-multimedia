@@ -44,30 +44,6 @@ typedef KGenericFactory<KMp3Plugin> Mp3Factory;
 
 K_EXPORT_COMPONENT_FACTORY(kfile_mp3, Mp3Factory( "kfile_mp3" ));
 
-#ifdef _GNUC
-#warning ### FIXME ### we have to remove that validator from here so the plugin \
-can safely be unloaded
-#endif
-// we need this one to better validate the id3 tag
-class MyValidator: public QValidator
-{
-  public:
-    MyValidator ( unsigned int maxlen, QObject * parent, const char * name = 0 )
-      : QValidator(parent, name)
-    {
-        m_maxlen = maxlen;
-    }
-
-    virtual State validate ( QString & input, int & /*pos*/ ) const
-    {
-      if (input.length()>m_maxlen) return Invalid;
-      return Acceptable;
-    }
-  private:
-      unsigned int m_maxlen;
-};
-
-
 KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
                        const QStringList &args)
     
@@ -293,15 +269,15 @@ QValidator* KMp3Plugin::createValidator(const QString& /* mimetype */,
     if ((key == "Title") || (key == "Artist")||
         (key == "Album"))
     {
-        return new MyValidator(30, parent, name);
+        return new QRegExpValidator(QRegExp(".{,30}"), parent, name);
     }
     else if (key == "Date")
     {
-        return new MyValidator(4, parent, name);
+        return new QRegExpValidator(QRegExp(".{,4}"), parent, name);
     }
     else if (key == "Comment")
     {
-        return new MyValidator(28, parent, name);
+        return new QRegExpValidator(QRegExp(".{,28}"), parent, name);
     }
     else if (key == "Tracknumber")
     {
@@ -317,7 +293,7 @@ QValidator* KMp3Plugin::createValidator(const QString& /* mimetype */,
 
         return new KStringListValidator(list, false, true, parent, name);
     }
-    else return 0;
+    return 0;
 }
 
 #include "kfile_mp3.moc"
