@@ -10,7 +10,7 @@ kde_module_LTLIBRARIES = kfile_au.la
 
 kfile_au_la_SOURCES = kfile_au.cpp 
 kfile_au_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
-kfile_au_la_LIBADD = $(LIB_KSYCOCA)
+kfile_au_la_LIBADD = $(LIB_KIO)
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO

@@ -10,7 +10,7 @@ kde_module_LTLIBRARIES = kfile_wav.la
 
 kfile_wav_la_SOURCES = kfile_wav.cpp 
 kfile_wav_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
-kfile_wav_la_LIBADD = $(LIB_KSYCOCA)
+kfile_wav_la_LIBADD = $(LIB_KIO)
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
