@@ -72,7 +72,8 @@ KOggPlugin::KOggPlugin( QObject *parent, const char *name,
     KFileMimeTypeInfo::GroupInfo* group = 0;
 
     // comment group
-    group = addGroupInfo(info, "Comment", i18n("Comment"));
+//    group = addGroupInfo(info, "Comment", i18n("Comment"));
+    group = addGroupInfo(info, "Comment", "Comment");
     setAttributes(group, KFileMimeTypeInfo::Addable |
                          KFileMimeTypeInfo::Removable);
     
@@ -82,7 +83,8 @@ KOggPlugin::KOggPlugin( QObject *parent, const char *name,
 
     // technical group
 
-    group = addGroupInfo(info, "Technical", i18n("Technical details"));
+//    group = addGroupInfo(info, "Technical", i18n("Technical details"));
+    group = addGroupInfo(info, "Technical", "Technical details");
     setAttributes(group, 0);
 
     KFileMimeTypeInfo::ItemInfo* item = 0;
