@@ -255,7 +255,7 @@ int get_header(FILE *file,mp3header *header)
     header->bitrate=(buffer[2] >> 4) & 0x0F;
     header->freq=(buffer[2] >> 2) & 0x3;
 
-    // Reserved value, illegal
+    /* Reserved value, illegal */
     if (header->freq == 3) {
 	header->sync=0;
         return 0;
@@ -269,7 +269,7 @@ int get_header(FILE *file,mp3header *header)
     header->original=(buffer[3] >> 2) & 0x1;
     header->emphasis=(buffer[3]) & 0x3;
     
-    // Reserved value, illegal
+    /* Reserved value, illegal */
     if (header->emphasis == 2) {
 	header->sync=0;
         return 0;
