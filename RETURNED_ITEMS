@@ -60,3 +60,14 @@ Int        Length      -/-  Length in seconds
 Int        Sample Rate -/-  Sample rate of sample in Hz
 Int        Channels    -/-  No. of channels
 String     Encoding    -/-  Data encoding (e.g. 8-bit ISDN u-law)
+
+
+avi plugin:
+===========
+
+type       key         W/A        details
+------------------------------------------------------------------------
+Int        Length      -/-  Length in seconds/minutes/hours
+Size       Resolution  -/-  Resolution in pixels
+Int        Frame rate  -/-  Frame rate
+String     Video codec -/-  The video codec symbol (e.g. mp42 or div3)
