@@ -24,6 +24,13 @@
 #include <kdebug.h>
 
 #include <qfile.h>
+#include <qvalidator.h>
+#include <qwidget.h>
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 typedef KGenericFactory<KSidPlugin> SidFactory;
 
@@ -46,15 +53,15 @@ KSidPlugin::KSidPlugin(QObject *parent, const char *name,
     KFileMimeTypeInfo::ItemInfo* item;
 
     item = addItemInfo(group, "Title", i18n("Title"), QVariant::String);
-//    setAttributes(item, KFileMimeTypeInfo::Modifiable);
+    setAttributes(item, KFileMimeTypeInfo::Modifiable);
     setHint(item,  KFileMimeTypeInfo::Name);
 
     item = addItemInfo(group, "Artist", i18n("Artist"), QVariant::String);
-//    setAttributes(item, KFileMimeTypeInfo::Modifiable);
+    setAttributes(item, KFileMimeTypeInfo::Modifiable);
     setHint(item,  KFileMimeTypeInfo::Author);
 
     item = addItemInfo(group, "Copyright", i18n("Copyright"), QVariant::String);
-//    setAttributes(item, KFileMimeTypeInfo::Modifiable);
+    setAttributes(item, KFileMimeTypeInfo::Modifiable);
     setHint(item,  KFileMimeTypeInfo::Description);
 
     // technical group
@@ -63,16 +70,18 @@ KSidPlugin::KSidPlugin(QObject *parent, const char *name,
     item = addItemInfo(group, "Version", i18n("Version"), QVariant::Int);
     setPrefix(item,  i18n("PSID v"));
 
-    item = addItemInfo(group, "Number of Songs", i18n("Number of Songs"), QVariant::Int);
+    addItemInfo(group, "Number of Songs", i18n("Number of Songs"), QVariant::Int);
+    item = addItemInfo(group, "Start Song", i18n("Start Song"), QVariant::Int);
 }
 
-bool KSidPlugin::readInfo(KFileMetaInfo& info, uint what)
+bool KSidPlugin::readInfo(KFileMetaInfo& info, uint /*what*/)
 {
     QFile file(info.path());
     file.open(IO_ReadOnly);
 
     int version;
     int num_songs;
+    int start_song;
     QString name;
     QString artist;
     QString copyright;
@@ -101,6 +110,14 @@ bool KSidPlugin::readInfo(KFileMetaInfo& info, uint what)
     if (0 > (ch = file.getch()))
         return false;
     num_songs += ch;
+
+    //start song
+    if (0 > (ch = file.getch()))
+        return false;
+    start_song = ch << 8;
+    if (0 > (ch = file.getch()))
+        return false;
+    start_song += ch;
 
     //name
     file.at(0x16);
@@ -131,8 +148,77 @@ bool KSidPlugin::readInfo(KFileMetaInfo& info, uint what)
 
     appendItem(tech, "Version",         version);
     appendItem(tech, "Number of Songs", num_songs);
+    appendItem(tech, "Start Song", start_song);
 
     kdDebug(7034) << "reading finished\n";
     return true;
 }
+
+bool KSidPlugin::writeInfo(const KFileMetaInfo& info) const
+{
+    kdDebug(7034) << k_funcinfo << endl;
+
+    char name[32] = {0};
+    char artist[32] = {0};
+    char copyright[32] = {0};
+
+    int file = 0;
+    QString s;
+        
+    KFileMetaInfoGroup group = info.group("General");
+    if (!group.isValid())
+        goto failure;
+
+    s = group.item("Title").value().toString();
+    if (s.isNull()) goto failure;
+    strncpy(name, s.local8Bit(), 31);
+    
+    s = group.item("Artist").value().toString();
+    if (s.isNull()) goto failure;
+    strncpy(artist, s.local8Bit(), 31);
+    
+    s = group.item("Copyright").value().toString();
+    if (s.isNull()) goto failure;
+    strncpy(copyright, s.local8Bit(), 31);
+    
+    kdDebug(7034) << "Opening sid file " << info.path() << endl;
+    file = ::open(QFile::encodeName(info.path()), O_WRONLY);
+    //name
+    if (-1 == ::lseek(file, 0x16, SEEK_SET))
+        goto failure;
+    if (32 != ::write(file, name, 32))
+        goto failure;
+
+    //artist
+    if (32 != ::write(file, artist, 32))
+        goto failure;
+
+    //copyright
+    if (32 != write(file, copyright, 32))
+        goto failure;
+
+    close(file);
+    return true;
+
+failure:
+    if (file) close(file);
+    kdDebug() << "something went wrong writing to sid file\n";
+    return false;
+}
+
+QValidator*
+KSidPlugin::createValidator(const QString& /*mimetype*/, const QString& group,
+                            const QString& /*key*/, QObject* parent,
+                            const char* name) const
+{
+    kdDebug(7034) << k_funcinfo << endl;
+    // all items in "General" group are strings of max lenght 31
+    if (group == "General")
+        return new QRegExpValidator(QRegExp(".{,31}"), parent, name);
+    // all others are read-only
+    return 0;
+}
+
+
+
 #include "kfile_sid.moc"
