@@ -77,11 +77,21 @@ KMp3MetaInfo::KMp3MetaInfo( const QString& path ) :
     if (mp3.id3.genre[0] > MAXGENRE)
         mp3.id3.genre[0] = 0;
 
-    m_items.insert("Genre", new KFileMetaInfoItem("Genre",
-        i18n("Genre"), QVariant(::typegenre[mp3.id3.genre[0]])));
+    if (!mp3.id3_isvalid) {
+         m_items.insert("Genre", new KFileMetaInfoItem("Genre",
+            i18n("Genre"), QVariant("")));
 
-    m_items.insert("GenreNo", new KFileMetaInfoItem("Genre No.",
-        i18n("Genre No."), QVariant(mp3.id3.genre[0]), true));
+        m_items.insert("GenreNo", new KFileMetaInfoItem("Genre No.",
+            i18n("Genre No."), QVariant(-1), true));
+    }
+    else {
+         m_items.insert("Genre", new KFileMetaInfoItem("Genre",
+            i18n("Genre"), QVariant(::typegenre[mp3.id3.genre[0]])));
+
+        m_items.insert("GenreNo", new KFileMetaInfoItem("Genre No.",
+            i18n("Genre No."), QVariant(mp3.id3.genre[0]), true));
+    }
+
             
     m_items.insert("Version", new KFileMetaInfoItem("Version",
         i18n("Version"), QVariant(mp3.header.version)));
