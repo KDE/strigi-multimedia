@@ -5,5 +5,5 @@ Name=MP3 Info
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_mp3
 MimeType=audio/x-mp3
-PreferredGroups=Technical,id3v1.1
+PreferredGroups=id3v1.1,Technical
 PreferredItems=Title,Artist,Album,Tracknumber,Genre,Bitrate,Length,Date,Comment,Sample Rate,Channels,Version,Layer,Copyright,Original,CRC
