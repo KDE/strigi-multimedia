@@ -272,7 +272,14 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
     {
         while (ogg_sync_pageout(&o_sync_state,&o_page)>0)
         {
-            queue_page(&o_page);
+            // The following line was commented out by Scott Wheeler <wheeler@kde.org>
+            // We don't actually need to store all of the pages / packets in memory since
+            // (a) libtheora doesn't use them anyway in the one call that we make after this
+            // that usese t_state and (b) it basically buffers the entire file to memory if
+            // we queue them up like this and that sucks where a typical file size is a few
+            // hundred megs.
+
+            // queue_page(&o_page);
         }
         if (theora_serial==ogg_page_serialno(&o_page))
             duration=(ogg_int64_t) theora_granule_time(&t_state,ogg_page_granulepos(&o_page));
