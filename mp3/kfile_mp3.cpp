@@ -153,13 +153,23 @@ bool KMp3Plugin::readInfo(KFileMetaInfo &info, uint what)
         QString date  = file.tag()->year() > 0 ? QString::number(file.tag()->year()) : QString::null;
         QString track = file.tag()->track() > 0 ? QString::number(file.tag()->track()) : QString::null;
 
-        appendItem(id3group, "Title",       TStringToQString(file.tag()->title()).stripWhiteSpace());
-        appendItem(id3group, "Artist",      TStringToQString(file.tag()->artist()).stripWhiteSpace());
-        appendItem(id3group, "Album",       TStringToQString(file.tag()->album()).stripWhiteSpace());
+	QString title = TStringToQString(file.tag()->title()).stripWhiteSpace();
+	if (!title.isEmpty())
+	    appendItem(id3group, "Title", title);
+	QString artist = TStringToQString(file.tag()->artist()).stripWhiteSpace();
+	if (!artist.isEmpty())
+	    appendItem(id3group, "Artist", artist);
+	QString album = TStringToQString(file.tag()->album()).stripWhiteSpace();
+	if (!album.isEmpty())
+	    appendItem(id3group, "Album", album);
         appendItem(id3group, "Date",        date);
-        appendItem(id3group, "Comment",     TStringToQString(file.tag()->comment()).stripWhiteSpace());
+	QString comment = TStringToQString(file.tag()->comment()).stripWhiteSpace();
+	if (!comment.isEmpty())
+	    appendItem(id3group, "Comment", comment);
         appendItem(id3group, "Tracknumber", track);
-        appendItem(id3group, "Genre",       TStringToQString(file.tag()->genre()).stripWhiteSpace());
+	QString genre = TStringToQString(file.tag()->genre()).stripWhiteSpace();
+	if (!genre.isEmpty())
+	    appendItem(id3group, "Genre", genre);
     }
 
     if(readTech)
