@@ -148,7 +148,7 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info )
         i18n("Layer"), QVariant(::header_layer(&mp3.header))));
     
     info.insert(KFileMetaInfoItem("CRC", i18n("CRC"),
-                QVariant((bool)mp3.header.crc, 42)));
+                QVariant((bool)header_crc(&mp3.header), 42)));
     
     info.insert(KFileMetaInfoItem("Bitrate", i18n("Bitrate"),
                 QVariant(::header_bitrate(&mp3.header)), false,

@@ -68,18 +68,17 @@ int bitrate[4][3][14] = {
 int frame_size_index[] = {24000, 72000, 72000};
 
 
-char *mode_text[] = {
-   "stereo", "joint stereo", "dual channel", "mono"
+const char *mode_text[] = {
+   "Stereo", "Joint Stereo", "Dual Channel", "Mono"
 };
 
-char *emphasis_text[] = {
-  "none", "50/15 microsecs", "reserved", "CCITT J 17"
+const char *emphasis_text[] = {
+  "None", "50/15 Microseconds", "Reserved", "CCITT J 17"
 };
 
 
 int get_mp3_info(mp3info *mp3,int scantype, int fullscan_vbr)
 {
-  int had_error = 0;
   int frame_type[15]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
   float seconds=0,total_rate=0;
   int frames=0,frame_types=0,frames_so_far=0;
@@ -89,7 +88,6 @@ int get_mp3_info(mp3info *mp3,int scantype, int fullscan_vbr)
   mp3header header;
   struct stat filestat;
   off_t sample_pos,data_start=0;
-
 
   stat(mp3->filename,&filestat);
   mp3->datasize=filestat.st_size;
@@ -156,7 +154,8 @@ int get_mp3_info(mp3info *mp3,int scantype, int fullscan_vbr)
 		}
 	}
   }
-  return had_error;
+
+  return 0;
 }
 
 
@@ -295,12 +294,16 @@ int header_frequency(mp3header *h) {
 	return frequencies[h->version][h->freq];
 }
 
-char *header_emphasis(mp3header *h) {
+const char *header_emphasis(mp3header *h) {
 	return emphasis_text[h->emphasis];
 }
 
-char *header_mode(mp3header *h) {
+const char *header_mode(mp3header *h) {
 	return mode_text[h->mode];
+}
+
+int header_crc(mp3header *h) {
+	return (!h->crc);
 }
 
 double header_version(mp3header *h) {

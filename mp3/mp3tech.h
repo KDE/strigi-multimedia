@@ -79,19 +79,21 @@ typedef struct {
 } mp3info;
 
 
-int get_header(FILE *file,mp3header *header);
-int frame_length(mp3header *header);
+int header_frequency(mp3header *h);
+const char *header_emphasis(mp3header *h);
+const char *header_mode(mp3header *h);
 int header_layer(mp3header *h);
 int header_bitrate(mp3header *h);
 double header_version(mp3header *h);
+int header_crc(mp3header *h);
+
+int get_header(FILE *file,mp3header *header);
+int frame_length(mp3header *header);
 int sameConstant(mp3header *h1, mp3header *h2);
 int get_mp3_info(mp3info *mp3,int scantype, int fullscan_vbr);
 int get_id3(mp3info *mp3);
 char *pad(char *string, int length);
 char *unpad(char *string);
 int write_tag(mp3info *mp3);
-int header_frequency(mp3header *h);
-char *header_emphasis(mp3header *h);
-char *header_mode(mp3header *h);
 int get_first_header(mp3info *mp3,long startpos);
 int get_next_header(mp3info *mp3);
