@@ -63,6 +63,10 @@ bool KWavPlugin::readInfo( KFileMetaInfo::Internal& info )
     uint16_t sample_size;
     uint32_t data_size;
 
+    const char *riff_signature = "RIFF";
+    const char *wav_signature = "WAVE";
+    char signature_buffer[4];
+
     if (!file.open(IO_ReadOnly))
     {
         kdDebug(7034) << "Couldn't open " << QFile::encodeName(info.path()) << endl;
@@ -70,8 +74,22 @@ bool KWavPlugin::readInfo( KFileMetaInfo::Internal& info )
     }    
 
     QDataStream dstream(&file);
-    // WAV headers are little-endian
+
+    // WAV files are little-endian
     dstream.setByteOrder(QDataStream::LittleEndian);
+
+    // Read and verify the RIFF signature
+    dstream.readRawBytes(signature_buffer, 4);
+    if (memcmp(signature_buffer, riff_signature, 4))
+         return false;
+
+    // Skip the next bit (total file size, pretty useless)
+    file.at(8);
+
+    // Read and verify the WAVE signature
+    dstream.readRawBytes(signature_buffer, 4);
+    if (memcmp(signature_buffer, wav_signature, 4))
+         return false;
 
     // Read the needed parts of the FORMAT chunk
     file.at(16);
@@ -83,11 +101,11 @@ bool KWavPlugin::readInfo( KFileMetaInfo::Internal& info )
     dstream >> bytes_per_sample;
     dstream >> sample_size;
 
-    // And now go for the DATA chunk
+    // And now read the DATA chunk
     file.at(24 + format_size);
     dstream >> data_size;
 
-    // Are downright illgeal
+    // These values are downright illgeal
     if ((!channel_count) || (!bytes_per_second))
         return false;
 
@@ -102,10 +120,12 @@ bool KWavPlugin::readInfo( KFileMetaInfo::Internal& info )
     info.insert(KFileMetaInfoItem("Channels", i18n("Channels"),
                 QVariant(channel_count)));        
 
-    int wav_seconds = data_size / bytes_per_second;
-    int playmin = wav_seconds / 60;
-    int playsec = wav_seconds % 60;
+    // Use the data size and bytes per second to figure out the audio length in minutes and seconds
+    unsigned int wav_seconds = data_size / bytes_per_second;
+    unsigned int playmin = wav_seconds / 60;
+    unsigned int playsec = wav_seconds % 60;
 
+    // And store that string under "Length"
     QString str;
     str = QString("%0:%1").arg(playmin)
                           .arg(QString::number(playsec).rightJustify(2,'0') );
