@@ -227,9 +227,6 @@ bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
 
 bool KMp3Plugin::writeInfo( const KFileMetaInfo& info) const
 {
-    if (!info["id3v1.1"].isValid())
-        return true;
-    
     mp3info mp3;
     memset(&mp3,0,sizeof(mp3info));
 
@@ -247,6 +244,15 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo& info) const
     }
 
     ::get_mp3_info(&mp3, ::SCAN_NONE, ::VBR_VARIABLE);
+    
+    if (!info.groups().contains("id3v1.1") || !info["id3v1.1"].isValid() )
+    {
+        fclose(mp3.file);
+        // that's how original mp3info does it
+    		truncate(mp3.filename,mp3.datasize);
+        delete [] mp3.filename;
+        return true;
+    }
     
     strncpy(mp3.id3.title,  info["id3v1.1"]["Title"]  .value().toString().local8Bit(), 31);
     strncpy(mp3.id3.artist, info["id3v1.1"]["Artist"] .value().toString().local8Bit(), 31);
