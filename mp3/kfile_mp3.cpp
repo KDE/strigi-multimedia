@@ -232,10 +232,15 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo& info) const
     }
     
     strncpy(mp3.id3.title,  info["id3v1.1"]["Title"]  .value().toString().local8Bit(), 31);
+    mp3.id3.title[ 30 ] = '\0';
     strncpy(mp3.id3.artist, info["id3v1.1"]["Artist"] .value().toString().local8Bit(), 31);
+    mp3.id3.artist[ 30 ] = '\0';
     strncpy(mp3.id3.album,  info["id3v1.1"]["Album"]  .value().toString().local8Bit(), 31);
+    mp3.id3.album[ 30 ] = '\0';
     strncpy(mp3.id3.year,   info["id3v1.1"]["Date"]   .value().toString().local8Bit(),  5);
+    mp3.id3.year[ 4 ] = '\0';
     strncpy(mp3.id3.comment,info["id3v1.1"]["Comment"].value().toString().local8Bit(), 29);
+    mp3.id3.comment[ 28 ] = '\0';
 
     KFileMetaInfoItem track = info["id3v1.1"]["Tracknumber"];
     if (track.isValid()) mp3.id3.track[0] = track.value().toInt();
