@@ -169,19 +169,22 @@ int get_first_header(mp3info *mp3, long startpos)
   while (1) {
      while((c=fgetc(mp3->file)) != 255 && (c != EOF));
      if(c == 255) {
-        ungetc(c,mp3->file);
-        valid_start=ftell(mp3->file);
-        if((l=get_header(mp3->file,&h))) {
+        valid_start = ftell(mp3->file);
+        if((l = get_header(mp3->file,&h))) {
           fseek(mp3->file,l-FRAME_HEADER_SIZE,SEEK_CUR);
-	  for(k=1; (k < MIN_CONSEC_GOOD_FRAMES) && (mp3->datasize-ftell(mp3->file) >= FRAME_HEADER_SIZE); k++) {
-	    if(!(l=get_header(mp3->file,&h2))) break;
-	    if(!sameConstant(&h,&h2)) break;
+	  for(k=1; (k < MIN_CONSEC_GOOD_FRAMES) && ((mp3->datasize - ftell(mp3->file)) >= FRAME_HEADER_SIZE); k++) {
+	    if(!(l=get_header(mp3->file,&h2)))
+                break;
+
+	    if (!sameConstant(&h,&h2))
+                break;
+
 	    fseek(mp3->file,l-FRAME_HEADER_SIZE,SEEK_CUR);
 	  }
 	  if(k == MIN_CONSEC_GOOD_FRAMES) {
 		fseek(mp3->file,valid_start,SEEK_SET);
-		memcpy(&(mp3->header),&h2,sizeof(mp3header));
-		mp3->header_isvalid=1;
+		memcpy(&(mp3->header), &h2, sizeof(mp3header));
+		mp3->header_isvalid = 1;
 		return 1;
 	  } 
         }
@@ -203,8 +206,8 @@ int get_next_header(mp3info *mp3)
   
    while(1) {
      while((c=fgetc(mp3->file)) != 255 && (ftell(mp3->file) < mp3->datasize)) skip_bytes++;
+
      if(c == 255) {
-        ungetc(c,mp3->file);
         if((l=get_header(mp3->file,&h))) {
 	  if(skip_bytes) mp3->badframes++;
           fseek(mp3->file,l-FRAME_HEADER_SIZE,SEEK_CUR);
@@ -216,6 +219,7 @@ int get_next_header(mp3info *mp3)
 	  if(skip_bytes) mp3->badframes++;
       	  return 0;
      }
+
   }
 }
 
@@ -235,38 +239,37 @@ int get_header(FILE *file,mp3header *header)
 	header->sync=0;
 	return 0;
     }
-    header->sync=((int)buffer[0] + (256*(buffer[1] >> 5)));
-    header->version=(buffer[1] >> 3) & 3;
 
+    header->sync= buffer[0] >> 5;
+    if (header->sync != 0x7) {
+	header->sync=0;
+	return 0;
+    }
+
+    header->version=(buffer[0] >> 3) & 3;
     if (header->version == 1) {
 	header->sync=0;
         return 0;
     }
 
-    header->layer=(buffer[1] >> 1) & 3;
-
-    if (header->sync != 0x7FF) {
-	header->sync=0;
-	return 0;
-    }
-
-    header->crc=buffer[1] & 1;
-    header->bitrate=(buffer[2] >> 4) & 0x0F;
-    header->freq=(buffer[2] >> 2) & 0x3;
+    header->layer=(buffer[0] >> 1) & 3;
+    header->crc=buffer[0] & 1;
+    header->bitrate=(buffer[1] >> 4) & 0x0F;
+    header->freq=(buffer[1] >> 2) & 0x3;
 
     /* Reserved value, illegal */
     if (header->freq == 3) {
-	header->sync=0;
+        header->sync=0;
         return 0;
     }
 
-    header->padding=(buffer[2] >>1) & 0x1;
-    header->extension=(buffer[2]) & 0x1;
-    header->mode=(buffer[3] >> 6) & 0x3;
-    header->mode_extension=(buffer[3] >> 4) & 0x3;
-    header->copyright=(buffer[3] >> 3) & 0x1;
-    header->original=(buffer[3] >> 2) & 0x1;
-    header->emphasis=(buffer[3]) & 0x3;
+    header->padding=(buffer[1] >>1) & 0x1;
+    header->extension=(buffer[1]) & 0x1;
+    header->mode=(buffer[2] >> 6) & 0x3;
+    header->mode_extension=(buffer[2] >> 4) & 0x3;
+    header->copyright=(buffer[2] >> 3) & 0x1;
+    header->original=(buffer[2] >> 2) & 0x1;
+    header->emphasis=(buffer[2]) & 0x3;
     
     /* Reserved value, illegal */
     if (header->emphasis == 2) {
@@ -278,7 +281,7 @@ int get_header(FILE *file,mp3header *header)
 }
 
 int frame_length(mp3header *header) {
-	return header->sync == 0x7FF ? 
+	return header->sync == 0x7 ? 
 		    (frame_size_index[3-header->layer]*(header->version+1)*
 		    header_bitrate(header)/header_frequency(header))+header->padding
 		    : 1;

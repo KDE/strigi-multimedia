@@ -97,10 +97,6 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info )
 
     ::get_mp3_info(&mp3, ::SCAN_QUICK, ::VBR_VARIABLE);
   
-    if (!mp3.header_isvalid) {
-        return false;
-    }
-
     QString value;
   
     if (!mp3.id3_isvalid)
@@ -155,51 +151,50 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info )
     
     // end of the id3 part
     
-    info.insert(KFileMetaInfoItem("Version", i18n("Version"),
-                QVariant(::header_version(&mp3.header)), false, i18n("MPEG")));
+    if (mp3.header_isvalid) {
+        info.insert(KFileMetaInfoItem("Version", i18n("Version"),
+                    QVariant(::header_version(&mp3.header)), false, i18n("MPEG")));
     
-    info.insert(KFileMetaInfoItem("Layer",
-        i18n("Layer"), QVariant(::header_layer(&mp3.header))));
+        info.insert(KFileMetaInfoItem("Layer",
+            i18n("Layer"), QVariant(::header_layer(&mp3.header))));
     
-    info.insert(KFileMetaInfoItem("CRC", i18n("CRC"),
-                QVariant((bool)header_crc(&mp3.header), 42)));
+        info.insert(KFileMetaInfoItem("CRC", i18n("CRC"),
+                    QVariant((bool)header_crc(&mp3.header), 42)));
     
-    info.insert(KFileMetaInfoItem("Bitrate", i18n("Bitrate"),
-                QVariant(::header_bitrate(&mp3.header)), false,
-                QString::null, i18n("kbps")));
+        info.insert(KFileMetaInfoItem("Bitrate", i18n("Bitrate"),
+                    QVariant(::header_bitrate(&mp3.header)), false,
+                    QString::null, i18n("kbps")));
     
-    info.insert(KFileMetaInfoItem("Sample Rate", i18n("Sample Rate"),
-                QVariant(::header_frequency(&mp3.header)), false,
-                QString::null, i18n("Hz")));
+        info.insert(KFileMetaInfoItem("Sample Rate", i18n("Sample Rate"),
+                    QVariant(::header_frequency(&mp3.header)), false,
+                    QString::null, i18n("Hz")));
     
-    // Modes 0-2 are forms of stereo, mode 3 is mono
-    info.insert(KFileMetaInfoItem("Channels", i18n("Channels"),
-                QVariant(int((mp3.header.mode == 3) ? 1 : 2))));
+        // Modes 0-2 are forms of stereo, mode 3 is mono
+        info.insert(KFileMetaInfoItem("Channels", i18n("Channels"),
+                    QVariant(int((mp3.header.mode == 3) ? 1 : 2))));
     
-    info.insert(KFileMetaInfoItem("Copyright", i18n("Copyright"),
-                QVariant((bool)mp3.header.copyright, 42)));
+        info.insert(KFileMetaInfoItem("Copyright", i18n("Copyright"),
+                    QVariant((bool)mp3.header.copyright, 42)));
 
-    info.insert(KFileMetaInfoItem("Original", i18n("Original"),
-                QVariant((bool)mp3.header.original, 42)));
+        info.insert(KFileMetaInfoItem("Original", i18n("Original"),
+                    QVariant((bool)mp3.header.original, 42)));
 
-    info.insert(KFileMetaInfoItem("Padding", i18n("Padding"),
-                QVariant((bool)mp3.header.padding, 42)));
+        info.insert(KFileMetaInfoItem("Padding", i18n("Padding"),
+                    QVariant((bool)mp3.header.padding, 42)));
 
-    int playmin = mp3.seconds / 60;
-    int playsec = mp3.seconds % 60;
-    QString str;
-    str = QString("%0:%1").arg(playmin)
-                          .arg(QString::number(playsec).rightJustify(2,'0') );
+         int playmin = mp3.seconds / 60;
+         int playsec = mp3.seconds % 60;
+         QString str;
+         str = QString("%0:%1").arg(playmin)
+                               .arg(QString::number(playsec).rightJustify(2,'0') );
 
-    info.insert(KFileMetaInfoItem("Length", i18n("Length"),
-                QVariant(str), false, QString::null));
+         info.insert(KFileMetaInfoItem("Length", i18n("Length"),
+                     QVariant(str), false, QString::null));
     
-    info.insert(KFileMetaInfoItem("Emphasis", i18n("Emphasis"),
-                QVariant(::header_emphasis(&mp3.header))));
+         info.insert(KFileMetaInfoItem("Emphasis", i18n("Emphasis"),
+                    QVariant(::header_emphasis(&mp3.header))));
+    }
 
-/* Dunno what this is:
-      mp3.header.extension
-*/
     fclose(mp3.file);
     kdDebug(7034) << "reading finished\n";
     
