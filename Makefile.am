@@ -8,7 +8,10 @@ noinst_HEADERS   = kfile_mp3.h mp3tech.h mp3info.h \
                    kfile_ogg.h \
                    kfile_m3u.h
 
-kde_module_LTLIBRARIES = kfile_mp3.la kfile_m3u.la kfile_ogg.la
+kde_module_LTLIBRARIES = kfile_mp3.la kfile_m3u.la $(KFILE_OGG)
+
+EXTRA_LTLIBRARIES = kfile_ogg.la
+# KFILE_OGG expands to kfile_ogg.la when enabled.
 
 kfile_mp3_la_SOURCES = kfile_mp3.cpp mp3tech.c
 kfile_mp3_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
@@ -19,11 +22,7 @@ kfile_m3u_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 kfile_m3u_la_LIBADD = $(LIB_KSYCOCA)
 
 # yes, it's true, automake sucks
-if MAKE_KFILE_OGG
 kfile_ogg_la_SOURCES = kfile_ogg.cpp
-else
-kfile_ogg_la_SOURCES =
-endif
 kfile_ogg_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 kfile_ogg_la_LIBADD = $(LIB_KSYCOCA) -logg -lvorbis -lvorbisfile
 
