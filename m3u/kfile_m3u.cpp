@@ -55,7 +55,7 @@ KM3uPlugin::KM3uPlugin( QObject *parent, const char *name,
 bool KM3uPlugin::readInfo( KFileMetaInfo& info, uint )
 {
     QFile f(info.path());
-    f.open(IO_ReadOnly);
+    if (!f.open(IO_ReadOnly)) return false;
     QTextStream str(&f);
     str.setEncoding(QTextStream::Locale);
     
