@@ -84,8 +84,6 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
                                KFileMimeTypeInfo::Addable |
                                KFileMimeTypeInfo::Removable, false);
      
-    // ### set group properties somewhere
-    
     group->addItemInfo("Title", i18n("Title"), QVariant::String,
                        KFileMimeTypeInfo::Modifiable, KFileMimeTypeInfo::NoUnit,
                        KFileMimeTypeInfo::Name);
@@ -114,7 +112,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     group->addItemInfo("Layer", i18n("Layer"), QVariant::Int);
     group->addItemInfo("CRC", i18n("CRC"), QVariant::Bool);
     group->addItemInfo("Bitrate", i18n("Bitrate"), QVariant::Int,
-                      KFileMimeTypeInfo::Average, 
+                      KFileMimeTypeInfo::Averaged, 
                       KFileMimeTypeInfo::NoUnit,
                       KFileMimeTypeInfo::NoHint, QString::null, i18n("kbps"));
 
@@ -134,6 +132,17 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
 bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
 {
     kdDebug(7034) << "mp3 plugin readInfo\n";
+    
+    bool readId3 = false;
+    bool readTech = false;
+    typedef enum KFileMetaInfo::What What;
+    if (what & (KFileMetaInfo::Fastest | 
+                KFileMetaInfo::DontCare |
+                KFileMetaInfo::ContentInfo)) readId3 = true;
+    
+    if (what & (KFileMetaInfo::Fastest | 
+                KFileMetaInfo::DontCare |
+                KFileMetaInfo::TechnicalInfo)) readTech = true;
     
     mp3info mp3;
 
@@ -156,9 +165,7 @@ bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
     // here we go
     QString value;
   
-    if (!mp3.id3_isvalid)
-        memset(&mp3.id3, sizeof(id3tag), 0);
-    else
+    if (mp3.id3_isvalid && readId3)
     {
         KFileMetaInfoGroup id3group = info.appendGroup("id3v1.1");
         
@@ -180,33 +187,26 @@ bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
         id3group.appendItem("Genre", QString::fromLocal8Bit(
                                               ::typegenre[mp3.id3.genre[0]]));
     }
+    else
+        memset(&mp3.id3, sizeof(id3tag), 0);
     
     // end of the id3 part
     // now the technical stuff
-    if (mp3.header_isvalid) {
+    if (mp3.header_isvalid && readTech) {
 
         KFileMetaInfoGroup techgroup = info.appendGroup("Technical");
         
         techgroup.appendItem("Version", mp3.header.version);
         techgroup.appendItem("Layer", ::header_layer(&mp3.header));
-        techgroup.appendItem("CRC", bool(header_crc(&mp3.header)));
+        techgroup.appendItem("CRC", QVariant(header_crc(&mp3.header), 42));
         techgroup.appendItem("Bitrate", ::header_bitrate(&mp3.header));
         techgroup.appendItem("Sample Rate", ::header_frequency(&mp3.header));
         // Modes 0-2 are forms of stereo, mode 3 is mono
         techgroup.appendItem("Channels", int((mp3.header.mode == 3) ? 1 : 2));
-        techgroup.appendItem("Copyright", bool(mp3.header.copyright));
-        techgroup.appendItem("Original", bool(mp3.header.original));
+        techgroup.appendItem("Copyright", QVariant(mp3.header.copyright, 42));
+        techgroup.appendItem("Original", QVariant(mp3.header.original, 42));
         techgroup.appendItem("Length", mp3.seconds);
-        techgroup.appendItem("Emphasis", ::header_emphasis(&mp3.header));
-        
-//        int playmin = mp3.seconds / 60;
-//        int playsec = mp3.seconds % 60;
-//        QString str;
-//        str = QString("%0:%1").arg(playmin)
-//                              .arg(QString::number(playsec).rightJustify(2,'0') );
-//         info.insert(KFileMetaInfoItem("Length", i18n("Length"),
-//                     QVariant(str), false, QString::null));
-
+        techgroup.appendItem("Emphasis", QString(::header_emphasis(&mp3.header)));
     }
 
     fclose(mp3.file);
@@ -268,10 +268,12 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo& info) const
     return success;
 }
 
-QValidator* KMp3Plugin::createValidator(const QString &key,
-                                        QObject* parent, const char* name,
-                                        const QString &/*group*/) const
+QValidator* KMp3Plugin::createValidator(const QString &group,
+                                        const QString &key,
+                                        QObject* parent, const char* name) const
 {
+    kdDebug(7034) << "making a validator for " << group << "/" << key << endl;
+
     if ((key == "Title") || (key == "Artist")||
         (key == "Album"))
     {
