@@ -19,7 +19,7 @@ AC_DEFUN([AC_CHECK_LIBFLAC],
   AC_LANG_RESTORE
 ])
 
-AC_DEFUN(KDE_CHECK_FLAC_SUBDIR,
+AC_DEFUN([KDE_CHECK_FLAC_SUBDIR],
 [
  AC_REQUIRE([AC_CHECK_LIBFLAC])
  # add the flac file meta info plugin only if the test succeeded
