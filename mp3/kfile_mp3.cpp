@@ -75,14 +75,15 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
 {
     kdDebug(7034) << "mp3 plugin\n";
     
-    QStringList sg;
-    sg.append("id3v1.1");
-    sg.append("Technical");
-    
-    KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/x-mp3", sg, sg);
+    KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/x-mp3" );
+
+    KFileMimeTypeInfo::GroupInfo* group;
 
     // id3 group
-    KFileMimeTypeInfo::GroupInfo* group = info->groupInfo("id3v1.1");
+    group = info->addGroupInfo("id3v1.1", i18n("ID3V1 Tag"),
+                               KFileMimeTypeInfo::Addable |
+                               KFileMimeTypeInfo::Removable, false);
+     
     // ### set group properties somewhere
     
     group->addItemInfo("Title", i18n("Title"), QVariant::String,
@@ -104,7 +105,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
                        KFileMimeTypeInfo::Modifiable);
 
     // technical group
-    group = info->groupInfo("Technical");
+    group = info->addGroupInfo("Technical", i18n("Technical Details"), 0, false);
 
     group->addItemInfo("Version", i18n("Version"), QVariant::Int, 0,
                       KFileMimeTypeInfo:: NoUnit,
