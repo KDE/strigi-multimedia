@@ -56,8 +56,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     KFileMimeTypeInfo::GroupInfo* group = 0L;
 
     // id3 group
-//    group = addGroupInfo(info, "id3v1.1", i18n("ID3V1 Tag"));
-    group = addGroupInfo(info, "id3v1.1", "ID3V1 Tag");
+    group = addGroupInfo(info, "id3v1.1", i18n("ID3V1 Tag"));
     setAttributes(group, KFileMimeTypeInfo::Addable | 
                          KFileMimeTypeInfo::Removable);
 
