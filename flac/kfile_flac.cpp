@@ -34,15 +34,8 @@
 #include <kgenericfactory.h>
 #include <ksavefile.h>
 
-#if HAVE_TAGLIB
-#include "tstring.h"
-#include "mpegfile.h"
-#include "id3v1genres.h"
-#include "tag.h"
-#else
 // The C API is more powerful, and we need the extra power
 #include <FLAC/metadata.h>
-#endif
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -143,132 +136,6 @@ KFlacPlugin::KFlacPlugin( QObject *parent, const char *name,
     setUnit(item, KFileMimeTypeInfo::Seconds);
 }
 
-#if HAVE_TAGLIB
-
-bool KFlacPlugin::readInfo( KFileMetaInfo& info, uint what )
-{
-    kdDebug(7034) << "flac plugin readInfo\n";
-
-    bool readComment = false;
-    bool readTech = false;
-    typedef enum KFileMetaInfo::What What;
-    if (what & (KFileMetaInfo::Fastest |
-                KFileMetaInfo::DontCare |
-                KFileMetaInfo::ContentInfo)) readId3 = true;
-
-    if (what & (KFileMetaInfo::Fastest |
-                KFileMetaInfo::DontCare |
-                KFileMetaInfo::TechnicalInfo)) readTech = true;
-
-    if(!readId3 && !readTech)
-	return true;
-
-    TagLib::FLAC::File file(QFile::encodeName(info.path()).data(), readTech);
-
-    if(!file.isOpen())  {
-        kdDebug(7034) << "Couldn't open " << file.name() << endl;
-        return false;
-    }
-
-    if(readId3)
-    {
-        KFileMetaInfoGroup id3group = appendGroup(info, "id3");
-
-        QString date  = file.tag()->year() > 0 ? QString::number(file.tag()->year()) : QString::null;
-        QString track = file.tag()->track() > 0 ? QString::number(file.tag()->track()) : QString::null;
-
-        appendItem(id3group, "Title",       TStringToQString(file.tag()->title()));
-        appendItem(id3group, "Artist",      TStringToQString(file.tag()->artist()));
-        appendItem(id3group, "Album",       TStringToQString(file.tag()->album()));
-        appendItem(id3group, "Date",        date);
-        appendItem(id3group, "Comment",     TStringToQString(file.tag()->comment()));
-        appendItem(id3group, "Tracknumber", track);
-        appendItem(id3group, "Genre",       TStringToQString(file.tag()->genre()));
-    }
-
-    if(readTech) {
-
-        KFileMetaInfoGroup techgroup = appendGroup(info, "Technical");
-
-        QString version;
-        switch(file.audioProperties()->version()) {
-        case TagLib::MPEG::Header::Version1:
-            version = "1.0";
-            break;
-        case TagLib::MPEG::Header::Version2:
-            version = "2.0";
-            break;
-        case TagLib::MPEG::Header::Version2_5:
-            version = "2.5";
-            break;
-        }
-
-	static const int dummy = 0; // QVariant's bool constructor requires a dummy int value.
-
-        // CRC and Emphasis aren't yet implemented in TagLib (not that I think anyone cares)
-
-        appendItem(techgroup, "Version",     version);
-        appendItem(techgroup, "Layer",       file.audioProperties()->layer());
-        // appendItem(techgroup, "CRC",      file.audioProperties()->crc());
-        appendItem(techgroup, "Bitrate",     file.audioProperties()->bitrate());
-        appendItem(techgroup, "Sample Rate", file.audioProperties()->sampleRate());
-        appendItem(techgroup, "Channels",    file.audioProperties()->channels());
-        appendItem(techgroup, "Copyright",   QVariant(file.audioProperties()->isCopyrighted(), dummy));
-        appendItem(techgroup, "Original",    QVariant(file.audioProperties()->isOriginal(), dummy));
-        appendItem(techgroup, "Length",      file.audioProperties()->length());
-        // appendItem(techgroup, "Emphasis", file.audioProperties()->empahsis());
-    }
-
-    kdDebug(7034) << "reading finished\n";
-    return true;
-}
-
-/**
- * Do translation between KFileMetaInfo items and TagLib::String in a tidy way.
- */
-
-class Translator
-{
-public:
-    Translator(const KFileMetaInfo &info) : m_info(info) {}
-    TagLib::String operator[](const char *key) const
-    {
-        return QStringToTString(m_info["id3"][key].value().toString());
-    }
-    int toInt(const char *key) const
-    {
-        return m_info["id3"][key].value().toInt();
-    }
-private:
-    const KFileMetaInfo &m_info;
-};
-
-bool KFlacPlugin::writeInfo( const KFileMetaInfo& info) const
-{
-    TagLib::FLAC::File file(QFile::encodeName(info.path()).data(), false);
-
-    if(!file.isOpen() || !TagLib::File::isWritable(file.name())) {
-        kdDebug(7034) << "couldn't open " << info.path() << endl;
-        return false;
-    }
-
-    Translator t(info);
-
-    file.tag()->setTitle(t["Title"]);
-    file.tag()->setArtist(t["Artist"]);
-    file.tag()->setAlbum(t["Album"]);
-    file.tag()->setYear(t.toInt("Date"));
-    file.tag()->setComment(t["Comment"]);
-    file.tag()->setTrack(t.toInt("Tracknumber"));
-    file.tag()->setGenre(t["Genre"]);
-
-    file.save();
-
-    return true;
-}
-
-#else
-
 bool KFlacPlugin::readInfo( KFileMetaInfo& info, uint what )
 {
 
@@ -293,18 +160,18 @@ bool KFlacPlugin::readInfo( KFileMetaInfo& info, uint what )
     do {
         if (FLAC__metadata_simple_iterator_get_block_type(simp) == FLAC__METADATA_TYPE_STREAMINFO && readTech)
         {
-	    struct stat buf;
-	    int ret = stat(QFile::encodeName(info.path()), &buf); // To get file-size
-	    if (ret) return false;
+    	    struct stat buf;
+    	    int ret = stat(QFile::encodeName(info.path()), &buf); // To get file-size
+    	    if (ret) return false;
 
 	    KFileMetaInfoGroup techgroup = appendGroup(info, "Technical");
 	    const FLAC__StreamMetadata *block = FLAC__metadata_simple_iterator_get_block(simp);
 	    const FLAC__StreamMetadata_StreamInfo *si = &block->data.stream_info;
 
-	    appendItem(techgroup, "Channels", int(si->channels));
+    	    appendItem(techgroup, "Channels", int(si->channels));
             appendItem(techgroup, "Sample Rate", int(si->sample_rate));
             appendItem(techgroup, "Sample Width", int(si->bits_per_sample));
-	    int slen = si->total_samples/ si->sample_rate; // length in seconds
+    	    int slen = si->total_samples/ si->sample_rate; // length in seconds
             appendItem(techgroup, "Length", slen);
 	    appendItem(techgroup, "Bitrate", int(buf.st_size/(slen*125))); // 8/1000 = 1/125
 	}
@@ -320,7 +187,6 @@ bool KFlacPlugin::readInfo( KFileMetaInfo& info, uint what )
 		QString entry = QString::fromUtf8((const char*)ent->entry, ent->length);
 		QString name  = entry.section('=', 0, 0);
 		QString value = entry.section('=', 1, 1);
-		name = name.lower();	// ARTIST == artist
                 name[0] = name[0].upper(); // artist==Artist
 		appendItem(commentgroup, name, value);
 	    }
@@ -407,7 +273,5 @@ QValidator* KFlacPlugin::createValidator( const QString&,
                                          QObject* parent, const char* name) const {
 	return new QRegExpValidator(QRegExp(".*"), parent, name);
 }
-
-#endif
 
 #include "kfile_flac.moc"
