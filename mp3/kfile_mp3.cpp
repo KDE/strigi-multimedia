@@ -77,7 +77,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     
     KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/x-mp3" );
 
-    KFileMimeTypeInfo::GroupInfo* group;
+    KFileMimeTypeInfo::GroupInfo* group = 0L;
 
     // id3 group
     group = info->addGroupInfo("id3v1.1", i18n("ID3V1 Tag"),
