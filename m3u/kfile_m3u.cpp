@@ -1,7 +1,29 @@
+/* This file is part of the KDE project
+ * Copyright (C) 2001, 2002 Rolf Magnus <ramagnus@kde.org>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation version 2.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; see the file COPYING.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ *
+ *  $Id$
+ */
+
 #include "kfile_m3u.h"
+
 #include <kurl.h>
 #include <kprocess.h>
 #include <klocale.h>
+
 #include <qcstring.h>
 #include <qfile.h>
 #include <qdatetime.h>
@@ -9,26 +31,20 @@
 #include <qdict.h>
 #include <qvalidator.h>
 
-K_EXPORT_COMPONENT_FACTORY( kfile_m3u, KGenericFactory<KM3uPlugin>( "kfile_m3u" ) );
+typedef KGenericFactory<KM3uPlugin> M3uFactory;
+
+K_EXPORT_COMPONENT_FACTORY( kfile_m3u, M3uFactory( "kfile_m3u" ) );
 
 KM3uPlugin::KM3uPlugin( QObject *parent, const char *name,
                         const QStringList &preferredItems )
     : KFilePlugin( parent, name, preferredItems )
 {
+    kdDebug(7034) << "m3u plugin\n";
 }
 
-KFileMetaInfo* KM3uPlugin::createInfo( const QString& path )
+bool KM3uPlugin::readInfo( KFileMetaInfo::Internal& info )
 {
-    return new KM3uMetaInfo(path);
-}
-
-
-
-KM3uMetaInfo::KM3uMetaInfo( const QString& path ) :
-    KFileMetaInfo (path)
-{
-  
-    QFile f(path);
+    QFile f(info.path());
     f.open(IO_ReadOnly);
     
     // for now treat all lines like entries
@@ -41,78 +57,19 @@ KM3uMetaInfo::KM3uMetaInfo( const QString& path ) :
         {
             QString key; key.sprintf("%04d", num);
             if (s.endsWith("\n")) s.truncate(s.length()-1);
-            m_items.insert(key, new KFileMetaInfoItem(key,
-                            i18n("Track %1").arg(num), QVariant(s)));
+            info.insert(KFileMetaInfoItem(key, i18n("Track %1").arg(num),
+                                          QVariant(s)));
             num++;
         }
     }
-}
-
-KM3uMetaInfo::~KM3uMetaInfo()
-{
-}
-
-KFileMetaInfoItem * KM3uMetaInfo::item( const QString& key ) const
-{
-    return m_items[key];
-}
-
-QStringList KM3uMetaInfo::supportedKeys() const
-{
-    QDictIterator<KFileMetaInfoItem> it(m_items);
-    QStringList list;
     
-    for (; it.current(); ++it)
-    {
-        list.append(it.current()->key());
-    }
-    return list;
-}
+    info.setPreferredKeys(m_preferred);
 
-QStringList KM3uMetaInfo::preferredKeys() const
-{
-    QStringList l = supportedKeys();
-    l.sort();
-    return l;
-}
-
-void KM3uMetaInfo::applyChanges()
-{
-    bool doit = false;
-    
-    // look up if we need to write to the file
-    QDictIterator<KFileMetaInfoItem> it(m_items);
-    for( ; it.current(); ++it )
-    {
-        if (it.current()->isModified())
-        {
-            doit = true;
-            break;
-        }
-    }
-
-    if (!doit) return;
-
-    // todo
-}
-
-bool KM3uMetaInfo::supportsVariableKeys() const
-{
+    QStringList supported(m_preferred);
+    supported.sort();
+    info.setSupportedKeys(supported);
+    info.setSupportsVariableKeys(false);
     return true;
-}
-
-QValidator * KM3uMetaInfo::createValidator( const QString& key, QObject *parent,
-                                            const char *name ) const
-{
-    if (m_items[key]->isEditable())
-        return new QRegExpValidator(QRegExp(".*"), parent, name);
-    else 
-        return 0L;
-}
-
-QVariant::Type KM3uMetaInfo::type( const QString& key ) const
-{
-    return m_items[key]->type();
 }
 
 #include "kfile_m3u.moc"

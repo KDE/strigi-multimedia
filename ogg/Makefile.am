@@ -8,7 +8,7 @@ noinst_HEADERS   = kfile_ogg.h
 
 kde_module_LTLIBRARIES = kfile_ogg.la
 
-kfile_ogg_la_SOURCES = kfile_ogg.cpp
+kfile_ogg_la_SOURCES = kfile_ogg.cpp vcedit.c
 kfile_ogg_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 kfile_ogg_la_LIBADD = $(LIB_KSYCOCA) -logg -lvorbis -lvorbisfile
 
