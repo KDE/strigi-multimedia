@@ -82,7 +82,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     // id3 group
     group = info->addGroupInfo("id3v1.1", i18n("ID3V1 Tag"),
                                KFileMimeTypeInfo::Addable |
-                               KFileMimeTypeInfo::Removable, false);
+                               KFileMimeTypeInfo::Removable);
      
     group->addItemInfo("Title", i18n("Title"), QVariant::String,
                        KFileMimeTypeInfo::Modifiable, KFileMimeTypeInfo::NoUnit,
@@ -103,7 +103,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
                        KFileMimeTypeInfo::Modifiable);
 
     // technical group
-    group = info->addGroupInfo("Technical", i18n("Technical Details"), 0, false);
+    group = info->addGroupInfo("Technical", i18n("Technical Details"), 0);
 
     group->addItemInfo("Version", i18n("Version"), QVariant::Int, 0,
                       KFileMimeTypeInfo:: NoUnit,
