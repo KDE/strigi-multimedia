@@ -75,7 +75,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     kdDebug(7034) << "mp3 plugin\n";
 }
 
-bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info )
+bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info, int )
 {
     kdDebug(7034) << "mp3 plugin readInfo\n";
     

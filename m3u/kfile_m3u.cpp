@@ -43,7 +43,7 @@ KM3uPlugin::KM3uPlugin( QObject *parent, const char *name,
     kdDebug(7034) << "m3u plugin\n";
 }
 
-bool KM3uPlugin::readInfo( KFileMetaInfo::Internal& info )
+bool KM3uPlugin::readInfo( KFileMetaInfo::Internal& info, int )
 {
     QFile f(info.path());
     f.open(IO_ReadOnly);

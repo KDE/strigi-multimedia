@@ -67,7 +67,7 @@ KOggPlugin::KOggPlugin( QObject *parent, const char *name,
     kdDebug(7034) << "ogg plugin\n";
 }
 
-bool KOggPlugin::readInfo( KFileMetaInfo::Internal& info )
+bool KOggPlugin::readInfo( KFileMetaInfo::Internal& info, int )
 {
     // parts of this code taken from ogginfo.c of the vorbis-tools v1.0rc2
     FILE *fp;
@@ -203,31 +203,36 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo::Internal& info) const
     }
     else
     {
-      vc->vendor = new char;
+      vc->vendor = new char[1];
       strcpy(vc->vendor,"");
     }
 
-    QMapIterator<QString, KFileMetaInfoItem> it;
-    
-    for (it = info.map()->begin(); it!=info.map()->end(); ++it)
+    QStringList keys = info.keys();
+    QStringList::Iterator it;
+    for (it = keys.begin(); it!=keys.end(); ++it)
     {
-        KFileMetaInfoItem item = it.data();
+        KFileMetaInfoItem item = info[*it];
         
         if (!item.isEditable() || !(item.type()==QVariant::String) ) 
             continue;
                   
-        QCString key = it.data().key().upper().utf8();
-        QCString value = it.data().value().toString().utf8();
-        
-        kdDebug(7034) << " writing tag " << key << "=" << value << endl;
+        QCString key = item.key().upper().utf8();
+        if (item.value().canCast(QVariant::String))
+        {
+            QCString value = item.value().toString().utf8();
 
-        vorbis_comment_add_tag(vc,
+            kdDebug(7034) << " writing tag " << key << "=" << value << endl;
+       
+            vorbis_comment_add_tag(vc,
                         const_cast<char*>(static_cast<const char*>(key)),
                         const_cast<char*>(static_cast<const char*>(value)));
+        }
+        else
+          kdWarning(7034) << "ignoring " << key << endl;
         
     }
     
-    // nothing in Qt or KDE to get this?
+    // nothing in Qt or KDE to get the mode as an int?
     struct stat s;
     stat(QFile::encodeName(info.path()), &s);
 

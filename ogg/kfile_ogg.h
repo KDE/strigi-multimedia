@@ -34,7 +34,7 @@ public:
     KOggPlugin( QObject *parent, const char *name,
                 const QStringList& preferredItems );
     
-    virtual bool readInfo( KFileMetaInfo::Internal& info );
+    virtual bool readInfo( KFileMetaInfo::Internal& info, int );
     virtual bool writeInfo( const KFileMetaInfo::Internal& info ) const;
     virtual QValidator* createValidator( const KFileMetaInfoItem& item,
                                          QObject* parent,

@@ -50,7 +50,7 @@ KWavPlugin::KWavPlugin(QObject *parent, const char *name,
 {
 }
 
-bool KWavPlugin::readInfo( KFileMetaInfo::Internal& info )
+bool KWavPlugin::readInfo( KFileMetaInfo::Internal& info, int )
 {
     QFile file(info.path());
 
