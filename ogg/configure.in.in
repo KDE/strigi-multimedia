@@ -1,5 +1,5 @@
 
-AC_DEFUN(KDE_CHECK_OGG_SUBDIR,
+AC_DEFUN([KDE_CHECK_OGG_SUBDIR],
 [
  AC_REQUIRE([KDE_CHECK_OGG])
  # add the ogg-vorbis file meta info plugin only if the test succeeded
