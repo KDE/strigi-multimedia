@@ -152,22 +152,19 @@ bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
     if(readId3)
     {
         KFileMetaInfoGroup id3group = appendGroup(info, "id3");
-        
+
+        QString date  = file.tag()->year() > 0 ? QString::number(file.tag()->year()) : QString::null;
+        QString track = file.tag()->track() > 0 ? QString::number(file.tag()->track()) : QString::null;
+
         appendItem(id3group, "Title",       TStringToQString(file.tag()->title()));
         appendItem(id3group, "Artist",      TStringToQString(file.tag()->artist()));
         appendItem(id3group, "Album",       TStringToQString(file.tag()->album()));
-	if (file.tag()->year() > 0 )
-	    appendItem(id3group, "Date",    	QString::number(file.tag()->year()));
-	else
-	    appendItem(id3group, "Date",    	QString::null);
+        appendItem(id3group, "Date",        date);
         appendItem(id3group, "Comment",     TStringToQString(file.tag()->comment()));
-	if (file.tag()->track() > 0 )
-	    appendItem(id3group, "Tracknumber", QString::number(file.tag()->track()));
-	else 
-	    appendItem(id3group, "Tracknumber", QString::null);
+        appendItem(id3group, "Tracknumber", track);
         appendItem(id3group, "Genre",       TStringToQString(file.tag()->genre()));
     }
-    
+
     if(readTech) {
 
         KFileMetaInfoGroup techgroup = appendGroup(info, "Technical");
