@@ -1,7 +1,13 @@
 [Desktop Entry]
 Type=Service
 Name=MP3 Info
+Name[da]=MP3-info
+Name[es]=Info MP3
+Name[pt]=Informação do MP3
+Name[pt_BR]=Informação do MP3
+Name[sv]=MP3-information
+Name[tr]=MP3 Bilgisi
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_mp3
 MimeType=audio/x-mp3
-PreferredItems=Title,Author,Album
+PreferredItems=Title,Artist,Album,Track,Genre,Bitrate,Length,Year,Comment,Frequency,Version,Layer,Copyright,Original,CRC
