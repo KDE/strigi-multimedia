@@ -145,6 +145,8 @@ void KFlacPlugin::makeMimeTypeInfo(const QString& mimeType)
 
 bool KFlacPlugin::readInfo( KFileMetaInfo& info, uint what )
 {
+    if ( info.path().isEmpty() ) // remote file
+        return false;
 
     bool readComment = false;
     bool readTech = false;

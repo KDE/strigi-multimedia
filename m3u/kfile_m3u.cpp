@@ -54,6 +54,9 @@ KM3uPlugin::KM3uPlugin( QObject *parent, const char *name,
 
 bool KM3uPlugin::readInfo( KFileMetaInfo& info, uint )
 {
+    if ( info.path().isEmpty() ) // remote file
+        return false;
+
     QFile f(info.path());
     if (!f.open(IO_ReadOnly)) return false;
     QTextStream str(&f);

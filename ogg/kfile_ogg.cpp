@@ -169,7 +169,10 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
                 KFileMetaInfo::TechnicalInfo)) readTech = true;
 
     memset(&vf, 0, sizeof(OggVorbis_File));
-  
+
+    if ( info.path().isEmpty() ) // remote file
+        return false;
+ 
     fp = fopen(QFile::encodeName(info.path()),"rb");
     if (!fp)
     {

@@ -72,6 +72,9 @@ KWavPlugin::KWavPlugin(QObject *parent, const char *name,
 
 bool KWavPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
 {
+    if ( info.path().isEmpty() ) // remote file
+        return false;
+
     QFile file(info.path());
 
     uint32_t format_size;

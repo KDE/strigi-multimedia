@@ -76,8 +76,11 @@ KSidPlugin::KSidPlugin(QObject *parent, const char *name,
 
 bool KSidPlugin::readInfo(KFileMetaInfo& info, uint /*what*/)
 {
+    if ( info.path().isEmpty() ) // remote file
+        return false;
     QFile file(info.path());
-    file.open(IO_ReadOnly);
+    if ( !file.open(IO_ReadOnly) )
+        return false;
 
     int version;
     int num_songs;

@@ -135,6 +135,9 @@ bool KMp3Plugin::readInfo(KFileMetaInfo &info, uint what)
     if(!readId3 && !readTech)
 	return true;
 
+    if ( info.path().isEmpty() ) // remote file
+        return false;
+
     TagLib::MPEG::File file(QFile::encodeName(info.path()).data(), readTech);
 
     if(!file.isOpen())

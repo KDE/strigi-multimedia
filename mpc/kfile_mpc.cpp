@@ -138,6 +138,9 @@ bool KMpcPlugin::readInfo( KFileMetaInfo& info, uint what )
                 KFileMetaInfo::DontCare |
                 KFileMetaInfo::TechnicalInfo)) readTech = true;
 
+    if ( info.path().isEmpty() ) // remote file
+        return false;
+
     TagLib::File *file = new TagLib::MPC::File(QFile::encodeName(info.path()).data(), readTech);
 
     if (!file->isOpen())

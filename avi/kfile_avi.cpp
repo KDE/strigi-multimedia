@@ -478,6 +478,9 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     if (f.isOpen())
         f.close();
 
+    if ( info.path().isEmpty() ) // remote file
+        return false;
+
     f.setName(info.path());
 
     // open file, set up stream and set endianness

@@ -83,6 +83,9 @@ bool KAuPlugin::readInfo( KFileMetaInfo& info, uint what)
     uint32_t channels;
     uint16_t bytespersample;
 
+    if ( info.path().isEmpty() ) // remote file
+        return false;
+
     QFile file(info.path());
 
     if (!file.open(IO_ReadOnly))

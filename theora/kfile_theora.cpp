@@ -122,6 +122,9 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
                 KFileMetaInfo::TechnicalInfo))
         readTech = true;
 
+    if ( info.path().isEmpty() ) // remote file
+        return false;
+
     fp = fopen(QFile::encodeName(info.path()),"rb");
     if (!fp)
     {
