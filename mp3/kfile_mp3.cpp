@@ -47,7 +47,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name, const QStringList &arg
     : KFilePlugin(parent, name, args)
 {
     kdDebug(7034) << "mp3 plugin\n";
-    
+
     KFileMimeTypeInfo *info = addMimeTypeInfo("audio/x-mp3");
 
     // id3 group
@@ -69,10 +69,10 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name, const QStringList &arg
 
     item = addItemInfo(group, "Album", i18n("Album"), QVariant::String);
     setAttributes(item, KFileMimeTypeInfo::Modifiable);
-    
+
     item = addItemInfo(group, "Date", i18n("Year"), QVariant::String);
     setAttributes(item, KFileMimeTypeInfo::Modifiable);
-    
+
     item = addItemInfo(group, "Comment", i18n("Comment"), QVariant::String);
     setAttributes(item, KFileMimeTypeInfo::Modifiable);
     setHint(item,  KFileMimeTypeInfo::Description);
@@ -99,7 +99,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name, const QStringList &arg
 
     item = addItemInfo(group, "Sample Rate", i18n("Sample Rate"), QVariant::Int);
     setSuffix(item, i18n("Hz"));
-    
+
     item = addItemInfo(group, "Channels", i18n("Channels"), QVariant::Int);
     item = addItemInfo(group, "Copyright", i18n("Copyright"), QVariant::Bool);
     item = addItemInfo(group, "Original", i18n("Original"), QVariant::Bool);
@@ -112,19 +112,19 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name, const QStringList &arg
 bool KMp3Plugin::readInfo(KFileMetaInfo &info, uint what)
 {
     kdDebug(7034) << "mp3 plugin readInfo\n";
-    
+
     bool readId3 = false;
     bool readTech = false;
 
     typedef enum KFileMetaInfo::What What;
 
-    if(what & (KFileMetaInfo::Fastest | 
+    if(what & (KFileMetaInfo::Fastest |
                KFileMetaInfo::DontCare |
                KFileMetaInfo::ContentInfo))
     {
         readId3 = true;
     }
-    
+
     if(what & (KFileMetaInfo::Fastest |
                KFileMetaInfo::DontCare |
                KFileMetaInfo::TechnicalInfo))
@@ -133,7 +133,7 @@ bool KMp3Plugin::readInfo(KFileMetaInfo &info, uint what)
     }
 
     if(!readId3 && !readTech)
-	return true;
+        return true;
 
     if ( info.path().isEmpty() ) // remote file
         return false;
@@ -153,23 +153,23 @@ bool KMp3Plugin::readInfo(KFileMetaInfo &info, uint what)
         QString date  = file.tag()->year() > 0 ? QString::number(file.tag()->year()) : QString::null;
         QString track = file.tag()->track() > 0 ? QString::number(file.tag()->track()) : QString::null;
 
-	QString title = TStringToQString(file.tag()->title()).stripWhiteSpace();
-	if (!title.isEmpty())
-	    appendItem(id3group, "Title", title);
-	QString artist = TStringToQString(file.tag()->artist()).stripWhiteSpace();
-	if (!artist.isEmpty())
-	    appendItem(id3group, "Artist", artist);
-	QString album = TStringToQString(file.tag()->album()).stripWhiteSpace();
-	if (!album.isEmpty())
-	    appendItem(id3group, "Album", album);
+        QString title = TStringToQString(file.tag()->title()).stripWhiteSpace();
+        if (!title.isEmpty())
+            appendItem(id3group, "Title", title);
+        QString artist = TStringToQString(file.tag()->artist()).stripWhiteSpace();
+        if (!artist.isEmpty())
+            appendItem(id3group, "Artist", artist);
+        QString album = TStringToQString(file.tag()->album()).stripWhiteSpace();
+        if (!album.isEmpty())
+            appendItem(id3group, "Album", album);
         appendItem(id3group, "Date",        date);
-	QString comment = TStringToQString(file.tag()->comment()).stripWhiteSpace();
-	if (!comment.isEmpty())
-	    appendItem(id3group, "Comment", comment);
+        QString comment = TStringToQString(file.tag()->comment()).stripWhiteSpace();
+        if (!comment.isEmpty())
+            appendItem(id3group, "Comment", comment);
         appendItem(id3group, "Tracknumber", track);
-	QString genre = TStringToQString(file.tag()->genre()).stripWhiteSpace();
-	if (!genre.isEmpty())
-	    appendItem(id3group, "Genre", genre);
+        QString genre = TStringToQString(file.tag()->genre()).stripWhiteSpace();
+        if (!genre.isEmpty())
+            appendItem(id3group, "Genre", genre);
     }
 
     if(readTech)
@@ -178,7 +178,7 @@ bool KMp3Plugin::readInfo(KFileMetaInfo &info, uint what)
 
         QString version;
         switch(file.audioProperties()->version())
-	{
+        {
         case TagLib::MPEG::Header::Version1:
             version = "1.0";
             break;
@@ -190,10 +190,10 @@ bool KMp3Plugin::readInfo(KFileMetaInfo &info, uint what)
             break;
         }
 
-	static const int dummy = 0; // QVariant's bool constructor requires a dummy int value.
+        static const int dummy = 0; // QVariant's bool constructor requires a dummy int value.
 
         // CRC and Emphasis aren't yet implemented in TagLib (not that I think anyone cares)
-        
+
         appendItem(techgroup, "Version",     version);
         appendItem(techgroup, "Layer",       file.audioProperties()->layer());
         // appendItem(techgroup, "CRC",      file.audioProperties()->crc());
@@ -294,7 +294,7 @@ QValidator *KMp3Plugin::createValidator(const QString & /* mimetype */,
         TagLib::StringList genres = TagLib::ID3v1::genreList();
         for(TagLib::StringList::ConstIterator it = genres.begin(); it != genres.end(); ++it)
         {
-	    l.append(TStringToQString((*it)));
+            l.append(TStringToQString((*it)));
         }
         return new ComboValidator(l, false, true, parent, name);
     }

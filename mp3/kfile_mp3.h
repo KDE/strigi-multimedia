@@ -26,16 +26,16 @@ class QStringList;
 class KMp3Plugin: public KFilePlugin
 {
     Q_OBJECT
-    
+
 public:
     KMp3Plugin(QObject *parent, const char *name, const QStringList &args);
-    
+
     virtual bool readInfo( KFileMetaInfo& info, uint what );
     virtual bool writeInfo( const KFileMetaInfo& info) const;
     virtual QValidator *createValidator(const QString &mimetype,
-					const QString &group,
-					const QString &key,
-					QObject *parent, const char *name) const;
+                                        const QString &group,
+                                        const QString &key,
+                                        QObject *parent, const char *name) const;
 };
 
 #endif
