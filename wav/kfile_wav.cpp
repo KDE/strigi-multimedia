@@ -17,6 +17,7 @@
  *
  */
 
+#include <config.h>
 #include "kfile_wav.h"
 
 #include <kprocess.h>
@@ -31,7 +32,12 @@
 #include <qfile.h>
 #include <qdatetime.h>
 
+#if !defined(__osf__)
 #include <inttypes.h>
+#else
+typedef unsigned short uint16_t;
+typedef unsigned int   uint32_t;
+#endif
 
 typedef KGenericFactory<KWavPlugin> WavFactory;
 
