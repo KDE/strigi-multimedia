@@ -151,9 +151,9 @@ bool KAviPlugin::read_avi()
 
 bool KAviPlugin::read_list()
 {
-    static const char sig_hdrl[] = "hdrl";   // header list
-    static const char sig_strl[] = "strl";   // ...list
-    static const char sig_movi[] = "movi";   // movie list
+    const char sig_hdrl[] = "hdrl";   // header list
+    const char sig_strl[] = "strl";   // ...list
+    const char sig_movi[] = "movi";   // movie list
 
     uint32_t dwbuf1;
     char charbuf1[5];
