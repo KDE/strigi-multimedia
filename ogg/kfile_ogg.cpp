@@ -194,7 +194,8 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
                 appendItem(techgroup, "NominalBitrate",
                            int(vi->bitrate_nominal+500)/1000);
 
-            appendItem(techgroup, "Bitrate", int(ov_bitrate(&vf,-1)+500)/1000);
+            if (ov_bitrate(&vf,-1) > 0)
+                appendItem(techgroup, "Bitrate", int(ov_bitrate(&vf,-1)+500)/1000);
             
         }
         
