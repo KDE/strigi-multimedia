@@ -44,7 +44,7 @@
 
 // known translations for common ogg/vorbis keys
 // from http://www.ogg.org/ogg/vorbis/doc/v-comment.html
-static const char* knownTranslations[] = {
+static const char* const knownTranslations[] = {
   I18N_NOOP("Title"),
   I18N_NOOP("Version"),
   I18N_NOOP("Album"),
@@ -76,6 +76,16 @@ KOggPlugin::KOggPlugin( QObject *parent, const char *name,
     setAttributes(group, KFileMimeTypeInfo::Addable |
                          KFileMimeTypeInfo::Removable);
     
+    KFileMimeTypeInfo::ItemInfo* item = 0;
+
+    item = addItemInfo(group, "Artist", i18n("Artist"), QVariant::String);
+    setHint(item, KFileMimeTypeInfo::Author);
+    setAttributes(item, KFileMimeTypeInfo::Modifiable);
+
+    item = addItemInfo(group, "Title", i18n("Title"), QVariant::String);
+    setHint(item, KFileMimeTypeInfo::Name);
+    setAttributes(item, KFileMimeTypeInfo::Modifiable);
+   
     addVariableInfo(group, QVariant::String, KFileMimeTypeInfo::Addable |
                                              KFileMimeTypeInfo::Removable |
                                              KFileMimeTypeInfo::Modifiable); 
@@ -84,8 +94,6 @@ KOggPlugin::KOggPlugin( QObject *parent, const char *name,
 
     group = addGroupInfo(info, "Technical", i18n("Technical Details"));
     setAttributes(group, 0);
-
-    KFileMimeTypeInfo::ItemInfo* item = 0;
     
     addItemInfo(group, "Version", i18n("Version"), QVariant::Int);
     addItemInfo(group, "Channels", i18n("Channels"), QVariant::Int);
