@@ -2,12 +2,21 @@
 Encoding=UTF-8
 Type=Service
 Name=theora Info
-Name[da]=theora info
-Name[et]=theora info
-Name[pt_BR]=Informações de theora
-Name[sv]=theora information
-Name[ta]=theora தகவல்
-Name[xx]=xxtheora Infoxx
+Name[bg]=Информация за theora
+Name[ca]=Informació theora
+Name[de]=Theora-Info
+Name[es]=Info Theora
+Name[et]=Theora info
+Name[eu]=theora informazioa
+Name[fr]=Informations theora
+Name[hu]=Theora-jellemzők
+Name[nl]=theora-informatie
+Name[pt]=Informação do theora
+Name[pt_BR]=Informação do theora
+Name[sv]=Theora-information
+Name[ta]= தியோரா தகவல்
+Name[uk]=Інформація по theora
+Name[zh_CN]=theora 信息
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_theora
 # change MimeType here! (example: inode/directory)
