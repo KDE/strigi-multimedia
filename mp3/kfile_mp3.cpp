@@ -44,6 +44,9 @@ KMp3MetaInfo::KMp3MetaInfo( const QString& path ) :
     strcpy(mp3.filename, s);
         
     mp3.file = fopen(mp3.filename, "rb");
+    if (!mp3.file)
+        return;
+
     ::get_mp3_info(&mp3, ::SCAN_QUICK, ::VBR_VARIABLE);
   
     if (!mp3.header_isvalid) return;
@@ -214,6 +217,10 @@ void KMp3MetaInfo::applyChanges()
 
     mp3.filename = m_path;
     mp3.file = fopen(mp3.filename, "a+b");
+
+    if (!mp3.file)
+        return;
+
     ::get_mp3_info(&mp3, ::SCAN_QUICK, ::VBR_VARIABLE);
 
     memset(&mp3.id3, sizeof(id3tag), 0);
