@@ -227,6 +227,9 @@ bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
 
 bool KMp3Plugin::writeInfo( const KFileMetaInfo& info) const
 {
+    if (!info["id3v1.1"].isValid())
+        return true;
+    
     mp3info mp3;
     memset(&mp3,0,sizeof(mp3info));
 
