@@ -45,13 +45,13 @@ K_EXPORT_COMPONENT_FACTORY(kfile_au, AuFactory( "kfile_au" ))
 
 KAuPlugin::KAuPlugin(QObject *parent, const char *name,
                        const QStringList &args)
-    
+
     : KFilePlugin(parent, name, args)
 {
     KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/basic" );
 
     KFileMimeTypeInfo::GroupInfo* group = 0L;
-    
+
     group = addGroupInfo(info, "Technical", i18n("Technical Details"));
 
     KFileMimeTypeInfo::ItemInfo* item;
@@ -71,11 +71,7 @@ KAuPlugin::KAuPlugin(QObject *parent, const char *name,
 bool KAuPlugin::readInfo( KFileMetaInfo& info, uint what)
 {
     // the file signature, wants to be tidier...
-    char fsig[4];
-    fsig[0] = 0x2e;
-    fsig[1] = 0x73;
-    fsig[2] = 0x6e;
-    fsig[3] = 0x64;
+    const char fsig[] = { 0x2e, 0x73, 0x6e, 0x64 };
 
     // a dword buffer for input
     char inbuf[4];
