@@ -96,8 +96,6 @@ KMp3MetaInfo::KMp3MetaInfo( const QString& path ) :
         i18n("Frequency"), QVariant(::header_frequency(&mp3.header)), false,
         QString::null, i18n("Hz")));
 
-    cout << "Mode: " << mp3.header.mode << endl;
-
     // Modes 0-2 are forms of stereo, mode 3 is mono
     m_items.insert("Channels", new KFileMetaInfoItem("Channels",
         i18n("Channels"), QVariant(int((mp3.header.mode == 3) ? 1 : 2))));
