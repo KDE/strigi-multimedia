@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Service
+Name=MP3 Info
+ServiceTypes=KFilePlugin
+X-KDE-Library=kfile_mp3
+MimeType=audio/x-mp3
+PreferredItems=Title,Author,Album
