@@ -28,6 +28,8 @@
 
 */
 
+#include "config.h"
+#if HAVE_TAGLIB == 0
 #include "mp3info.h"
 
 
@@ -378,3 +380,5 @@ int write_tag(mp3info *mp3) {
 	fseek(mp3->file,-128*mp3->id3_isvalid,SEEK_END);
 	return (int)fwrite(buf,1,128,mp3->file);
 }
+
+#endif

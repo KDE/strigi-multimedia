@@ -19,6 +19,8 @@
  *  $Id$
  */
 
+#include "config.h"
+
 #include "kfile_mp3.h"
 
 #include <kprocess.h>
@@ -33,12 +35,18 @@
 #include <qfile.h>
 #include <qdatetime.h>
 
+#if HAVE_TAGLIB
+#include "tstring.h"
+#include "mpegfile.h"
+#include "tag.h"
+#else
 // need this for the mp3info header
 #define __MAIN
 extern "C" {
 #include "mp3info.h"
 }
 #undef __MAIN
+#endif
 
 typedef KGenericFactory<KMp3Plugin> Mp3Factory;
 
@@ -56,7 +64,11 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     KFileMimeTypeInfo::GroupInfo* group = 0L;
 
     // id3 group
+#ifdef HAVE_TAGLIB
+    group = addGroupInfo(info, "id3", i18n("ID3 Tag"));
+#else
     group = addGroupInfo(info, "id3v1.1", i18n("ID3V1 Tag"));
+#endif
     setAttributes(group, KFileMimeTypeInfo::Addable | 
                          KFileMimeTypeInfo::Removable);
 
@@ -110,6 +122,123 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     setUnit(item, KFileMimeTypeInfo::Seconds);
     item = addItemInfo(group, "Emphasis", i18n("Emphasis"), QVariant::String);
 }
+
+#if HAVE_TAGLIB
+
+bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
+{
+    kdDebug(7034) << "mp3 plugin readInfo\n";
+    
+    bool readId3 = false;
+    bool readTech = false;
+    typedef enum KFileMetaInfo::What What;
+    if (what & (KFileMetaInfo::Fastest | 
+                KFileMetaInfo::DontCare |
+                KFileMetaInfo::ContentInfo)) readId3 = true;
+    
+    if (what & (KFileMetaInfo::Fastest | 
+                KFileMetaInfo::DontCare |
+                KFileMetaInfo::TechnicalInfo)) readTech = true;
+
+    if(!readId3 && !readTech)
+	return true;
+
+    TagLib::MPEG::File file(QFile::encodeName(info.path()).data(), readTech);
+
+    if(!file.isOpen())  {
+        kdDebug(7034) << "Couldn't open " << file.name().toCString() << endl;
+        return false;
+    }
+
+    if(readId3)
+    {
+        KFileMetaInfoGroup id3group = appendGroup(info, "id3");
+        
+        appendItem(id3group, "Title",       TStringToQString(file.tag()->title()));
+        appendItem(id3group, "Artist",      TStringToQString(file.tag()->artist()));
+        appendItem(id3group, "Album",       TStringToQString(file.tag()->album()));
+        appendItem(id3group, "Date",        QString::number(file.tag()->year()));
+        appendItem(id3group, "Comment",     TStringToQString(file.tag()->comment()));
+        appendItem(id3group, "Tracknumber", QString::number(file.tag()->track()));
+        appendItem(id3group, "Genre",       TStringToQString(file.tag()->genre()));
+    }
+    
+    if(readTech) {
+
+        KFileMetaInfoGroup techgroup = appendGroup(info, "Technical");
+
+        QString version;
+        switch(file.audioProperties()->version()) {
+        case TagLib::MPEG::Header::Version1:
+            version = "1.0";
+            break;
+        case TagLib::MPEG::Header::Version2:
+            version = "2.0";
+            break;
+        case TagLib::MPEG::Header::Version2_5:
+            version = "2.5";
+            break;
+        }
+
+        // CRC and Emphasis aren't yet implemented in TagLib (not that I think anyone cares)
+        
+        appendItem(techgroup, "Version",     version);
+        appendItem(techgroup, "Layer",       file.audioProperties()->layer());
+        // appendItem(techgroup, "CRC",      file.audioProperties()->crc());
+        appendItem(techgroup, "Bitrate",     file.audioProperties()->bitrate());
+        appendItem(techgroup, "Sample Rate", file.audioProperties()->sampleRate());
+        appendItem(techgroup, "Channels",    file.audioProperties()->channels());
+        appendItem(techgroup, "Copyright",   file.audioProperties()->isCopyrighted());
+        appendItem(techgroup, "Original",    file.audioProperties()->isOriginal());
+        appendItem(techgroup, "Length",      file.audioProperties()->length());
+        // appendItem(techgroup, "Emphasis", file.audioProperties()->empahsis());
+    }
+
+    kdDebug(7034) << "reading finished\n";
+    return true;
+}
+
+class Translator
+{
+public:
+    Translator(const KFileMetaInfo &info) : m_info(info) {}
+    TagLib::String operator[](const char *key) const
+    {
+        return QStringToTString(m_info["id3"][key].value().toString());
+    }
+    int toInt(const char *key) const
+    {
+        return m_info["id3"][key].value().toInt();
+    }
+private:
+    const KFileMetaInfo &m_info;
+};
+
+bool KMp3Plugin::writeInfo( const KFileMetaInfo& info) const
+{
+    TagLib::MPEG::File file(QFile::encodeName(info.path()).data(), false);
+
+    if(!file.isOpen() || !TagLib::File::isWritable(file.name())) {
+        kdDebug(7034) << "couldn't open " << info.path() << endl;
+        return false;
+    }
+
+    Translator t(info);
+
+    file.tag()->setTitle(t["title"]);
+    file.tag()->setArtist(t["Artist"]);
+    file.tag()->setAlbum(t["Album"]);
+    file.tag()->setYear(t.toInt("Date"));
+    file.tag()->setComment(t["Comment"]);
+    file.tag()->setTrack(t.toInt("Tracknumber"));
+    file.tag()->setGenre(t["Genre"]);
+
+    file.save();
+
+    return true;
+}
+
+#else // non-TagLib version
 
 bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
 {
@@ -267,11 +396,20 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo& info) const
     return success;
 }
 
+#endif // HAVE_TAGLIB
+
 QValidator* KMp3Plugin::createValidator(const QString& /* mimetype */,
                                         const QString &group, const QString &key,
                                         QObject* parent, const char* name) const
 {
     kdDebug(7034) << "making a validator for " << group << "/" << key << endl;
+
+#if HAVE_TAGLIB
+
+    Q_UNUSED(parent);
+    Q_UNUSED(name);
+
+#else
 
     if ((key == "Title") || (key == "Artist")||
         (key == "Album"))
@@ -296,10 +434,13 @@ QValidator* KMp3Plugin::createValidator(const QString& /* mimetype */,
         for (int index = 0; index <= MAXGENRE; index++)
         {
            list += ::typegenre[galphagenreindex[index]];
-         }
+        }
 
         return new KStringListValidator(list, false, true, parent, name);
     }
+
+#endif
+
     return 0;
 }
 
