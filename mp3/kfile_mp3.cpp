@@ -51,7 +51,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
 {
     kdDebug(7034) << "mp3 plugin\n";
     
-    KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/mpeg" );
+    KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/x-mp3" );
 
     KFileMimeTypeInfo::GroupInfo* group = 0L;
 
