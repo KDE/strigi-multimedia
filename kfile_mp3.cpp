@@ -31,7 +31,7 @@ KFileMetaInfo* KMp3Plugin::createInfo( const QString& path )
 
 
 KMp3MetaInfo::KMp3MetaInfo( const QString& path ) :
-    KFileMetaInfo::KFileMetaInfo (path)
+    KFileMetaInfo (path)
 {
     mp3info mp3;
 
