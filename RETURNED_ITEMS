@@ -3,17 +3,17 @@ If you add a new plugin here, add the list of returned items to this file.
 The returned items are:
 
 
-mp3 plguin:
+mp3 plugin:
 ===========
 
 type       key         W/A        details
 ------------------------------------------------------------------------
-String     Title       +/+  only if id3v1 tag exitsts / max. 30 characters
-String     Artist      +/+  only if id3v1 tag exitsts / max. 30 characters
-String     Album       +/+  only if id3v1 tag exitsts / max. 30 characters
-String     Comment     +/+  only if id3v1 tag exitsts / max. 28 characters
-String     Year        +/+  only if id3v1 tag exitsts / max.  4 characters
-Int        Track       +/+  only if id3v1.1 tag exitsts / 0-255
+String     Title       +/+  only if id3v1 tag exists / max. 30 characters
+String     Artist      +/+  only if id3v1 tag exists / max. 30 characters
+String     Album       +/+  only if id3v1 tag exists / max. 30 characters
+String     Comment     +/+  only if id3v1 tag exists / max. 28 characters
+String     Year        +/+  only if id3v1 tag exists / max.  4 characters
+Int        Track       +/+  only if id3v1.1 tag exists / 0-255
 Bool       CRC         -/-
 Bool       Original    -/-
 Bool       Copyright   -/-
@@ -40,7 +40,7 @@ Int        Bitrate nominal -/-  might also be a string containing i18n("none")
 Int        Bitrate         -/-  average bitrate
 String     Length          -/-
 
-Other keys correcponding to the vorbis comment keys are returned as editable
+Other keys corresponding to the vorbis comment keys are returned as editable
 String. If there are several equal vorbis comment keys, e.g. 3 Artists, the
 first one is called "Artist", the second one (not yet) "Artist(2)" and so on.
 
