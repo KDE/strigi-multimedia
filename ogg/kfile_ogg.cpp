@@ -90,7 +90,7 @@ KOggPlugin::KOggPlugin( QObject *parent, const char *name,
     addItemInfo(group, "Version", i18n("Version"), QVariant::Int);
     addItemInfo(group, "Channels", i18n("Channels"), QVariant::Int);
 
-    item = addItemInfo(group, "SampleRate", i18n("Sample rate"), QVariant::Int);
+    item = addItemInfo(group, "Sample Rate", i18n("Sample rate"), QVariant::Int);
     setSuffix(item, i18n(" Hz"));
 
     item = addItemInfo(group, "UpperBitrate", i18n("Upper bitrate"),
@@ -185,7 +185,7 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
 
             appendItem(techgroup, "Version", int(vi->version));
             appendItem(techgroup, "Channels", int(vi->channels));
-            appendItem(techgroup, "SampleRate", int(vi->rate));
+            appendItem(techgroup, "Sample Rate", int(vi->rate));
 
             if (vi->bitrate_upper > 0) 
                 appendItem(techgroup, "UpperBitrate",
