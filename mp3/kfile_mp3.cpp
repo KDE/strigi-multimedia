@@ -1,5 +1,6 @@
 /* This file is part of the KDE project
  * Copyright (C) 2001, 2002 Rolf Magnus <ramagnus@kde.org>
+ * Copyright (C) 2002 Ryan Cumming <bodnar42@phalynx.dhs.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -169,9 +170,6 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info, int )
 
         info.insert(KFileMetaInfoItem("Original", i18n("Original"),
                     QVariant((bool)mp3.header.original, 42)));
-
-        info.insert(KFileMetaInfoItem("Padding", i18n("Padding"),
-                    QVariant((bool)mp3.header.padding, 42)));
 
          int playmin = mp3.seconds / 60;
          int playsec = mp3.seconds % 60;
