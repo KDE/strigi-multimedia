@@ -20,8 +20,8 @@ Bool       Copyright   -/-
 String     Length      -/- 
 Int        Bitrate     -/-  in kbps
 Int        Frequency   -/-  in Hz
-Int        Version     -/-  mpeg version, 1 or 2
-Int        Layer       -/-  2 or 3
+Double     Version     -/-  mpeg version, 1, 2, or 2.5
+Int        Layer       -/-  1, 2 or 3
 Int        Channels    -/-  number of audio channels, 1 for mono, 2 stereo
 
 type is the QVariant::type() of that key.
