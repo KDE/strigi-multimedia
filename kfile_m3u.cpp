@@ -9,7 +9,7 @@
 #include <qdict.h>
 #include <qvalidator.h>
 
-K_EXPORT_COMPONENT_FACTORY( kfile_m3u, KGenericFactory<KM3uPlugin> );
+K_EXPORT_COMPONENT_FACTORY( kfile_m3u, KGenericFactory<KM3uPlugin>( "kfile_m3u" ) );
 
 KM3uPlugin::KM3uPlugin( QObject *parent, const char *name,
                         const QStringList &preferredItems )

@@ -31,7 +31,7 @@ static const char* knownTranslations[] = {
 };    
 
 
-K_EXPORT_COMPONENT_FACTORY( kfile_ogg, KGenericFactory<KOggPlugin> );
+K_EXPORT_COMPONENT_FACTORY( kfile_ogg, KGenericFactory<KOggPlugin>( "kfile_ogg" ) );
 
 KOggPlugin::KOggPlugin( QObject *parent, const char *name,
                         const QStringList &preferredItems )

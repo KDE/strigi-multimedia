@@ -15,15 +15,12 @@ extern "C" {
 }
 #undef __MAIN
 
-K_EXPORT_COMPONENT_FACTORY( kfile_mp3, KGenericFactory<KMp3Plugin> );
+K_EXPORT_COMPONENT_FACTORY( kfile_mp3, KGenericFactory<KMp3Plugin>( "kfile_mp3" ) );
 
 KMp3Plugin::KMp3Plugin( QObject *parent, const char *name,
                         const QStringList &preferredItems )
     : KFilePlugin( parent, name, preferredItems )
 {
-    //how is this supposed to be done?
-    KInstance* instance = new KInstance("kfile_mp3");
-    KGlobal::locale()->insertCatalogue("kfile_mp3");
 }
 
 KFileMetaInfo* KMp3Plugin::createInfo( const QString& path )
