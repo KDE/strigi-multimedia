@@ -47,8 +47,7 @@ KM3uPlugin::KM3uPlugin( QObject *parent, const char *name,
     KFileMimeTypeInfo::GroupInfo* group;
 
     // tracks group
-//    group = addGroupInfo(info, "Tracks", i18n("Tracks"));
-    group = addGroupInfo(info, "Tracks", "Tracks");
+    group = addGroupInfo(info, "Tracks", i18n("Tracks"));
     addVariableInfo(group, QVariant::String, 0);
 }
 
