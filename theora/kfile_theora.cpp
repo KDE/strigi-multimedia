@@ -44,7 +44,7 @@ static int queue_page(ogg_page *page)
     return 0;
 }
 
-int buffer_data(FILE *in,ogg_sync_state *oy)
+static int buffer_data(FILE *in,ogg_sync_state *oy)
 {
     char *buffer=ogg_sync_buffer(oy,4096);
     int bytes=fread(buffer,1,4096,in);
@@ -114,6 +114,14 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
     int stateflag=0;
 
     ogg_int64_t duration=0;
+
+    // libtheora is still a bit unstable and sadly the init_ functions don't
+    // take care of things the way one would expect.  So, let's do some explicit
+    // clearing of these fields.
+
+    memset(&t_info,    0, sizeof(theora_info));
+    memset(&t_comment, 0, sizeof(theora_comment));
+    memset(&t_state,   0, sizeof(theora_state));
 
     bool readTech = false;
 
