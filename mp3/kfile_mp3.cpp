@@ -201,6 +201,8 @@ void KMp3MetaInfo::applyChanges()
     mp3.filename = m_path;
     mp3.file = fopen(mp3.filename, "a+b");
     ::get_mp3_info(&mp3, ::SCAN_QUICK, ::VBR_VARIABLE);
+
+    memset(&mp3.id3, sizeof(id3tag), 0);
     
     if (m_items["Title"])
         strncpy(mp3.id3.title, m_items["Title"]->value().toString().local8Bit(), 31);
