@@ -4,7 +4,7 @@ AC_DEFUN([AC_CHECK_LIBFLAC],
   AC_LANG_SAVE
   AC_LANG_C
   kde_has_flac_lib=no
-  AC_CHECK_HEADER(FLAC/metadata.h,
+  AC_CHECK_HEADER(FLAC++/decoder.h,
   [ 
      kde_has_flac_lib=yes
     ])
