@@ -1,4 +1,4 @@
-/* This file is part of the KDE EMU project
+/* This file is part of the KDE project
  * Copyright (C) 2003 Rolf Magnus <ramagnus@kde.org>
  *
  * This program is free software; you can redistribute it and/or
