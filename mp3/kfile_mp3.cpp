@@ -201,7 +201,7 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info )
 bool KMp3Plugin::writeInfo( const KFileMetaInfo::Internal& info) const
 {
     mp3info mp3;
-  	memset(&mp3,0,sizeof(mp3info));
+    memset(&mp3,0,sizeof(mp3info));
 
     QCString name = QFile::encodeName(info.path());
     mp3.filename = new char[name.length()+1];
@@ -215,6 +215,8 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo::Internal& info) const
       delete [] mp3.filename;
       return false;
     }
+
+    ::get_mp3_info(&mp3, ::SCAN_QUICK, ::VBR_VARIABLE);
     
     strncpy(mp3.id3.title,  info["Title"]  .value().toString().local8Bit(), 31);
     strncpy(mp3.id3.artist, info["Artist"] .value().toString().local8Bit(), 31);
