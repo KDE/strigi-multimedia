@@ -76,7 +76,7 @@ KAviPlugin::KAviPlugin(QObject *parent, const char *name,
     setSuffix(item, i18n("fps"));
 
     item = addItemInfo(group, "Video codec", i18n("Video codec"), QVariant::String);
-    //item = addItemInfo(group, "Audio codec", i18n("Audio codec"), QVariant::String);
+    item = addItemInfo(group, "Audio codec", i18n("Audio codec"), QVariant::String);
 
 }
 
@@ -89,6 +89,7 @@ bool KAviPlugin::read_avi()
     uint32_t dwbuf1;
 
     done_avih = false;
+    done_audio = false;
         
     // read AVI header
     char charbuf1[5];
@@ -139,7 +140,7 @@ bool KAviPlugin::read_avi()
         };
 
         if (
-          ((done_avih) && (strlen(handler_vids) > 0)/* && (strlen(handler_auds) > 0)*/) || 
+          ((done_avih) && (strlen(handler_vids) > 0) && (done_audio)) || 
           f.atEnd()) {
             kdDebug(7034) << "We're done!\n";
             done = true;
@@ -236,6 +237,8 @@ bool KAviPlugin::read_avih()
 
 bool KAviPlugin::read_strl()
 {
+    bool wantstrf = false;
+    
     static const char *sig_strh = "strh";
     static const char *sig_strf = "strf";
     static const char *sig_vids = "vids";   // ...video
@@ -307,6 +310,9 @@ bool KAviPlugin::read_strl()
         memcpy(handler_auds, charbuf2, 4);
         kdDebug(7034) << "Audio handler: " << handler_auds << "\n";
 
+        // we want strf to get the audio codec
+        wantstrf = true;
+        
     } else {
         // we are something that we don't understand
 
@@ -332,10 +338,70 @@ bool KAviPlugin::read_strl()
         return false;
     }
         
-    // skip the strf
-    f.at( f.at() + dwbuf1 );
+    // do we want to do the strf?
+    if (wantstrf) {
+        // yes.  we want the audio codec identifier out of it
         
+        // get the 16bit audio codec ID
+        dstream >> handler_audio;
+        kdDebug(7034) << "Read audio codec ID: " << handler_audio << "\n";
+        // skip past the rest of the stuff here for now
+        f.at( f.at() + dwbuf1 - 2);
+        // we have audio
+        done_audio = true;
+        
+    } else { 
+        // no, skip the strf
+        f.at( f.at() + dwbuf1 );
+    }
+
+    
+    // do we have a strn?
+    static const char *sig_strn = "strn";
+    f.readBlock(charbuf1, 4);
+
+    if (memcmp(&charbuf1, sig_strn, 4) == 0) {
+        // yes, skip it
+        dstream >> dwbuf1;
+        kdDebug(7034) << "Skipping strn chunk length: " << dwbuf1 << "\n";
+        f.at( f.at() + dwbuf1 );
+        
+    } else {
+        // no, go back before the marker
+        f.at( f.at() - 4 );
+    }
+        
+            
     return true;    
+}
+
+
+
+const char * KAviPlugin::resolve_audio(uint16_t id)
+{
+    /*
+        this really wants to use some sort of KDE global 
+        list.  To avoid bloat for the moment it only does
+        a few common codecs
+    */
+
+    static const char * codec_unknown = "Unknown";
+    static const char * codec_00 = "Unknown wave format";
+    static const char * codec_01 = "Wave (PCM)";
+    static const char * codec_02 = "Wave (ADPCM)";
+    static const char * codec_50 = "MPEG";
+    static const char * codec_55 = "MP3";
+    static const char * codec_92 = "AC3";
+    switch (id) {
+    case 0x00 : return codec_00; break;        
+    case 0x01 : return codec_01; break;        
+    case 0x02 : return codec_02; break;        
+    case 0x50 : return codec_50; break;        
+    case 0x55 : return codec_55; break;        
+    default : return codec_unknown;    
+    }
+    
+    return NULL;
 }
 
 
@@ -392,12 +458,8 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
         else
             appendItem(group, "Video codec", i18n("Unknown"));
 
-        /* we havent implemented this yet
-        if (strlen(handler_auds) > 0)
-            appendItem(group, "Audio codec", handler_auds);
-        else
-            appendItem(group, "Audio codec", i18n("Unknown"));
-        */
+        if (done_audio)
+            appendItem(group, "Audio codec", i18n(resolve_audio(handler_audio)));
             
     }
 

@@ -52,6 +52,9 @@ private:
     bool read_avih();
     bool read_strl();
 
+    // methods to sort out human readable names for the codecs
+    const char * resolve_audio(uint16_t id);
+    
     QFile f;
     QDataStream dstream;
 
@@ -74,7 +77,9 @@ private:
 
     char handler_vids[5];   // leave room for trailing \0
     char handler_auds[5];
-
+    uint16_t handler_audio; // the ID of the audio codec
+    bool done_audio;
+    
 };
 
 #endif
