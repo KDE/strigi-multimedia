@@ -200,12 +200,12 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
         {
             if(ret<0)
             {
-                kdDebug()<<"Error parsing Theora stream headers; corrupt stream?\n"<<endl;
+                kdDebug(7034)<<"Error parsing Theora stream headers; corrupt stream?\n"<<endl;
                 corruptedHeaders=true;
             }
             if(theora_decode_header(&t_info,&t_comment,&o_packet))
             {
-                kdDebug()<<"Error parsing Theora stream headers; corrupt stream?"<<endl;
+                kdDebug(7034)<<"Error parsing Theora stream headers; corrupt stream?"<<endl;
                 corruptedHeaders=true;
             }
             theora_p++;
@@ -218,12 +218,12 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
         {
             if(ret<0)
             {
-                kdDebug()<<"Error parsing Vorbis stream headers; corrupt stream"<<endl;
+                kdDebug(7034)<<"Error parsing Vorbis stream headers; corrupt stream"<<endl;
                 corruptedHeaders=true;
             }
             if(vorbis_synthesis_headerin(&v_info,&v_comment,&o_packet))
             {
-                kdDebug()<<"Error parsing Vorbis stream headers; corrupt stream?"<<endl;
+                kdDebug(7034)<<"Error parsing Vorbis stream headers; corrupt stream?"<<endl;
                 corruptedHeaders=true;
             }
             vorbis_p++;
@@ -243,7 +243,7 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
             int ret=buffer_data(fp,&o_sync_state); /* someone needs more data */
             if(ret==0)
             {
-                kdDebug()<<"End of file while searching for codec headers."<<endl;
+                kdDebug(7034)<<"End of file while searching for codec headers."<<endl;
                 corruptedHeaders=true;
             }
         }
