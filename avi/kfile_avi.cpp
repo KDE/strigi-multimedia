@@ -443,13 +443,19 @@ const char * KAviPlugin::resolve_audio(uint16_t id)
     static const char * codec_50 = "MPEG";
     static const char * codec_55 = "MP3";
     static const char * codec_92 = "AC3";
+    static const char * codec_160 = "WMA1";
+    static const char * codec_161 = "WMA2";
+    static const char * codec_162 = "WMA3";
     switch (id) {
-    case 0x00 : return codec_00; break;
-    case 0x01 : return codec_01; break;
-    case 0x02 : return codec_02; break;
-    case 0x50 : return codec_50; break;
-    case 0x55 : return codec_55; break;
-    case 0x92 : return codec_92; break;
+    case 0x000 : return codec_00; break;
+    case 0x001 : return codec_01; break;
+    case 0x002 : return codec_02; break;
+    case 0x050 : return codec_50; break;
+    case 0x055 : return codec_55; break;
+    case 0x092 : return codec_92; break;
+    case 0x160 : return codec_160; break;
+    case 0x161 : return codec_161; break;
+    case 0x162 : return codec_162; break;
     default : return codec_unknown;
     }
 
