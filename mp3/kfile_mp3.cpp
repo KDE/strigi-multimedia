@@ -94,7 +94,7 @@ KMp3MetaInfo::KMp3MetaInfo( const QString& path ) :
 
             
     m_items.insert("Version", new KFileMetaInfoItem("Version",
-        i18n("Version"), QVariant(mp3.header.version)));
+        i18n("Version"), QVariant(mp3.header.version), false, i18n("MPEG")));
     
     m_items.insert("Layer", new KFileMetaInfoItem("Layer",
         i18n("Layer"), QVariant(::header_layer(&mp3.header))));
