@@ -97,7 +97,9 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info )
 
     ::get_mp3_info(&mp3, ::SCAN_QUICK, ::VBR_VARIABLE);
   
-    if (!mp3.header_isvalid) return false;
+    if (!mp3.header_isvalid) {
+        return false;
+    }
 
     QString value;
   
@@ -216,7 +218,7 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo::Internal& info) const
       return false;
     }
 
-    ::get_mp3_info(&mp3, ::SCAN_QUICK, ::VBR_VARIABLE);
+    ::get_mp3_info(&mp3, ::SCAN_NONE, ::VBR_VARIABLE);
     
     strncpy(mp3.id3.title,  info["Title"]  .value().toString().local8Bit(), 31);
     strncpy(mp3.id3.artist, info["Artist"] .value().toString().local8Bit(), 31);
@@ -234,12 +236,12 @@ bool KMp3Plugin::writeInfo( const KFileMetaInfo::Internal& info) const
         if (s == ::typegenre[mp3.id3.genre[0]]) break;
     }
       
-    ::write_tag(&mp3);
+    bool success = ::write_tag(&mp3);
     fclose(mp3.file);
     
     delete [] mp3.filename;
   
-    return true;
+    return success;
 }
 
 QValidator* KMp3Plugin::createValidator(const KFileMetaInfoItem& item,
