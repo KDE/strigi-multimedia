@@ -123,8 +123,11 @@ bool KMp3Plugin::readInfo( KFileMetaInfo::Internal& info, int )
             info.insert(KFileMetaInfoItem("Tracknumber", i18n("Track"),
                         QVariant((int)mp3.id3.track[0]), true));
         
-        if (mp3.id3.genre[0]>MAXGENRE)
-            mp3.id3.genre[0] = 0;
+	// Could we find a valid genre?
+        if (mp3.id3.genre[0]>MAXGENRE) {
+		// No, set it to 12 ("Other")
+        	mp3.id3.genre[0] = 12;
+	}
 
         if (!mp3.id3_isvalid) {
             info.insert(KFileMetaInfoItem("Genre", i18n("Genre"),
