@@ -508,7 +508,9 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
 
         KFileMetaInfoGroup group = appendGroup(info, "Technical");
 
-        appendItem(group, "Frame rate", int(1000000 / avih_microsecperframe));
+	if (0 != avih_microsecperframe) {
+	    appendItem(group, "Frame rate", int(1000000 / avih_microsecperframe));
+	}
         appendItem(group, "Resolution", QSize(avih_width, avih_height));
 
         // work out and add length
