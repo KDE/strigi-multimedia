@@ -46,4 +46,4 @@ ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_flac
 MimeType=audio/x-flac;audio/x-oggflac
 PreferredGroups=Comment,Technical
-PreferredItems=Artist,Album,Tracknumber,Title,Length,Bitrate,Genre,Date
+PreferredItems=Title,Artist,Album,Tracknumber,Genre,Bitrate,Length,Channels, Date,Description,Organization,Location,Copyright
