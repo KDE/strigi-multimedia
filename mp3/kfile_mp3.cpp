@@ -100,7 +100,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     group = addGroupInfo(info, "Technical", i18n("Technical Details"));
 
     item = addItemInfo(group, "Version", i18n("Version"), QVariant::Int);
-    setPrefix(item,  i18n("MPEG"));
+    setPrefix(item,  i18n("MPEG "));
 
     item = addItemInfo(group, "Layer", i18n("Layer"), QVariant::Int);
     item = addItemInfo(group, "CRC", i18n("CRC"), QVariant::Bool);
@@ -178,6 +178,8 @@ bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
             break;
         }
 
+	static const int dummy = 0; // QVariant's bool constructor requires a dummy int value.
+
         // CRC and Emphasis aren't yet implemented in TagLib (not that I think anyone cares)
         
         appendItem(techgroup, "Version",     version);
@@ -186,8 +188,8 @@ bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
         appendItem(techgroup, "Bitrate",     file.audioProperties()->bitrate());
         appendItem(techgroup, "Sample Rate", file.audioProperties()->sampleRate());
         appendItem(techgroup, "Channels",    file.audioProperties()->channels());
-        appendItem(techgroup, "Copyright",   file.audioProperties()->isCopyrighted());
-        appendItem(techgroup, "Original",    file.audioProperties()->isOriginal());
+        appendItem(techgroup, "Copyright",   QVariant(file.audioProperties()->isCopyrighted(), dummy));
+        appendItem(techgroup, "Original",    QVariant(file.audioProperties()->isOriginal(), dummy));
         appendItem(techgroup, "Length",      file.audioProperties()->length());
         // appendItem(techgroup, "Emphasis", file.audioProperties()->empahsis());
     }
