@@ -39,6 +39,7 @@
 #if HAVE_TAGLIB
 #include "tstring.h"
 #include "mpegfile.h"
+#include "id3v1genres.h"
 #include "tag.h"
 #else
 // need this for the mp3info header
@@ -406,8 +407,17 @@ QValidator* KMp3Plugin::createValidator(const QString& /* mimetype */,
 
 #if HAVE_TAGLIB
 
-    Q_UNUSED(parent);
-    Q_UNUSED(name);
+    if (key == "Genre")
+    {
+        QStringList l;
+        TagLib::StringList genres = TagLib::ID3v1::genreList();
+        for(TagLib::StringList::ConstIterator it = genres.begin(); it != genres.end(); ++it)
+        {
+	    l.append(TStringToQString((*it)));
+        }
+
+        return new KStringListValidator(l, false, true, parent, name);
+    }
 
 #else
 
