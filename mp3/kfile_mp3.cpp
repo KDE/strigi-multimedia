@@ -98,7 +98,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name,
     item = addItemInfo(group, "Album", i18n("Album"), QVariant::String);
     setAttributes(item, KFileMimeTypeInfo::Modifiable);
     
-    item = addItemInfo(group, "Year", i18n("Year"), QVariant::String);
+    item = addItemInfo(group, "Date", i18n("Year"), QVariant::String);
     setAttributes(item, KFileMimeTypeInfo::Modifiable);
     
     item = addItemInfo(group, "Comment", i18n("Comment"), QVariant::String);
@@ -180,7 +180,7 @@ bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
         appendItem(id3group, "Title", QString::fromLocal8Bit(mp3.id3.title));
         appendItem(id3group, "Artist", QString::fromLocal8Bit(mp3.id3.artist));
         appendItem(id3group, "Album", QString::fromLocal8Bit(mp3.id3.album));
-        appendItem(id3group, "Year", QString::fromLocal8Bit(mp3.id3.year));
+        appendItem(id3group, "Date", QString::fromLocal8Bit(mp3.id3.year));
         appendItem(id3group, "Comment", QString::fromLocal8Bit(mp3.id3.comment));
 
         if (mp3.id3.track[0])
