@@ -16,8 +16,6 @@
  * along with this program; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- *  $Id$
  */
 
 #include "config.h"
@@ -145,7 +143,7 @@ bool KMp3Plugin::readInfo( KFileMetaInfo& info, uint what )
     TagLib::MPEG::File file(QFile::encodeName(info.path()).data(), readTech);
 
     if(!file.isOpen())  {
-        kdDebug(7034) << "Couldn't open " << TStringToQString(file.name()) << endl;
+        kdDebug(7034) << "Couldn't open " << file.name() << endl;
         return false;
     }
 
