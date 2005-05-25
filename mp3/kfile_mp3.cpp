@@ -38,6 +38,7 @@
 #include <tag.h>
 #include <mpegfile.h>
 #include <id3v1genres.h>
+#include <id3v2framefactory.h>
 
 typedef KGenericFactory<KMp3Plugin> Mp3Factory;
 
@@ -233,6 +234,7 @@ private:
 
 bool KMp3Plugin::writeInfo(const KFileMetaInfo &info) const
 {
+    TagLib::ID3v2::FrameFactory::instance()->setDefaultTextEncoding(TagLib::String::UTF8);
     TagLib::MPEG::File file(QFile::encodeName(info.path()).data(), false);
 
     if(!file.isOpen() || !TagLib::File::isWritable(file.name()))
