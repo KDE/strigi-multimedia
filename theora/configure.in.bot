@@ -1,0 +1,7 @@
+if test "x$with_theora" = xcheck && test "x$have_theora" = xno; then
+  echo ""
+  echo "Ogg Theora support was not found."
+  echo "a KFile-plugin for displaying Ogg Theora Information"
+  echo "has been disabled from compilation."
+  all_tests=bad
+fi
