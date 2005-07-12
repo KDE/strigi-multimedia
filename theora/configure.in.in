@@ -1,9 +1,26 @@
-
-AC_DEFUN([KDE_CHECK_THEORA_SUBDIR],
+AC_DEFUN([KDE_CHECK_THEORA],
 [
- AC_REQUIRE([KDE_CHECK_THEORA])
- # add the ogg-vorbis file meta info plugin only if the test succeeded
- AM_CONDITIONAL(include_theora_SUBDIR, test x$oggv_have_theora = x1)
+have_theora=yes
+
+KDE_CHECK_HEADER(theora/theora.h,
+  [], [have_theora=no])
+
+KDE_CHECK_LIB(theora, theora_info_init,
+  [], [have_theora=no])
 ])
 
-KDE_CHECK_THEORA_SUBDIR
+AC_ARG_WITH(theora,
+  [AS_HELP_STRING(--with-theora,
+    [enable support for Ogg Theora @<:@default=check@:>@])],
+  [], with_theora=check)
+
+have_theora=no
+if test "x$with_theora" != xno; then
+  KDE_CHECK_THEORA
+
+  if test "x$with_theora" != xcheck && test "x$have_theora" != xyes; then
+    AC_MSG_FAILURE([--with-theora was given, but test for Theora failed])
+  fi
+fi
+
+AM_CONDITIONAL(include_theora_SUBDIR, test "x$have_theora" = xyes)

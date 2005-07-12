@@ -1,1 +1,1 @@
-AM_CONDITIONAL(include_mp3_SUBDIR, test "x$have_taglib" = "xtrue")
+AM_CONDITIONAL(include_mp3_SUBDIR, test "x$have_taglib" = xyes)
