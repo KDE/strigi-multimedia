@@ -10,7 +10,7 @@ KDE_CHECK_LIB(theora, theora_info_init,
 ])
 
 AC_ARG_WITH(theora,
-  [AS_HELP_STRING(--with-theora,
+  [AC_HELP_STRING(--with-theora,
     [enable support for Ogg Theora @<:@default=check@:>@])],
   [], with_theora=check)
 
@@ -19,7 +19,7 @@ if test "x$with_theora" != xno; then
   KDE_CHECK_THEORA
 
   if test "x$with_theora" != xcheck && test "x$have_theora" != xyes; then
-    AC_MSG_FAILURE([--with-theora was given, but test for Theora failed])
+    AC_MSG_ERROR([--with-theora was given, but test for Theora failed])
   fi
 fi
 
