@@ -1,0 +1,466 @@
+/* This file is part of the KDE project
+ * Copyright (C) 2005 Allan Sandfeld Jensen <kde@carewolf.com>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation version 2.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; see the file COPYING.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ *
+ */
+
+// MPEG KFile plugin
+// Based on reading sourcecode of mpeglib, xinelib and libmpeg3
+// and studying MPEG dumps.
+
+#include <config.h>
+#include "kfile_mpeg.h"
+
+#include <kprocess.h>
+#include <klocale.h>
+#include <kgenericfactory.h>
+#include <kstringvalidator.h>
+#include <kdebug.h>
+
+#include <qdict.h>
+#include <qvalidator.h>
+#include <qcstring.h>
+#include <qfile.h>
+#include <qdatetime.h>
+
+#include <stdint.h>
+
+typedef KGenericFactory<KMpegPlugin> MpegFactory;
+
+K_EXPORT_COMPONENT_FACTORY(kfile_mpeg, MpegFactory( "kfile_mpeg" ))
+
+KMpegPlugin::KMpegPlugin(QObject *parent, const char *name,
+                       const QStringList &args)
+
+    : KFilePlugin(parent, name, args)
+{
+    KFileMimeTypeInfo* info = addMimeTypeInfo( "video/mpeg" );
+
+    KFileMimeTypeInfo::GroupInfo* group = 0L;
+
+    group = addGroupInfo(info, "Technical", i18n("Technical Details"));
+
+    KFileMimeTypeInfo::ItemInfo* item;
+
+    item = addItemInfo(group, "Length", i18n("Length"), QVariant::Int);
+    setUnit(item, KFileMimeTypeInfo::Seconds);
+
+    item = addItemInfo(group, "Resolution", i18n("Resolution"), QVariant::Size);
+
+    item = addItemInfo(group, "Frame rate", i18n("Frame Rate"), QVariant::Double);
+    setSuffix(item, i18n("fps"));
+
+    item = addItemInfo(group, "Video codec", i18n("Video Codec"), QVariant::String);
+    item = addItemInfo(group, "Audio codec", i18n("Audio Codec"), QVariant::String);
+
+    item = addItemInfo(group, "Aspect ratio", i18n("Aspect ratio"), QVariant::String);
+}
+
+// Frame-rate table from libmpeg3
+float frame_rate_table[16] =
+{
+    0.0,   /* Pad */
+    (float)24000.0/1001.0,       /* Official frame rates */
+    (float)24.0,
+    (float)25.0,
+    (float)30000.0/1001.0,
+    (float)30.0,
+    (float)50.0,
+    (float)60000.0/1001.0,
+    (float)60.0,
+
+    1,                    /* Unofficial economy rates */
+    5,
+    10,
+    12,
+    15,
+    0,
+    0,
+};
+
+static const uint16_t sequence_start = 0x01b3;
+static const uint16_t ext_sequence_start = 0x01b5;
+static const uint16_t gop_start = 0x01b8;
+static const uint16_t audio1_packet = 0x01c0;
+static const uint16_t audio2_packet = 0x01d0;
+static const uint16_t private1_packet = 0x01bd;
+static const uint16_t private2_packet = 0x01bf;
+
+void KMpegPlugin::parse_seq() {
+    uint32_t buf;
+    dstream >> buf;
+
+    horizontal_size = (buf >> 20);
+    vertical_size = (buf >> 8) & ((1<<12)-1);
+    aspect_ratio = (buf >> 4) & ((1<<4)-1);
+    int framerate_code = buf & ((1<<4)-1);
+    frame_rate = frame_rate_table[framerate_code];
+
+    dstream >> buf;
+
+    bitrate = (buf >> 14);
+//    kdDebug(7034) << "bitrate: " << bitrate << endl;
+
+    mpeg = 1;
+}
+
+void KMpegPlugin::parse_seq_ext() {
+    uint8_t type;
+    dstream >> type;
+    type = (type >> 4);
+    if (type == 1)
+        mpeg = 2;
+    /*
+    else
+    if (type == 2) {
+        uint8_t dummy;
+        dstream >> dummy;
+        dstream >> dummy;
+        dstream >> dummy;
+        uint32_t buf;
+        dstream >> buf;
+        // These are display-sizes. I let them override physical sizes.
+        horizontal_size = (buf >> 18);
+        vertical_size = (buf >> 1) & ((1<<14)-1);
+} */
+}
+
+long KMpegPlugin::parse_gop() {
+    uint32_t buf;
+    dstream >> buf;
+
+    int gop_hour = (buf>>26) & ((1<<5)-1);
+    kdDebug(7034) << "gop_hour: " << gop_hour << endl;
+    int gop_minute = (buf>>20) & ((1<<6)-1);
+    kdDebug(7034) << "gop_minute: " << gop_minute << endl;
+    int gop_second = (buf>>13) & ((1<<6)-1);
+    kdDebug(7034) << "gop_second: " << gop_second << endl;
+    int gop_frame = (buf>>7) & ((1<<6)-1);
+    kdDebug(7034) << "gop_frame: " << gop_frame << endl;
+
+    long seconds = gop_hour*60*60 + gop_minute*60 + gop_second;
+    return (long)(seconds * frame_rate) + gop_frame;
+}
+
+int KMpegPlugin::parse_audio() {
+    uint16_t len;
+    dstream >> len;
+//     kdDebug(7034) << "Length of audio packet: " << len << endl;
+
+    uint8_t buf;
+    for(int i=0; i<20; i++) {
+        dstream >> buf;
+        if (buf == 0xff) goto found_sync;
+    }
+    kdDebug(7034) << "MPEG audio sync not found" << endl;
+    return len-20;
+
+found_sync:
+
+    dstream >> buf;
+    if ((buf & 0xe0) != 0xe0) {
+        kdDebug(7034) << "MPEG audio sync failure" << endl;
+        return len - 21;
+    }
+
+    int layer = ((buf >> 1) & 0x3);
+    if (layer == 1)
+        audio_type = 3;
+    else if (layer == 2)
+        audio_type = 2;
+    else if (layer == 3)
+        audio_type = 1;
+    else
+        kdDebug(7034) << "Invalid MPEG audio layer" << endl;
+
+    return len-21;
+}
+
+int KMpegPlugin::skip_packet() {
+    uint16_t len;
+    dstream >> len;
+//     kdDebug(7034) << "Length of skipped packet: " << len << endl;
+
+    return len;
+}
+
+int KMpegPlugin::parse_private() {
+    uint16_t len;
+    dstream >> len;
+//     kdDebug(7034) << "Length of private packet: " << len << endl;
+
+    // Match AC3 packets
+    uint8_t subtype;
+    dstream >> subtype;
+    subtype = subtype >> 4;
+    if (subtype == 8)   // AC3
+        audio_type = 5;
+    else
+    if (subtype == 10)  // LPCM
+        audio_type = 7;
+
+    return len-1;
+}
+
+bool KMpegPlugin::read_mpeg()
+{
+    mpeg = 0;
+    audio_type = 0;
+
+    uint32_t magic;
+    dstream >> magic;
+    if (magic != 0x000001ba) {
+        kdDebug(7034) << "Not a MPEG-PS file" << endl;
+        return false;
+    }
+
+    uint8_t byte;
+    int skip_len = 0;
+    int state = 0;
+    int skimmed = 0;
+    int video_len = 0;
+    bool video_found = false, audio_found = false, gop_found = false;
+    // Search for MPEG packets
+    for(int i=0; i < 1024; i++) {
+        dstream >> byte;
+        skimmed++;
+        if (video_len > 0) video_len--;
+        // Use a fast state machine to find 00 00 01 sync code
+        switch (state) {
+            case 0:
+                if (byte == 0)
+                    state = 1;
+                else
+                    state = 0;
+                break;
+            case 1:
+                if (byte == 0)
+                    state = 2;
+                else
+                    state = 0;
+                break;
+            case 2:
+                if (byte == 0)
+                    state = 2;
+                else
+                if (byte == 1)
+                    state = 3;
+                else
+                    state = 0;
+                break;
+            case 3: {
+//                 kdDebug(7034) << "Bytes skimmed:" << skimmed << endl;
+                switch (byte) {
+                case 0xb3:
+                    if (video_found) break;
+                    parse_seq();
+                    video_found = true;
+                    // skip the rest of this video data
+                    skip_len = video_len;
+                    break;
+                case 0xb5:
+                    parse_seq_ext();
+                    break;
+                /*
+                case 0xb8:
+                    if (gop_found) break;
+                    start_time = parse_gop();
+                    gop_found = true;
+                    kdDebug(7034) << "start_time: " << start_time << endl;
+                    break;
+                */
+                /*
+                case 0xb2:
+                    skip_len = parse_user();
+                    break;
+                */
+                case 0xba:
+                    skip_len = 8;
+                    break;
+                case 0xbe:
+                    // padding
+                    skip_len = skip_packet();
+                    break;
+                case 0xe0:
+                    // video data
+                    if (video_found)
+                        skip_len = skip_packet();
+                    else
+                        video_len = skip_packet();
+                    break;
+                case 0xbd:
+                case 0xbf:
+                    skip_len = parse_private();
+                    break;
+                case 0xc0:
+                case 0xd0:
+                    skip_len = parse_audio();
+                    audio_found = true;
+                    break;
+//                 default:
+//                     kdDebug(7034) << "Unhandled packet of type:" << QString::number(byte,16) << endl;
+                }
+                state = 0;
+                skimmed = 0;
+                break;
+            }
+        }
+
+        if (video_found && audio_found /*&& gop_found*/) break;
+        if (skip_len) {
+            file.at(file.at()+skip_len); // lseek(fd, SEEK_CUR, skip_len);
+            skip_len = 0;
+        }
+    }
+
+    if (mpeg == 0) {
+        kdDebug(7034) << "No sequence-start found" << endl;
+        return false;
+    }
+    return true;
+}
+
+// Search for the last GOP packet and read the time field
+void KMpegPlugin::read_length()
+{
+    end_time = 0;
+    uint8_t byte;
+    int state = 0;
+    int fd = file.handle();
+    // Search for the last gop
+    lseek(fd, -1024, SEEK_END);
+    for(int j=1; j<64; j++) {
+//        dstream.setDevice(&file);
+//        dstream.setByteOrder(QDataStream::BigEndian);
+        for(int i=0; i<1024; i++) {
+            dstream >> byte;
+            switch (state) {
+                case 0:
+                    if (byte == 0)
+                        state = 1;
+                    else
+                        state = 0;
+                    break;
+                case 1:
+                    if (byte == 0)
+                        state = 2;
+                    else
+                        state = 0;
+                case 2:
+                    if (byte == 0)
+                        state = 2;
+                    else
+                    if (byte == 1)
+                        state = 3;
+                    else
+                        state = 0;
+                case 3:
+                    if (byte == 0xb8) {
+                        end_time = parse_gop();
+                        kdDebug(7034) << "end_time: " << end_time << endl;
+                        return;
+                    }
+                    state = 0;
+            }
+        }
+        state = 0;
+        lseek(fd, -(j*1024), SEEK_END);
+    }
+}
+
+bool KMpegPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
+{
+    if ( info.path().isEmpty() ) // remote file
+        return false;
+
+    file.setName(info.path());
+
+    // open file, set up stream and set endianness
+    if (!file.open(IO_ReadOnly))
+    {
+        kdDebug(7034) << "Couldn't open " << QFile::encodeName(info.path()) << endl;
+        return false;
+    }
+
+    dstream.setDevice(&file);
+    dstream.setByteOrder(QDataStream::BigEndian);
+
+    if (!read_mpeg()) {
+        kdDebug(7034) << "read_mpeg() failed!" << endl;
+    }
+    else {
+        KFileMetaInfoGroup group = appendGroup(info, "Technical");
+
+        appendItem(group, "Frame rate", double(frame_rate));
+
+        appendItem(group, "Resolution", QSize(horizontal_size, vertical_size));
+        /*
+        read_length();
+        if (end_time != 0) {
+            long total_frames = end_time-start_time + 1;
+            long total_time = (long)(total_frames/frame_rate);
+            appendItem(group, "Length", int(total_time));
+        }
+        */
+        if (mpeg == 1)
+            appendItem(group, "Video codec", "MPEG1");
+        else
+            appendItem(group, "Video codec", "MPEG2");
+
+        switch (audio_type) {
+            case 1:
+                appendItem(group, "Audio codec", "MP1");
+                break;
+            case 2:
+                appendItem(group, "Audio codec", "MP2");
+                break;
+            case 3:
+                appendItem(group, "Audio codec", "MP3");
+                break;
+            case 5:
+                appendItem(group, "Audio codec", "AC3");
+                break;
+            case 7:
+                appendItem(group, "Audio codec", "PCM");
+                break;
+            default:
+                appendItem(group, "Audio codec", i18n("Unknown"));
+        }
+        // MPEG 1 also has an aspect ratio setting, but it works differently,
+        // and I am not sure if it is used.
+        if (mpeg == 2) {
+            switch (aspect_ratio) {
+                case 1:
+                    appendItem(group, "Aspect ratio", i18n("default"));
+                    break;
+                case 2:
+                    appendItem(group, "Aspect ratio", "4/3");
+                    break;
+                case 3:
+                    appendItem(group, "Aspect ratio", "16/9");
+                    break;
+                case 4:
+                    appendItem(group, "Aspect ratio", "2.11/1");
+                    break;
+            }
+        }
+    }
+
+    file.close();
+    return true;
+}
+
+#include "kfile_mpeg.moc"

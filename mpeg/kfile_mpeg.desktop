@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Service
+Name=MPEG Info
+ServiceTypes=KFilePlugin
+X-KDE-Library=kfile_mpeg
+MimeType=video/mpeg
+PreferredGrous=Technical
+PreferredItems=Length,Resolution,Frame rate,Video codec,Audio codec
