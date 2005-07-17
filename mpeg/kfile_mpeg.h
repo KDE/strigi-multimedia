@@ -35,7 +35,7 @@ public:
     virtual bool readInfo( KFileMetaInfo& info, uint what);
 
 private:
-    void parse_seq();
+    int parse_seq();
     void parse_seq_ext();
     long parse_gop();
     int parse_audio();

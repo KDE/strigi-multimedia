@@ -99,7 +99,7 @@ static const uint16_t audio2_packet = 0x01d0;
 static const uint16_t private1_packet = 0x01bd;
 static const uint16_t private2_packet = 0x01bf;
 
-void KMpegPlugin::parse_seq() {
+int KMpegPlugin::parse_seq() {
     uint32_t buf;
     dstream >> buf;
 
@@ -113,24 +113,28 @@ void KMpegPlugin::parse_seq() {
 
     bitrate = (buf >> 14);
 //    kdDebug(7034) << "bitrate: " << bitrate << endl;
+    bool has_intra_matrix = buf & 2;
+    bool has_non_intra_matrix = buf & 1;
+
+    int matrix = 0;
+    if (has_intra_matrix) matrix +=64;
+    if (has_non_intra_matrix) matrix +=64;
 
     mpeg = 1;
+    return matrix;
 }
 
 void KMpegPlugin::parse_seq_ext() {
-    uint8_t type;
-    dstream >> type;
-    type = (type >> 4);
+    uint32_t buf;
+    dstream >> buf;
+
+    uint8_t type = buf >> 28;
     if (type == 1)
         mpeg = 2;
+
     /*
     else
     if (type == 2) {
-        uint8_t dummy;
-        dstream >> dummy;
-        dstream >> dummy;
-        dstream >> dummy;
-        uint32_t buf;
         dstream >> buf;
         // These are display-sizes. I let them override physical sizes.
         horizontal_size = (buf >> 18);
@@ -163,18 +167,16 @@ int KMpegPlugin::parse_audio() {
     uint8_t buf;
     for(int i=0; i<20; i++) {
         dstream >> buf;
-        if (buf == 0xff) goto found_sync;
+        if (buf == 0xff) {
+            dstream >> buf;
+            if ((buf & 0xe0) == 0xe0)
+                goto found_sync;
+        }
     }
     kdDebug(7034) << "MPEG audio sync not found" << endl;
     return len-20;
 
 found_sync:
-
-    dstream >> buf;
-    if ((buf & 0xe0) != 0xe0) {
-        kdDebug(7034) << "MPEG audio sync failure" << endl;
-        return len - 21;
-    }
 
     int layer = ((buf >> 1) & 0x3);
     if (layer == 1)
@@ -222,21 +224,34 @@ bool KMpegPlugin::read_mpeg()
 
     uint32_t magic;
     dstream >> magic;
+    if (magic == 0x52494646) // == "RIFF"
+    {
+        dstream >> magic;
+        dstream >> magic;
+        if (magic == 0x43445841) { // == "CDXA"
+            kdDebug(7034) << "CDXA not yet supported" << endl;
+            return false;
+        }
+    }
+    else
     if (magic != 0x000001ba) {
         kdDebug(7034) << "Not a MPEG-PS file" << endl;
         return false;
     }
+    file.at(0);
 
     uint8_t byte;
     int skip_len = 0;
     int state = 0;
     int skimmed = 0;
     int video_len = 0;
+    int searched = 0;
     bool video_found = false, audio_found = false, gop_found = false;
     // Search for MPEG packets
-    for(int i=0; i < 1024; i++) {
+    for(int i=0; i < 2048; i++) {
         dstream >> byte;
         skimmed++;
+        searched++;
         if (video_len > 0) video_len--;
         // Use a fast state machine to find 00 00 01 sync code
         switch (state) {
@@ -262,26 +277,38 @@ bool KMpegPlugin::read_mpeg()
                     state = 0;
                 break;
             case 3: {
-//                 kdDebug(7034) << "Bytes skimmed:" << skimmed << endl;
+                skimmed -= 4;
+                if (skimmed) {
+//                     kdDebug(7034) << "Bytes skimmed:" << skimmed << endl;
+                    skimmed = 0;
+                }
+//                 kdDebug(7034) << "Packet of type:" << QString::number(byte,16) << endl;
                 switch (byte) {
                 case 0xb3:
                     if (video_found) break;
-                    parse_seq();
+                    skip_len = parse_seq();
                     video_found = true;
-                    // skip the rest of this video data
-                    skip_len = video_len;
+                    video_len -= 8;
+                    video_len -= skip_len;
                     break;
                 case 0xb5:
                     parse_seq_ext();
+                    video_len -= 4;
                     break;
-                /*
                 case 0xb8:
+                /*
                     if (gop_found) break;
                     start_time = parse_gop();
                     gop_found = true;
                     kdDebug(7034) << "start_time: " << start_time << endl;
-                    break;
                 */
+                    /* nobreak */
+                case 0x00:
+                case 0x01:
+                    // skip the rest of the video data
+                    if (video_len > 0 && video_found)
+                        skip_len = video_len;
+                    break;
                 /*
                 case 0xb2:
                     skip_len = parse_user();
@@ -310,11 +337,11 @@ bool KMpegPlugin::read_mpeg()
                     skip_len = parse_audio();
                     audio_found = true;
                     break;
-//                 default:
-//                     kdDebug(7034) << "Unhandled packet of type:" << QString::number(byte,16) << endl;
+                 default:
+//                      kdDebug(7034) << "Unhandled packet of type:" << QString::number(byte,16) << endl;
+                    break;
                 }
                 state = 0;
-                skimmed = 0;
                 break;
             }
         }
@@ -322,9 +349,15 @@ bool KMpegPlugin::read_mpeg()
         if (video_found && audio_found /*&& gop_found*/) break;
         if (skip_len) {
             file.at(file.at()+skip_len); // lseek(fd, SEEK_CUR, skip_len);
+            searched += skip_len;
             skip_len = 0;
         }
     }
+    /*
+    if (skimmed)
+        kdDebug(7034) << "Bytes skimmed:" << skimmed << endl;
+    kdDebug(7034) << "Bytes searched:" << searched << endl;
+    */
 
     if (mpeg == 0) {
         kdDebug(7034) << "No sequence-start found" << endl;
@@ -416,9 +449,9 @@ bool KMpegPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
         }
         */
         if (mpeg == 1)
-            appendItem(group, "Video codec", "MPEG1");
+            appendItem(group, "Video codec", "MPEG-1");
         else
-            appendItem(group, "Video codec", "MPEG2");
+            appendItem(group, "Video codec", "MPEG-2");
 
         switch (audio_type) {
             case 1:
