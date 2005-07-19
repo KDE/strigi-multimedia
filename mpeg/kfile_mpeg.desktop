@@ -2,6 +2,8 @@
 Encoding=UTF-8
 Type=Service
 Name=MPEG Info
+Name[et]=MPEG info
+Name[ga]=Eolas MPEG
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_mpeg
 MimeType=video/mpeg
