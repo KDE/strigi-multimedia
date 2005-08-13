@@ -8,7 +8,6 @@ Name[fr]=Informations MPEG
 Name[ga]=Eolas MPEG
 Name[sr]=Информације о MPEG-у
 Name[sr@Latn]=Информације о MPEG-у
-Name[zh_CN]=MPEG 信息
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_mpeg
 MimeType=video/mpeg
