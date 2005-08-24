@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=Service
 Name=MPEG Info
 Name[bg]=Информация за MPEG
+Name[da]=MPEG-info
 Name[de]=MPEG-Info
 Name[et]=MPEG info
 Name[fr]=Informations MPEG
