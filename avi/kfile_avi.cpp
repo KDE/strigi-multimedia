@@ -20,16 +20,16 @@
 
 #include <config.h>
 #include "kfile_avi.h"
-
+#include <QSize>
 #include <kprocess.h>
 #include <klocale.h>
 #include <kgenericfactory.h>
 #include <kstringvalidator.h>
 #include <kdebug.h>
 
-#include <qdict.h>
+#include <q3dict.h>
 #include <qvalidator.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qfile.h>
 #include <qdatetime.h>
 
@@ -484,7 +484,7 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     f.setName(info.path());
 
     // open file, set up stream and set endianness
-    if (!f.open(IO_ReadOnly))
+    if (!f.open(QIODevice::ReadOnly))
     {
         kdDebug(7034) << "Couldn't open " << QFile::encodeName(info.path()) << endl;
         return false;

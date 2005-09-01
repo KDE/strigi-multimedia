@@ -26,11 +26,11 @@
 #include <klocale.h>
 #include <kgenericfactory.h>
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdatetime.h>
-#include <qdict.h>
+#include <q3dict.h>
 #include <qvalidator.h>
 
 typedef KGenericFactory<KM3uPlugin> M3uFactory;
@@ -58,7 +58,7 @@ bool KM3uPlugin::readInfo( KFileMetaInfo& info, uint )
         return false;
 
     QFile f(info.path());
-    if (!f.open(IO_ReadOnly)) return false;
+    if (!f.open(QIODevice::ReadOnly)) return false;
     QTextStream str(&f);
     str.setEncoding(QTextStream::Locale);
     

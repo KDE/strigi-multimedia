@@ -26,9 +26,9 @@
 #include <kstringvalidator.h>
 #include <kdebug.h>
 
-#include <qdict.h>
+#include <q3dict.h>
 #include <qvalidator.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qfile.h>
 #include <qdatetime.h>
 
@@ -97,7 +97,7 @@ bool KWavPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     const char *data_signature = "data";
     char signature_buffer[4];
 
-    if (!file.open(IO_ReadOnly))
+    if (!file.open(QIODevice::ReadOnly))
     {
         kdDebug(7034) << "Couldn't open " << QFile::encodeName(info.path()) << endl;
         return false;

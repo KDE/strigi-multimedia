@@ -28,9 +28,9 @@
 #include <kstringvalidator.h>
 #include <kdebug.h>
 
-#include <qdict.h>
+#include <q3dict.h>
 #include <qvalidator.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qfile.h>
 #include <qdatetime.h>
 

@@ -29,10 +29,10 @@
 #include <kgenericfactory.h>
 #include <kstringvalidator.h>
 #include <kdebug.h>
-
-#include <qdict.h>
+#include <QSize>
+#include <q3dict.h>
 #include <qvalidator.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qfile.h>
 #include <qdatetime.h>
 
@@ -422,7 +422,7 @@ bool KMpegPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     file.setName(info.path());
 
     // open file, set up stream and set endianness
-    if (!file.open(IO_ReadOnly))
+    if (!file.open(QIODevice::ReadOnly))
     {
         kdDebug(7034) << "Couldn't open " << QFile::encodeName(info.path()) << endl;
         return false;

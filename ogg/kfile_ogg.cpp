@@ -21,10 +21,10 @@
 #include "kfile_ogg.h"
 #include "vcedit.h"
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qfile.h>
 #include <qdatetime.h>
-#include <qdict.h>
+#include <q3dict.h>
 #include <qvalidator.h>
 #include <qfileinfo.h>
 
@@ -293,10 +293,10 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
         if (!item.isEditable() || !(item.type()==QVariant::String) ) 
             continue;
                   
-        QCString key = item.key().upper().utf8();
+        Q3CString key = item.key().upper().utf8();
         if (item.value().canCast(QVariant::String))
         {
-            QCString value = item.value().toString().utf8();
+            Q3CString value = item.value().toString().utf8();
 
             kdDebug(7034) << " writing tag " << key << "=" << value << endl;
        
