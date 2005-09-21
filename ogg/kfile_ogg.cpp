@@ -293,10 +293,10 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
         if (!item.isEditable() || !(item.type()==QVariant::String) ) 
             continue;
                   
-        Q3CString key = item.key().upper().utf8();
+        QByteArray key = item.key().upper().utf8();
         if (item.value().canCast(QVariant::String))
         {
-            Q3CString value = item.value().toString().utf8();
+            QByteArray value = item.value().toString().utf8();
 
             kdDebug(7034) << " writing tag " << key << "=" << value << endl;
        
