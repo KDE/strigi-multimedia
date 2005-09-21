@@ -21,7 +21,7 @@
 #include <qfile.h>
 #include <config.h>
 #include "kfile_theora.h"
-
+#include <QSize>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kgenericfactory.h>
