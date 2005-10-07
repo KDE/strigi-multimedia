@@ -63,10 +63,10 @@ K_EXPORT_COMPONENT_FACTORY(kfile_ogg, KGenericFactory<KOggPlugin>("kfile_ogg"))
 
 KOggPlugin::KOggPlugin( QObject *parent, const char *name,
                         const QStringList &args )
-    : KFilePlugin( parent, name, args )
+    : KFilePlugin( parent, args )
 {
     kdDebug(7034) << "ogg plugin\n";
-    
+    setObjectName(name);
     KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/vorbis" );
 
     KFileMimeTypeInfo::GroupInfo* group = 0;

@@ -48,8 +48,9 @@ K_EXPORT_COMPONENT_FACTORY(kfile_avi, AviFactory( "kfile_avi" ))
 KAviPlugin::KAviPlugin(QObject *parent, const char *name,
                        const QStringList &args)
 
-    : KFilePlugin(parent, name, args)
+    : KFilePlugin(parent, args)
 {
+	setObjectName(name);
     KFileMimeTypeInfo* info = addMimeTypeInfo( "video/x-msvideo" );
 
     KFileMimeTypeInfo::GroupInfo* group = 0L;

@@ -39,8 +39,9 @@ K_EXPORT_COMPONENT_FACTORY(kfile_sid, SidFactory("kfile_sid"))
 KSidPlugin::KSidPlugin(QObject *parent, const char *name,
                        const QStringList &args)
     
-    : KFilePlugin(parent, name, args)
+    : KFilePlugin(parent, args)
 {
+	setObjectName(name);
     kdDebug(7034) << "sid plugin\n";
     
     KFileMimeTypeInfo* info = addMimeTypeInfo("audio/prs.sid");

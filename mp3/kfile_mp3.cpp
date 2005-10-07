@@ -45,9 +45,10 @@ typedef KGenericFactory<KMp3Plugin> Mp3Factory;
 K_EXPORT_COMPONENT_FACTORY(kfile_mp3, Mp3Factory( "kfile_mp3" ))
 
 KMp3Plugin::KMp3Plugin(QObject *parent, const char *name, const QStringList &args)
-    : KFilePlugin(parent, name, args)
+    : KFilePlugin(parent, args)
 {
-    kdDebug(7034) << "mp3 plugin\n";
+    setObjectName(name);
+	kdDebug(7034) << "mp3 plugin\n";
 
     KFileMimeTypeInfo *info = addMimeTypeInfo("audio/x-mp3");
 

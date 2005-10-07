@@ -39,8 +39,9 @@ K_EXPORT_COMPONENT_FACTORY( kfile_m3u, M3uFactory( "kfile_m3u" ) )
 
 KM3uPlugin::KM3uPlugin( QObject *parent, const char *name,
                         const QStringList &preferredItems )
-    : KFilePlugin( parent, name, preferredItems )
+    : KFilePlugin( parent, preferredItems )
 {
+	setObjectName(name);
     kdDebug(7034) << "m3u plugin\n";
 
     KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/x-mpegurl" );

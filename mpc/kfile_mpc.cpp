@@ -50,8 +50,9 @@ K_EXPORT_COMPONENT_FACTORY(kfile_mpc, KGenericFactory<KMpcPlugin>("kfile_mpc"))
 
 KMpcPlugin::KMpcPlugin( QObject *parent, const char *name,
                         const QStringList &args )
-    : KFilePlugin( parent, name, args )
+    : KFilePlugin( parent, args )
 {
+	setObjectName(name);
     kdDebug(7034) << "mpc plugin\n";
 
     KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/x-musepack" );

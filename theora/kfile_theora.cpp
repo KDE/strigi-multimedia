@@ -58,10 +58,10 @@ K_EXPORT_COMPONENT_FACTORY(kfile_theora, theoraFactory( "kfile_theora" ))
 
 theoraPlugin::theoraPlugin(QObject *parent, const char *name,
                            const QStringList &args)
-        : KFilePlugin(parent, name, args)
+        : KFilePlugin(parent, args)
 {
 //  kdDebug(7034) << "theora plugin\n";
-
+	setObjectName(name);
     KFileMimeTypeInfo* info = addMimeTypeInfo( "video/x-theora" );
 
     KFileMimeTypeInfo::GroupInfo* group = 0;

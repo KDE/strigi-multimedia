@@ -58,10 +58,10 @@ K_EXPORT_COMPONENT_FACTORY(kfile_flac, KGenericFactory<KFlacPlugin>("kfile_flac"
 
 KFlacPlugin::KFlacPlugin( QObject *parent, const char *name,
                         const QStringList &args )
-    : KFilePlugin( parent, name, args )
+    : KFilePlugin( parent, args )
 {
     kdDebug(7034) << "flac plugin\n";
-
+	setObjectName(name);
     makeMimeTypeInfo( "audio/x-flac" );
 #ifdef TAGLIB_1_2
     makeMimeTypeInfo( "audio/x-oggflac" );

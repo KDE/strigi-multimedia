@@ -46,8 +46,9 @@ K_EXPORT_COMPONENT_FACTORY(kfile_au, AuFactory( "kfile_au" ))
 KAuPlugin::KAuPlugin(QObject *parent, const char *name,
                        const QStringList &args)
 
-    : KFilePlugin(parent, name, args)
+    : KFilePlugin(parent, args)
 {
+	setObjectName(name);
     KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/basic" );
 
     KFileMimeTypeInfo::GroupInfo* group = 0L;
