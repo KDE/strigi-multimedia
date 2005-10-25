@@ -36,7 +36,9 @@
 #include <qfile.h>
 #include <qdatetime.h>
 
-#include <stdint.h>
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
 
 typedef KGenericFactory<KMpegPlugin> MpegFactory;
 
@@ -91,6 +93,12 @@ float frame_rate_table[16] =
     0,
 };
 
+/* Bitrate indexes */
+int bitrate_123[3][16] =
+   { {0,32,64,96,128,160,192,224,256,288,320,352,384,416,448,},
+     {0,32,48,56, 64, 80, 96,112,128,160,192,224,256,320,384,},
+     {0,32,40,48, 56, 64, 80, 96,112,128,160,192,224,256,320,} };
+
 static const uint16_t sequence_start = 0x01b3;
 static const uint16_t ext_sequence_start = 0x01b5;
 static const uint16_t gop_start = 0x01b8;
@@ -112,7 +120,7 @@ int KMpegPlugin::parse_seq() {
     dstream >> buf;
 
     bitrate = (buf >> 14);
-//    kdDebug(7034) << "bitrate: " << bitrate << endl;
+//     kdDebug(7034) << "bitrate: " << bitrate << endl;
     bool has_intra_matrix = buf & 2;
     bool has_non_intra_matrix = buf & 1;
 
@@ -145,6 +153,7 @@ void KMpegPlugin::parse_seq_ext() {
 long KMpegPlugin::parse_gop() {
     uint32_t buf;
     dstream >> buf;
+    dstream >> buf;
 
     int gop_hour = (buf>>26) & ((1<<5)-1);
     kdDebug(7034) << "gop_hour: " << gop_hour << endl;
@@ -156,7 +165,7 @@ long KMpegPlugin::parse_gop() {
     kdDebug(7034) << "gop_frame: " << gop_frame << endl;
 
     long seconds = gop_hour*60*60 + gop_minute*60 + gop_second;
-    return (long)(seconds * frame_rate) + gop_frame;
+    return (long)seconds;
 }
 
 int KMpegPlugin::parse_audio() {
@@ -165,7 +174,8 @@ int KMpegPlugin::parse_audio() {
 //     kdDebug(7034) << "Length of audio packet: " << len << endl;
 
     uint8_t buf;
-    for(int i=0; i<20; i++) {
+    int i = 0;
+    for(i=0; i<20; i++) {
         dstream >> buf;
         if (buf == 0xff) {
             dstream >> buf;
@@ -174,7 +184,7 @@ int KMpegPlugin::parse_audio() {
         }
     }
     kdDebug(7034) << "MPEG audio sync not found" << endl;
-    return len-20;
+    return len-i;
 
 found_sync:
 
@@ -188,7 +198,11 @@ found_sync:
     else
         kdDebug(7034) << "Invalid MPEG audio layer" << endl;
 
-    return len-21;
+    dstream >> buf;
+    int bitrate_index = buf & 0xf0;
+    audio_rate = bitrate_123[3-layer][bitrate_index];
+
+    return len-3-i;
 }
 
 int KMpegPlugin::skip_packet() {
@@ -221,6 +235,7 @@ bool KMpegPlugin::read_mpeg()
 {
     mpeg = 0;
     audio_type = 0;
+    audio_rate = 0;
 
     uint32_t magic;
     dstream >> magic;
@@ -297,10 +312,11 @@ bool KMpegPlugin::read_mpeg()
                     break;
                 case 0xb8:
                 /*
-                    if (gop_found) break;
-                    start_time = parse_gop();
-                    gop_found = true;
-                    kdDebug(7034) << "start_time: " << start_time << endl;
+                    if (!gop_found) {
+                        start_time = parse_gop();
+                        gop_found = true;
+                        kdDebug(7034) << "start_time: " << start_time << endl;
+                    }
                 */
                     /* nobreak */
                 case 0x00:
@@ -348,7 +364,8 @@ bool KMpegPlugin::read_mpeg()
 
         if (video_found && audio_found /*&& gop_found*/) break;
         if (skip_len) {
-            file.at(file.at()+skip_len); // lseek(fd, SEEK_CUR, skip_len);
+            if (!file.at(file.at()+skip_len))
+                return false;
             searched += skip_len;
             skip_len = 0;
         }
@@ -372,9 +389,8 @@ void KMpegPlugin::read_length()
     end_time = 0;
     uint8_t byte;
     int state = 0;
-    int fd = file.handle();
     // Search for the last gop
-    lseek(fd, -1024, SEEK_END);
+    file.at(file.size()-1024);
     for(int j=1; j<64; j++) {
 //        dstream.setDevice(&file);
 //        dstream.setByteOrder(QDataStream::BigEndian);
@@ -410,8 +426,9 @@ void KMpegPlugin::read_length()
             }
         }
         state = 0;
-        lseek(fd, -(j*1024), SEEK_END);
+        file.at(file.size()-j*1024);
     }
+    kdDebug(7034) << "No end GOP found" << endl;
 }
 
 bool KMpegPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
@@ -431,6 +448,8 @@ bool KMpegPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     dstream.setDevice(&file);
     dstream.setByteOrder(QDataStream::BigEndian);
 
+    start_time = end_time = 0L;
+
     if (!read_mpeg()) {
         kdDebug(7034) << "read_mpeg() failed!" << endl;
     }
@@ -440,13 +459,16 @@ bool KMpegPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
         appendItem(group, "Frame rate", double(frame_rate));
 
         appendItem(group, "Resolution", QSize(horizontal_size, vertical_size));
-        /*
+        /* The GOP timings are completely bogus
         read_length();
         if (end_time != 0) {
-            long total_frames = end_time-start_time + 1;
-            long total_time = (long)(total_frames/frame_rate);
+            //long total_frames = end_time-start_time + 1;
+            long total_time = end_time;
             appendItem(group, "Length", int(total_time));
         }
+        // and so is bitrate
+        long total_time = file.size()/((bitrate+audio_rate)*50);
+        appendItem(group, "Length", int(total_time));
         */
         if (mpeg == 1)
             appendItem(group, "Video codec", "MPEG-1");

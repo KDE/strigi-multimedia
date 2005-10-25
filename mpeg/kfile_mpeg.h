@@ -57,6 +57,7 @@ private:
 
     int mpeg;
     int audio_type;
+    int audio_rate;
 
     long start_time;
     long end_time;
