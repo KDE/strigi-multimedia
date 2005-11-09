@@ -158,13 +158,13 @@ bool KMpcPlugin::readInfo( KFileMetaInfo& info, uint what )
         QString date  = file->tag()->year() > 0 ? QString::number(file->tag()->year()) : QString::null;
         QString track = file->tag()->track() > 0 ? QString::number(file->tag()->track()) : QString::null;
 
-        appendItem(commentgroup, "Title",       TStringToQString(file->tag()->title()).stripWhiteSpace());
-        appendItem(commentgroup, "Artist",      TStringToQString(file->tag()->artist()).stripWhiteSpace());
-        appendItem(commentgroup, "Album",       TStringToQString(file->tag()->album()).stripWhiteSpace());
+        appendItem(commentgroup, "Title",       TStringToQString(file->tag()->title()).trimmed());
+        appendItem(commentgroup, "Artist",      TStringToQString(file->tag()->artist()).trimmed());
+        appendItem(commentgroup, "Album",       TStringToQString(file->tag()->album()).trimmed());
         appendItem(commentgroup, "Date",        date);
-        appendItem(commentgroup, "Comment",     TStringToQString(file->tag()->comment()).stripWhiteSpace());
+        appendItem(commentgroup, "Comment",     TStringToQString(file->tag()->comment()).trimmed());
         appendItem(commentgroup, "Tracknumber", track);
-        appendItem(commentgroup, "Genre",       TStringToQString(file->tag()->genre()).stripWhiteSpace());
+        appendItem(commentgroup, "Genre",       TStringToQString(file->tag()->genre()).trimmed());
     }
 
     if (readTech)
@@ -245,10 +245,10 @@ QValidator* KMpcPlugin::createValidator( const QString&,
 {
     if(key == "Tracknumber" || key == "Date")
     {
-        return new QIntValidator(0, 9999, parent, name);
+        return new QIntValidator(0, 9999, parent);
     }
     else
-	return new QRegExpValidator(QRegExp(".*"), parent, name);
+	return new QRegExpValidator(QRegExp(".*"), parent);
 }
 
 #include "kfile_mpc.moc"

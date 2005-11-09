@@ -75,7 +75,7 @@ bool KM3uPlugin::readInfo( KFileMetaInfo& info, uint )
         {
             if (s.endsWith("\n")) s.truncate(s.length()-1);
 
-            if (!s.stripWhiteSpace().isEmpty()) {
+            if (!s.trimmed().isEmpty()) {
                 appendItem(group, i18n("Track %1").arg(num, 3), s);
                 num++;
             }

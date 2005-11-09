@@ -2,7 +2,6 @@
 
 # set the include path for X, qt, KDE and TagLib
 INCLUDES         = $(all_includes) $(taglib_includes)
-
 # these are the headers for your project
 noinst_HEADERS   = kfile_mpc.h
 

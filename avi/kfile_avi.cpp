@@ -88,14 +88,14 @@ bool KAviPlugin::read_avi()
     charbuf1[4] = '\0';
 
     // this must be RIFF
-    f.readBlock(charbuf1, 4);
+    f.read(charbuf1, 4);
     if (memcmp(charbuf1, sig_riff, 4) != 0)
         return false;
 
     dstream >> dwbuf1;
 
     // this must be AVI
-    f.readBlock(charbuf1, 4);
+    f.read(charbuf1, 4);
     if (memcmp(charbuf1, sig_avi, 4) != 0)
         return false;
 
@@ -106,7 +106,7 @@ bool KAviPlugin::read_avi()
     do {
 
         // read header
-        f.readBlock(charbuf1, 4);
+        f.read(charbuf1, 4);
 
         kdDebug(7034) << "about to handle chunk with ID: " << charbuf1 << "\n";
 
@@ -124,7 +124,7 @@ bool KAviPlugin::read_avi()
             kdDebug(7034) << "Skipping junk chunk length: " << dwbuf1 << "\n";
 
             // skip junk
-            f.at( f.at() + dwbuf1 );
+            f.seek( f.pos() + dwbuf1 );
 
         } else {
             // something we dont understand yet
@@ -164,7 +164,7 @@ bool KAviPlugin::read_list()
 
     // read size & list type
     dstream >> dwbuf1;
-    f.readBlock(charbuf1, 4);
+    f.read(charbuf1, 4);
 
     // read the relevant bits of the list
     if (memcmp(charbuf1, sig_hdrl, 4) == 0) {
@@ -183,7 +183,7 @@ bool KAviPlugin::read_list()
         kdDebug(7034) << "Skipping movi chunk length: " << dwbuf1 << "\n";
 
         // skip past it
-        f.at( f.at() + dwbuf1 );
+        f.seek( f.pos() + dwbuf1 );
 
     } else {
         // unknown list type
@@ -202,7 +202,7 @@ bool KAviPlugin::read_avih()
     char charbuf1[5];
 
     // read header and length
-    f.readBlock(charbuf1, 4);
+    f.read(charbuf1, 4);
     dstream >> dwbuf1;
 
     // not a valid avih?
@@ -252,7 +252,7 @@ bool KAviPlugin::read_strl()
     while (true) {
 
         // read type and size
-        f.readBlock(charbuf1, 4);   // type
+        f.read(charbuf1, 4);   // type
         dstream >> dwbuf1;          // size
 
         // detect type
@@ -271,7 +271,7 @@ bool KAviPlugin::read_strl()
 
             // skip it
             kdDebug(7034) << "Skipping strn chunk length: " << dwbuf1 << "\n";
-            f.at( f.at() + dwbuf1 );
+            f.seek( f.pos() + dwbuf1 );
 
             /*
             this is a pretty annoying hack; many AVIs incorrectly report the
@@ -285,17 +285,17 @@ bool KAviPlugin::read_strl()
             unsigned char counter = 0;
             while (!done) {
                 // read next marker
-                f.readBlock(charbuf1, 4);
+                f.read(charbuf1, 4);
 
                 // does it look ok?
                 if ((memcmp(charbuf1, sig_list, 4) == 0) ||
                     (memcmp(charbuf1, sig_junk, 4) == 0)) {
                     // yes, go back before it
-                    f.at( f.at() - 4);
+                    f.seek( f.pos() - 4);
                     done = true;
                 } else {
                     // no, skip one space forward from where we were
-                    f.at( f.at() - 3);
+                    f.seek( f.pos() - 3);
                     kdDebug(7034) << "Working around incorrectly marked strn length..." << "\n";
                 }
 
@@ -311,7 +311,7 @@ bool KAviPlugin::read_strl()
             kdDebug(7034) << "Found LIST/JUNK, returning...\n";
 
             // rollback before the id and size
-            f.at( f.at() - 8 );
+            f.seek( f.pos() - 8 );
 
             // return back to the main avi parser
             return true;
@@ -321,7 +321,7 @@ bool KAviPlugin::read_strl()
 
             kdDebug(7034) << "Sskipping unrecognised block\n";
             // just skip over it
-            f.at( f.at() + dwbuf1);
+            f.seek( f.pos() + dwbuf1);
 
         } /* switch block type */
 
@@ -356,8 +356,8 @@ bool KAviPlugin::read_strh(uint32_t blocksize)
 
 
     // get stream info type, and handler id
-    f.readBlock(charbuf1, 4);
-    f.readBlock(charbuf2, 4);
+    f.read(charbuf1, 4);
+    f.read(charbuf2, 4);
 
     // read the strh fields
     dstream >> strh_flags;
@@ -398,7 +398,7 @@ bool KAviPlugin::read_strh(uint32_t blocksize)
     // the AVI specs I've read...)
     // note: 48 is 10 * uint32_t + 2*FOURCC; the 10 fields we read above, plus the two character fields
     if (blocksize > 48)
-        f.at( f.at() + (blocksize - 48) );
+        f.seek( f.pos() + (blocksize - 48) );
 
     return true;
 }
@@ -414,13 +414,13 @@ bool KAviPlugin::read_strf(uint32_t blocksize)
         dstream >> handler_audio;
         kdDebug(7034) << "Read audio codec ID: " << handler_audio << "\n";
         // skip past the rest of the stuff here for now
-        f.at( f.at() + blocksize - 2);
+        f.seek( f.pos() + blocksize - 2);
         // we have audio
         done_audio = true;
 
     } else {
         // no, skip the strf
-        f.at( f.at() + blocksize );
+        f.seek( f.pos() + blocksize );
     }
 
     return true;
@@ -482,7 +482,7 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     if ( info.path().isEmpty() ) // remote file
         return false;
 
-    f.setName(info.path());
+    f.setFileName(info.path());
 
     // open file, set up stream and set endianness
     if (!f.open(QIODevice::ReadOnly))

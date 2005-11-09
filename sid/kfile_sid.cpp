@@ -80,7 +80,7 @@ bool KSidPlugin::readInfo(KFileMetaInfo& info, uint /*what*/)
     if ( info.path().isEmpty() ) // remote file
         return false;
     QFile file(info.path());
-    if ( !file.open(IO_ReadOnly) )
+    if ( !file.open(QIODevice::ReadOnly) )
         return false;
 
     int version;
@@ -92,7 +92,7 @@ bool KSidPlugin::readInfo(KFileMetaInfo& info, uint /*what*/)
     
     char buf[64] = { 0 };
     
-    if (4 != file.readBlock(buf, 4))
+    if (4 != file.read(buf, 4))
         return false;
     if (strncmp(buf, "PSID", 4))
         return false;
@@ -107,7 +107,7 @@ bool KSidPlugin::readInfo(KFileMetaInfo& info, uint /*what*/)
     version+= ch;
 
     //read number of songs
-    file.at(0xE);
+    file.seek(0xE);
     if (0 > (ch = file.getch()))
         return false;
     num_songs = ch << 8;
@@ -124,18 +124,18 @@ bool KSidPlugin::readInfo(KFileMetaInfo& info, uint /*what*/)
     start_song += ch;
 
     //name
-    file.at(0x16);
-    if (32 != file.readBlock(buf, 32))
+    file.seek(0x16);
+    if (32 != file.read(buf, 32))
         return false;
     name = buf;
 
     //artist
-    if (32 != file.readBlock(buf, 32))
+    if (32 != file.read(buf, 32))
         return false;
     artist = buf;
 
     //copyright
-    if (32 != file.readBlock(buf, 32))
+    if (32 != file.read(buf, 32))
         return false;
     copyright = buf;
 
@@ -218,7 +218,7 @@ KSidPlugin::createValidator(const QString& /*mimetype*/, const QString& group,
     kdDebug(7034) << k_funcinfo << endl;
     // all items in "General" group are strings of max lenght 31
     if (group == "General")
-        return new QRegExpValidator(QRegExp(".{,31}"), parent, name);
+        return new QRegExpValidator(QRegExp(".{,31}"), parent);
     // all others are read-only
     return 0;
 }

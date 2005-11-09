@@ -239,7 +239,7 @@ bool KMpegPlugin::read_mpeg()
         kdDebug(7034) << "Not a MPEG-PS file" << endl;
         return false;
     }
-    file.at(0);
+    file.seek(0);
 
     uint8_t byte;
     int skip_len = 0;
@@ -349,7 +349,7 @@ bool KMpegPlugin::read_mpeg()
 
         if (video_found && audio_found /*&& gop_found*/) break;
         if (skip_len) {
-            file.at(file.at()+skip_len); // lseek(fd, SEEK_CUR, skip_len);
+            file.seek(file.pos()+skip_len); // lseek(fd, SEEK_CUR, skip_len);
             searched += skip_len;
             skip_len = 0;
         }
@@ -420,7 +420,7 @@ bool KMpegPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     if ( info.path().isEmpty() ) // remote file
         return false;
 
-    file.setName(info.path());
+    file.setFileName(info.path());
 
     // open file, set up stream and set endianness
     if (!file.open(QIODevice::ReadOnly))

@@ -116,7 +116,7 @@ bool KWavPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
          return false;
 
     // Skip the next bit (total file size, pretty useless)
-    file.at(8);
+    file.seek(8);
 
     // Read and verify the WAVE signature
     dstream.readRawBytes(signature_buffer, 4);
@@ -150,7 +150,7 @@ bool KWavPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
 	}
 	if (have_data && have_fmt)
 	    break;
-    } while (file.at() < file_length);
+    } while (file.pos() < file_length);
 
     if ( (!have_data) || (!have_fmt) )
 	return false;

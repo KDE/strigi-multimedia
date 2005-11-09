@@ -107,7 +107,7 @@ bool KAuPlugin::readInfo( KFileMetaInfo& info, uint what)
         return false;
 
     // skip unwanted bits
-    file.at(8);
+    file.seek(8);
 
     // grab the bits we want
     dstream >> datasize;

@@ -203,8 +203,8 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
         {
             kdDebug(7034) << vc->user_comments[i] << endl;
             QStringList split = QStringList::split("=", QString::fromUtf8(vc->user_comments[i]));
-            split[0] = split[0].lower();
-            split[0][0] = split[0][0].upper();
+            split[0] = split[0].toLower();
+            split[0][0] = split[0][0].toUpper();
  
             // we have to be sure that the i18n() string always has the same
             // case. Oh, and is UTF8 ok here?
@@ -293,7 +293,7 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
         if (!item.isEditable() || !(item.type()==QVariant::String) ) 
             continue;
                   
-        QByteArray key = item.key().upper().utf8();
+        QByteArray key = item.key().toUpper().toUtf8();
         if (item.value().canCast(QVariant::String))
         {
             QByteArray value = item.value().toString().utf8();
@@ -351,7 +351,7 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
 QValidator* KOggPlugin::createValidator( const QString&, 
                                          const QString &, const QString &,
                                          QObject* parent, const char* name) const {
-	return new QRegExpValidator(QRegExp(".*"), parent, name);
+	return new QRegExpValidator(QRegExp(".*"), parent);
 }
 
 #include "kfile_ogg.moc"
