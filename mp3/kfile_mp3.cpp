@@ -269,7 +269,7 @@ class ComboValidator : public KStringListValidator
 public:
     ComboValidator(const QStringList &list, bool rejecting,
                    bool fixupEnabled, QObject *parent, const char *name) :
-        KStringListValidator(list, rejecting, fixupEnabled, parent, name)
+        KStringListValidator(list, rejecting, fixupEnabled, parent)
     {
 
     }
