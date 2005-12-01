@@ -34,7 +34,6 @@ Name[sv]=Theora-information
 Name[ta]= தியோரா தகவல்
 Name[tr]=theora Bilgisi
 Name[uk]=Інформація по theora
-Name[xx]=xxtheora Infoxx
 Name[zh_CN]=theora 信息
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_theora
