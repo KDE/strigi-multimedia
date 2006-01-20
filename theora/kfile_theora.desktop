@@ -36,6 +36,7 @@ Name[ta]= தியோரா தகவல்
 Name[tr]=theora Bilgisi
 Name[uk]=Інформація по theora
 Name[zh_CN]=theora 信息
+Name[zh_HK]=theora 資訊
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_theora
 # change MimeType here! (example: inode/directory)

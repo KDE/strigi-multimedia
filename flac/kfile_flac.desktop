@@ -44,6 +44,7 @@ Name[tr]=FLAC Bilgisi
 Name[uk]=Інформація по FLAC
 Name[uz]=FLAC ҳақида маълумот
 Name[zh_CN]=FLAC 信息
+Name[zh_HK]=FLAC 資訊
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_flac
 MimeType=audio/x-flac;audio/x-oggflac

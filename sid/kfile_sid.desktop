@@ -42,6 +42,7 @@ Name[tg]=SID Ахборот
 Name[tr]=SID Bilgisi
 Name[uk]=Інформація по SID
 Name[zh_CN]=SID 信息
+Name[zh_HK]=SID 資訊
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_sid
 MimeType=audio/prs.sid
