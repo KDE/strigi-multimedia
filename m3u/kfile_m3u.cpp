@@ -42,7 +42,7 @@ KM3uPlugin::KM3uPlugin( QObject *parent, const char *name,
     : KFilePlugin( parent, preferredItems )
 {
 	setObjectName(name);
-    kdDebug(7034) << "m3u plugin\n";
+    kDebug(7034) << "m3u plugin\n";
 
     KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/x-mpegurl" );
 

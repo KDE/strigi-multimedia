@@ -65,7 +65,7 @@ KOggPlugin::KOggPlugin( QObject *parent, const char *name,
                         const QStringList &args )
     : KFilePlugin( parent, args )
 {
-    kdDebug(7034) << "ogg plugin\n";
+    kDebug(7034) << "ogg plugin\n";
     setObjectName(name);
     KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/vorbis" );
 
@@ -176,7 +176,7 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
     fp = fopen(QFile::encodeName(info.path()),"rb");
     if (!fp)
     {
-        kdDebug(7034) << "Unable to open " << QFile::encodeName(info.path()) << endl;
+        kDebug(7034) << "Unable to open " << QFile::encodeName(info.path()) << endl;
         return false;
     }
 
@@ -184,7 +184,7 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
 
     if (rc < 0) 
     {
-        kdDebug(7034) << "Unable to understand " << QFile::encodeName(info.path())
+        kDebug(7034) << "Unable to understand " << QFile::encodeName(info.path())
                       << ", errorcode=" << rc << endl;
         return false;
     }
@@ -201,7 +201,7 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
             
         for (i=0; i < vc->comments; i++)
         {
-            kdDebug(7034) << vc->user_comments[i] << endl;
+            kDebug(7034) << vc->user_comments[i] << endl;
             QStringList split = QStringList::split("=", QString::fromUtf8(vc->user_comments[i]));
             split[0] = split[0].toLower();
             split[0][0] = split[0][0].toUpper();
@@ -256,7 +256,7 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
   
     if (!infile) 
     {
-        kdDebug(7034) << "couldn't open " << info.path() << endl;
+        kDebug(7034) << "couldn't open " << info.path() << endl;
         return false;
     }
 
@@ -264,7 +264,7 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
     
     if ( vcedit_open(state, infile)==-1 ) 
     {
-        kdDebug(7034) << "error in vcedit_open for " << info.path() << endl;
+        kDebug(7034) << "error in vcedit_open for " << info.path() << endl;
         return false;
     }
     
@@ -298,14 +298,14 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
         {
             QByteArray value = item.value().toString().utf8();
 
-            kdDebug(7034) << " writing tag " << key << "=" << value << endl;
+            kDebug(7034) << " writing tag " << key << "=" << value << endl;
        
             vorbis_comment_add_tag(vc,
                         const_cast<char*>(static_cast<const char*>(key)),
                         const_cast<char*>(static_cast<const char*>(value)));
         }
         else
-          kdWarning(7034) << "ignoring " << key << endl;
+          kWarning(7034) << "ignoring " << key << endl;
         
     }
     
@@ -328,7 +328,7 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
 
     if ( sf.status() || !outfile)
     {
-        kdDebug(7034) << "couldn't create temp file\n";
+        kDebug(7034) << "couldn't create temp file\n";
         vcedit_clear(state); // frees comment entries and vendor
         sf.abort();
         if (vc->vendor) free(vc->vendor);

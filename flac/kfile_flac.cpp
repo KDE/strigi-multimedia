@@ -60,7 +60,7 @@ KFlacPlugin::KFlacPlugin( QObject *parent, const char *name,
                         const QStringList &args )
     : KFilePlugin( parent, args )
 {
-    kdDebug(7034) << "flac plugin\n";
+    kDebug(7034) << "flac plugin\n";
 	setObjectName(name);
     makeMimeTypeInfo( "audio/x-flac" );
 #ifdef TAGLIB_1_2
@@ -169,7 +169,7 @@ bool KFlacPlugin::readInfo( KFileMetaInfo& info, uint what )
 
     if (!file || !file->isValid())
     {
-        kdDebug(7034) << "Couldn't open " << file->name() << endl;
+        kDebug(7034) << "Couldn't open " << file->name() << endl;
         delete file;
         return false;
     }
@@ -233,7 +233,7 @@ bool KFlacPlugin::writeInfo(const KFileMetaInfo& info) const
     TagLib::File *file;
 
     if (!TagLib::File::isWritable(QFile::encodeName(info.path()).data())) {
-        kdDebug(7034) << "can't write to " << info.path() << endl;
+        kDebug(7034) << "can't write to " << info.path() << endl;
         return false;
     }
 
@@ -246,7 +246,7 @@ bool KFlacPlugin::writeInfo(const KFileMetaInfo& info) const
 
     if(!file->isOpen())
     {
-        kdDebug(7034) << "couldn't open " << info.path() << endl;
+        kDebug(7034) << "couldn't open " << info.path() << endl;
         delete file;
         return false;
     }

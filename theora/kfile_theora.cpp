@@ -60,7 +60,7 @@ theoraPlugin::theoraPlugin(QObject *parent, const char *name,
                            const QStringList &args)
         : KFilePlugin(parent, args)
 {
-//  kdDebug(7034) << "theora plugin\n";
+//  kDebug(7034) << "theora plugin\n";
 	setObjectName(name);
     KFileMimeTypeInfo* info = addMimeTypeInfo( "video/x-theora" );
 
@@ -136,7 +136,7 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
     fp = fopen(QFile::encodeName(info.path()),"rb");
     if (!fp)
     {
-        kdDebug(7034) << "Unable to open " << QFile::encodeName(info.path()) << endl;
+        kDebug(7034) << "Unable to open " << QFile::encodeName(info.path()) << endl;
         return false;
     }
 
@@ -200,12 +200,12 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
         {
             if(ret<0)
             {
-                kdDebug(7034)<<"Error parsing Theora stream headers; corrupt stream?\n"<<endl;
+                kDebug(7034)<<"Error parsing Theora stream headers; corrupt stream?\n"<<endl;
                 corruptedHeaders=true;
             }
             if(theora_decode_header(&t_info,&t_comment,&o_packet))
             {
-                kdDebug(7034)<<"Error parsing Theora stream headers; corrupt stream?"<<endl;
+                kDebug(7034)<<"Error parsing Theora stream headers; corrupt stream?"<<endl;
                 corruptedHeaders=true;
             }
             theora_p++;
@@ -218,12 +218,12 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
         {
             if(ret<0)
             {
-                kdDebug(7034)<<"Error parsing Vorbis stream headers; corrupt stream"<<endl;
+                kDebug(7034)<<"Error parsing Vorbis stream headers; corrupt stream"<<endl;
                 corruptedHeaders=true;
             }
             if(vorbis_synthesis_headerin(&v_info,&v_comment,&o_packet))
             {
-                kdDebug(7034)<<"Error parsing Vorbis stream headers; corrupt stream?"<<endl;
+                kDebug(7034)<<"Error parsing Vorbis stream headers; corrupt stream?"<<endl;
                 corruptedHeaders=true;
             }
             vorbis_p++;
@@ -243,7 +243,7 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
             int ret=buffer_data(fp,&o_sync_state); /* someone needs more data */
             if(ret==0)
             {
-                kdDebug(7034)<<"End of file while searching for codec headers."<<endl;
+                kDebug(7034)<<"End of file while searching for codec headers."<<endl;
                 corruptedHeaders=true;
             }
         }

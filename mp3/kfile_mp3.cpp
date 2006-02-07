@@ -48,7 +48,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name, const QStringList &arg
     : KFilePlugin(parent, args)
 {
     setObjectName(name);
-	kdDebug(7034) << "mp3 plugin\n";
+	kDebug(7034) << "mp3 plugin\n";
 
     KFileMimeTypeInfo *info = addMimeTypeInfo("audio/x-mp3");
 
@@ -113,7 +113,7 @@ KMp3Plugin::KMp3Plugin(QObject *parent, const char *name, const QStringList &arg
 
 bool KMp3Plugin::readInfo(KFileMetaInfo &info, uint what)
 {
-    kdDebug(7034) << "mp3 plugin readInfo\n";
+    kDebug(7034) << "mp3 plugin readInfo\n";
 
     bool readId3 = false;
     bool readTech = false;
@@ -144,7 +144,7 @@ bool KMp3Plugin::readInfo(KFileMetaInfo &info, uint what)
 
     if(!file.isOpen())
     {
-        kdDebug(7034) << "Couldn't open " << file.name() << endl;
+        kDebug(7034) << "Couldn't open " << file.name() << endl;
         return false;
     }
 
@@ -208,7 +208,7 @@ bool KMp3Plugin::readInfo(KFileMetaInfo &info, uint what)
         // appendItem(techgroup, "Emphasis", file.audioProperties()->empahsis());
     }
 
-    kdDebug(7034) << "reading finished\n";
+    kDebug(7034) << "reading finished\n";
 
     return true;
 }
@@ -240,7 +240,7 @@ bool KMp3Plugin::writeInfo(const KFileMetaInfo &info) const
 
     if(!file.isOpen() || !TagLib::File::isWritable(file.name()))
     {
-        kdDebug(7034) << "couldn't open " << info.path() << endl;
+        kDebug(7034) << "couldn't open " << info.path() << endl;
         return false;
     }
 
@@ -284,7 +284,7 @@ QValidator *KMp3Plugin::createValidator(const QString & /* mimetype */,
                                         const QString &group, const QString &key,
                                         QObject *parent, const char *name) const
 {
-    kdDebug(7034) << "making a validator for " << group << "/" << key << endl;
+    kDebug(7034) << "making a validator for " << group << "/" << key << endl;
 
     if(key == "Tracknumber" || key == "Date")
     {

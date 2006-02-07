@@ -113,7 +113,7 @@ int KMpegPlugin::parse_seq() {
     dstream >> buf;
 
     bitrate = (buf >> 14);
-//    kdDebug(7034) << "bitrate: " << bitrate << endl;
+//    kDebug(7034) << "bitrate: " << bitrate << endl;
     bool has_intra_matrix = buf & 2;
     bool has_non_intra_matrix = buf & 1;
 
@@ -148,13 +148,13 @@ long KMpegPlugin::parse_gop() {
     dstream >> buf;
 
     int gop_hour = (buf>>26) & ((1<<5)-1);
-    kdDebug(7034) << "gop_hour: " << gop_hour << endl;
+    kDebug(7034) << "gop_hour: " << gop_hour << endl;
     int gop_minute = (buf>>20) & ((1<<6)-1);
-    kdDebug(7034) << "gop_minute: " << gop_minute << endl;
+    kDebug(7034) << "gop_minute: " << gop_minute << endl;
     int gop_second = (buf>>13) & ((1<<6)-1);
-    kdDebug(7034) << "gop_second: " << gop_second << endl;
+    kDebug(7034) << "gop_second: " << gop_second << endl;
     int gop_frame = (buf>>7) & ((1<<6)-1);
-    kdDebug(7034) << "gop_frame: " << gop_frame << endl;
+    kDebug(7034) << "gop_frame: " << gop_frame << endl;
 
     long seconds = gop_hour*60*60 + gop_minute*60 + gop_second;
     return (long)(seconds * frame_rate) + gop_frame;
@@ -163,7 +163,7 @@ long KMpegPlugin::parse_gop() {
 int KMpegPlugin::parse_audio() {
     uint16_t len;
     dstream >> len;
-//     kdDebug(7034) << "Length of audio packet: " << len << endl;
+//     kDebug(7034) << "Length of audio packet: " << len << endl;
 
     uint8_t buf;
     for(int i=0; i<20; i++) {
@@ -174,7 +174,7 @@ int KMpegPlugin::parse_audio() {
                 goto found_sync;
         }
     }
-    kdDebug(7034) << "MPEG audio sync not found" << endl;
+    kDebug(7034) << "MPEG audio sync not found" << endl;
     return len-20;
 
 found_sync:
@@ -187,7 +187,7 @@ found_sync:
     else if (layer == 3)
         audio_type = 1;
     else
-        kdDebug(7034) << "Invalid MPEG audio layer" << endl;
+        kDebug(7034) << "Invalid MPEG audio layer" << endl;
 
     return len-21;
 }
@@ -195,7 +195,7 @@ found_sync:
 int KMpegPlugin::skip_packet() {
     uint16_t len;
     dstream >> len;
-//     kdDebug(7034) << "Length of skipped packet: " << len << endl;
+//     kDebug(7034) << "Length of skipped packet: " << len << endl;
 
     return len;
 }
@@ -203,7 +203,7 @@ int KMpegPlugin::skip_packet() {
 int KMpegPlugin::parse_private() {
     uint16_t len;
     dstream >> len;
-//     kdDebug(7034) << "Length of private packet: " << len << endl;
+//     kDebug(7034) << "Length of private packet: " << len << endl;
 
     // Match AC3 packets
     uint8_t subtype;
@@ -230,13 +230,13 @@ bool KMpegPlugin::read_mpeg()
         dstream >> magic;
         dstream >> magic;
         if (magic == 0x43445841) { // == "CDXA"
-            kdDebug(7034) << "CDXA not yet supported" << endl;
+            kDebug(7034) << "CDXA not yet supported" << endl;
             return false;
         }
     }
     else
     if (magic != 0x000001ba) {
-        kdDebug(7034) << "Not a MPEG-PS file" << endl;
+        kDebug(7034) << "Not a MPEG-PS file" << endl;
         return false;
     }
     file.seek(0);
@@ -280,10 +280,10 @@ bool KMpegPlugin::read_mpeg()
             case 3: {
                 skimmed -= 4;
                 if (skimmed) {
-//                     kdDebug(7034) << "Bytes skimmed:" << skimmed << endl;
+//                     kDebug(7034) << "Bytes skimmed:" << skimmed << endl;
                     skimmed = 0;
                 }
-//                 kdDebug(7034) << "Packet of type:" << QString::number(byte,16) << endl;
+//                 kDebug(7034) << "Packet of type:" << QString::number(byte,16) << endl;
                 switch (byte) {
                 case 0xb3:
                     if (video_found) break;
@@ -301,7 +301,7 @@ bool KMpegPlugin::read_mpeg()
                     if (gop_found) break;
                     start_time = parse_gop();
                     gop_found = true;
-                    kdDebug(7034) << "start_time: " << start_time << endl;
+                    kDebug(7034) << "start_time: " << start_time << endl;
                 */
                     /* nobreak */
                 case 0x00:
@@ -339,7 +339,7 @@ bool KMpegPlugin::read_mpeg()
                     audio_found = true;
                     break;
                  default:
-//                      kdDebug(7034) << "Unhandled packet of type:" << QString::number(byte,16) << endl;
+//                      kDebug(7034) << "Unhandled packet of type:" << QString::number(byte,16) << endl;
                     break;
                 }
                 state = 0;
@@ -356,12 +356,12 @@ bool KMpegPlugin::read_mpeg()
     }
     /*
     if (skimmed)
-        kdDebug(7034) << "Bytes skimmed:" << skimmed << endl;
-    kdDebug(7034) << "Bytes searched:" << searched << endl;
+        kDebug(7034) << "Bytes skimmed:" << skimmed << endl;
+    kDebug(7034) << "Bytes searched:" << searched << endl;
     */
 
     if (mpeg == 0) {
-        kdDebug(7034) << "No sequence-start found" << endl;
+        kDebug(7034) << "No sequence-start found" << endl;
         return false;
     }
     return true;
@@ -404,7 +404,7 @@ void KMpegPlugin::read_length()
                 case 3:
                     if (byte == 0xb8) {
                         end_time = parse_gop();
-                        kdDebug(7034) << "end_time: " << end_time << endl;
+                        kDebug(7034) << "end_time: " << end_time << endl;
                         return;
                     }
                     state = 0;
@@ -425,7 +425,7 @@ bool KMpegPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     // open file, set up stream and set endianness
     if (!file.open(QIODevice::ReadOnly))
     {
-        kdDebug(7034) << "Couldn't open " << QFile::encodeName(info.path()) << endl;
+        kDebug(7034) << "Couldn't open " << QFile::encodeName(info.path()) << endl;
         return false;
     }
 
@@ -433,7 +433,7 @@ bool KMpegPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     dstream.setByteOrder(QDataStream::BigEndian);
 
     if (!read_mpeg()) {
-        kdDebug(7034) << "read_mpeg() failed!" << endl;
+        kDebug(7034) << "read_mpeg() failed!" << endl;
     }
     else {
         KFileMetaInfoGroup group = appendGroup(info, "Technical");

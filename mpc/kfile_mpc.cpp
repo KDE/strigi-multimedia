@@ -53,7 +53,7 @@ KMpcPlugin::KMpcPlugin( QObject *parent, const char *name,
     : KFilePlugin( parent, args )
 {
 	setObjectName(name);
-    kdDebug(7034) << "mpc plugin\n";
+    kDebug(7034) << "mpc plugin\n";
 
     KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/x-musepack" );
 
@@ -146,7 +146,7 @@ bool KMpcPlugin::readInfo( KFileMetaInfo& info, uint what )
 
     if (!file->isOpen())
     {
-        kdDebug(7034) << "Couldn't open " << file->name() << endl;
+        kDebug(7034) << "Couldn't open " << file->name() << endl;
         delete file;
         return false;
     }
@@ -210,7 +210,7 @@ bool KMpcPlugin::writeInfo(const KFileMetaInfo& info) const
     TagLib::File *file;
 
     if (!TagLib::File::isWritable(QFile::encodeName(info.path()).data())) {
-        kdDebug(7034) << "can't write to " << info.path() << endl;
+        kDebug(7034) << "can't write to " << info.path() << endl;
         return false;
     }
 
@@ -218,7 +218,7 @@ bool KMpcPlugin::writeInfo(const KFileMetaInfo& info) const
 
     if(!file->isOpen())
     {
-        kdDebug(7034) << "couldn't open " << info.path() << endl;
+        kDebug(7034) << "couldn't open " << info.path() << endl;
         delete file;
         return false;
     }

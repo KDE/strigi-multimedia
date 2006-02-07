@@ -42,7 +42,7 @@ KSidPlugin::KSidPlugin(QObject *parent, const char *name,
     : KFilePlugin(parent, args)
 {
 	setObjectName(name);
-    kdDebug(7034) << "sid plugin\n";
+    kDebug(7034) << "sid plugin\n";
     
     KFileMimeTypeInfo* info = addMimeTypeInfo("audio/prs.sid");
 
@@ -140,7 +140,7 @@ bool KSidPlugin::readInfo(KFileMetaInfo& info, uint /*what*/)
     copyright = buf;
 
     QString TODO("TODO");
-    kdDebug(7034) << "sid plugin readInfo\n";
+    kDebug(7034) << "sid plugin readInfo\n";
     
     KFileMetaInfoGroup general = appendGroup(info, "General");
 
@@ -154,13 +154,13 @@ bool KSidPlugin::readInfo(KFileMetaInfo& info, uint /*what*/)
     appendItem(tech, "Number of Songs", num_songs);
     appendItem(tech, "Start Song", start_song);
 
-    kdDebug(7034) << "reading finished\n";
+    kDebug(7034) << "reading finished\n";
     return true;
 }
 
 bool KSidPlugin::writeInfo(const KFileMetaInfo& info) const
 {
-    kdDebug(7034) << k_funcinfo << endl;
+    kDebug(7034) << k_funcinfo << endl;
 
     char name[32] = {0};
     char artist[32] = {0};
@@ -185,7 +185,7 @@ bool KSidPlugin::writeInfo(const KFileMetaInfo& info) const
     if (s.isNull()) goto failure;
     strncpy(copyright, s.local8Bit(), 31);
     
-    kdDebug(7034) << "Opening sid file " << info.path() << endl;
+    kDebug(7034) << "Opening sid file " << info.path() << endl;
     file = ::open(QFile::encodeName(info.path()), O_WRONLY);
     //name
     if (-1 == ::lseek(file, 0x16, SEEK_SET))
@@ -206,7 +206,7 @@ bool KSidPlugin::writeInfo(const KFileMetaInfo& info) const
 
 failure:
     if (file) close(file);
-    kdDebug(7034) << "something went wrong writing to sid file\n";
+    kDebug(7034) << "something went wrong writing to sid file\n";
     return false;
 }
 
@@ -215,7 +215,7 @@ KSidPlugin::createValidator(const QString& /*mimetype*/, const QString& group,
                             const QString& /*key*/, QObject* parent,
                             const char* name) const
 {
-    kdDebug(7034) << k_funcinfo << endl;
+    kDebug(7034) << k_funcinfo << endl;
     // all items in "General" group are strings of max lenght 31
     if (group == "General")
         return new QRegExpValidator(QRegExp(".{,31}"), parent);
