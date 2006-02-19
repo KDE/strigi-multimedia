@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=SID Info
+Name[fr]=Informations SID
 Name[x-test]=xxSID Infoxx
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_sid

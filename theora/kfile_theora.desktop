@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=theora Info
+Name[fr]=Informations theora
 Name[x-test]=xxtheora Infoxx
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_theora
