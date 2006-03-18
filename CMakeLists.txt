@@ -1,4 +1,5 @@
 kde4_header()
+include(CheckIncludeFiles)
 
 add_subdirectory( m3u ) 
 add_subdirectory( au ) 
@@ -7,8 +8,15 @@ add_subdirectory( mpeg )
 add_subdirectory( wav ) 
 add_subdirectory( sid ) 
 
+if(TAGLIB_FOUND)
+	check_include_files("taglib/mpcfile.h" HAVE_TAGLIB_MPCFILE_H)
+	MESSAGE(STATUS "HAVE_TAGLIB_MPCFILE_H <${HAVE_TAGLIB_MPCFILE_H}>")
+	if(HAVE_TAGLIB_MPCFILE_H)
+		add_subdirectory(mpc)
+	endif(HAVE_TAGLIB_MPCFILE_H)
+endif(TAGLIB_FOUND)
+
 message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(KFILE_MP3_SUBDIR)")
-message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(KFILE_MPC_SUBDIR)")
 message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(KFILE_OGG_SUBDIR)")
 message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(KFILE_FLAC_SUBDIR)")
 message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(KFILE_THEORA_SUBDIR)")

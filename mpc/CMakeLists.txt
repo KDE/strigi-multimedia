@@ -1,6 +1,6 @@
 kde4_header()
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${TAGLIB_INCLUDE_DIR}/taglib ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
@@ -13,7 +13,7 @@ kde4_add_plugin(kfile_mpc ${kfile_mpc_PART_SRCS})
 
 kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_mpc )
 
-target_link_libraries(kfile_mpc  ${QT_AND_KDECORE_LIBS} kio )
+target_link_libraries(kfile_mpc  ${LIB_KIO} ${TAGLIB_LIBRARIES} )
 
 install_targets(${LIB_INSTALL_DIR}/kde4 kfile_mpc )
 
