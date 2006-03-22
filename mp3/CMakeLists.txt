@@ -13,7 +13,7 @@ kde4_add_plugin(kfile_mp3 ${kfile_mp3_PART_SRCS})
 
 kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_mp3 )
 
-target_link_libraries(kfile_mp3  ${QT_AND_KDECORE_LIBS} kio )
+target_link_libraries(kfile_mp3  ${KDE4_KDECORE_LIBS} kio )
 
 install_targets(${LIB_INSTALL_DIR}/kde4 kfile_mp3 )
 

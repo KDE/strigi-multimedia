@@ -13,7 +13,7 @@ kde4_add_plugin(kfile_theora ${kfile_theora_PART_SRCS})
 
 kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_theora )
 
-target_link_libraries(kfile_theora  ${QT_AND_KDECORE_LIBS} kio ogg vorbis theora )
+target_link_libraries(kfile_theora  ${KDE4_KDECORE_LIBS} kio ogg vorbis theora )
 
 install_targets(${LIB_INSTALL_DIR}/kde4 kfile_theora )
 
