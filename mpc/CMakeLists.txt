@@ -13,7 +13,7 @@ kde4_add_plugin(kfile_mpc ${kfile_mpc_PART_SRCS})
 
 kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_mpc )
 
-target_link_libraries(kfile_mpc  ${KDE4_KIO_LIBRARIES} ${TAGLIB_LIBRARIES} )
+target_link_libraries(kfile_mpc  ${KDE4_KIO_LIBS} ${TAGLIB_LIBRARIES} )
 
 install_targets(${LIB_INSTALL_DIR}/kde4 kfile_mpc )
 
