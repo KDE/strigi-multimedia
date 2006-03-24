@@ -13,7 +13,7 @@ kde4_add_plugin(kfile_flac ${kfile_flac_PART_SRCS})
 
 kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_flac )
 
-target_link_libraries(kfile_flac  ${KDE4_KDECORE_LIBS} kio )
+target_link_libraries(kfile_flac  ${KDE4_KIO_LIBS} )
 
 install_targets(${LIB_INSTALL_DIR}/kde4 kfile_flac )
 

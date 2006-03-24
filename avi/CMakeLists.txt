@@ -13,7 +13,7 @@ kde4_add_plugin(kfile_avi ${kfile_avi_PART_SRCS})
 
 kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_avi )
 
-target_link_libraries(kfile_avi  ${KDE4_KDECORE_LIBS} kio )
+target_link_libraries(kfile_avi  ${KDE4_KIO_LIBS} )
 
 install_targets(${LIB_INSTALL_DIR}/kde4 kfile_avi )
 
