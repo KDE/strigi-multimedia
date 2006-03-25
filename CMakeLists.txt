@@ -16,10 +16,13 @@ if(TAGLIB_FOUND)
 	endif(HAVE_TAGLIB_MPCFILE_H)
 endif(TAGLIB_FOUND)
 
+if(THEORA_FOUND)
+	add_subdirectory(theora)
+endif(THEORA_FOUND)
+
 message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(KFILE_MP3_SUBDIR)")
 message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(KFILE_OGG_SUBDIR)")
 message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(KFILE_FLAC_SUBDIR)")
-message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(KFILE_THEORA_SUBDIR)")
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
