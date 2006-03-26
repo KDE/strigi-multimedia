@@ -1,9 +1,10 @@
 kde4_header()
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${KDE4_INCLUDE_DIR} ${QT_INCLUDES}   )
 
-
+MESSAGE(STATUS "dir :<${TAGLIB_INCLUDE_DIR}>")
 ########### next target ###############
+add_definitions(${TAGLIB_INCLUDE_DIR})
 
 set(kfile_flac_PART_SRCS kfile_flac.cpp )
 
@@ -13,7 +14,7 @@ kde4_add_plugin(kfile_flac ${kfile_flac_PART_SRCS})
 
 kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_flac )
 
-target_link_libraries(kfile_flac  ${KDE4_KIO_LIBS} )
+target_link_libraries(kfile_flac  ${KDE4_KIO_LIBS} ${TAGLIB_LIBRARIES})
 
 install_targets(${LIB_INSTALL_DIR}/kde4 kfile_flac )
 

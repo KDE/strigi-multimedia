@@ -1,10 +1,10 @@
 kde4_header()
 
-include_directories( ${TAGLIB_INCLUDE_DIR}/taglib ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
 ########### next target ###############
-
+ADD_DEFINITIONS(${TAGLIB_INCLUDE_DIR})
 set(kfile_mpc_PART_SRCS kfile_mpc.cpp )
 
 kde4_automoc(${kfile_mpc_PART_SRCS})
