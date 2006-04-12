@@ -1,5 +1,5 @@
 kde4_header()
-include(CheckIncludeFiles)
+include(CheckIncludeFileCXX)
 
 add_subdirectory( m3u ) 
 add_subdirectory( au ) 
@@ -9,7 +9,7 @@ add_subdirectory( wav )
 add_subdirectory( sid ) 
 
 if(TAGLIB_FOUND)
-	check_include_files("taglib/mpcfile.h" HAVE_TAGLIB_MPCFILE_H)
+	check_include_file_cxx("taglib/mpcfile.h" HAVE_TAGLIB_MPCFILE_H)
 	MESSAGE(STATUS "HAVE_TAGLIB_MPCFILE_H <${HAVE_TAGLIB_MPCFILE_H}>")
 	if(HAVE_TAGLIB_MPCFILE_H)
 		add_subdirectory(mpc)
