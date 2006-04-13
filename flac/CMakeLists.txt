@@ -2,9 +2,8 @@ kde4_header()
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${KDE4_INCLUDE_DIR} ${QT_INCLUDES}   )
 
-MESSAGE(STATUS "dir :<${TAGLIB_INCLUDE_DIR}>")
 ########### next target ###############
-add_definitions(${TAGLIB_INCLUDE_DIR})
+add_definitions(${TAGLIB_CFLAGS})
 
 set(kfile_flac_PART_SRCS kfile_flac.cpp )
 
