@@ -4,7 +4,7 @@ include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_D
 
 
 ########### next target ###############
-ADD_DEFINITIONS(${TAGLIB_INCLUDE_DIR})
+ADD_DEFINITIONS(${TAGLIB_CFLAGS})
 set(kfile_mpc_PART_SRCS kfile_mpc.cpp )
 
 kde4_automoc(${kfile_mpc_PART_SRCS})
