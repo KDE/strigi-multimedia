@@ -15,6 +15,7 @@ if(TAGLIB_FOUND)
 		add_subdirectory(mpc)
 	endif(HAVE_TAGLIB_MPCFILE_H)
 	add_subdirectory(flac)
+	add_subdirectory(mp3)
 endif(TAGLIB_FOUND)
 
 if(THEORA_FOUND)
@@ -25,7 +26,6 @@ if (OGGVORBIS_FOUND)
 	add_subdirectory(ogg)
 endif(OGGVORBIS_FOUND)
 
-message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(KFILE_MP3_SUBDIR)")
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
