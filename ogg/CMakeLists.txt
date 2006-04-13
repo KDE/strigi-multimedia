@@ -13,7 +13,7 @@ kde4_add_plugin(kfile_ogg ${kfile_ogg_PART_SRCS})
 
 kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_ogg )
 
-target_link_libraries(kfile_ogg  ${KDE4_KIO_LIBS} ogg vorbis vorbisfile )
+target_link_libraries(kfile_ogg ${VORBIS_LIBS} ${VORBISFILE_LIBS} ${KDE4_KIO_LIBS} ogg vorbis vorbisfile )
 
 install_targets(${LIB_INSTALL_DIR}/kde4 kfile_ogg )
 

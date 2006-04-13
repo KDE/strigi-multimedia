@@ -21,8 +21,11 @@ if(THEORA_FOUND)
 	add_subdirectory(theora)
 endif(THEORA_FOUND)
 
+if (OGGVORBIS_FOUND)
+	add_subdirectory(ogg)
+endif(OGGVORBIS_FOUND)
+
 message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(KFILE_MP3_SUBDIR)")
-message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}: skipped subdir $(KFILE_OGG_SUBDIR)")
 include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
 
 
