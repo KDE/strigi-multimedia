@@ -15,7 +15,7 @@ kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_ogg )
 
 target_link_libraries(kfile_ogg ${VORBIS_LIBS} ${VORBISFILE_LIBS} ${KDE4_KIO_LIBS} ogg vorbis vorbisfile )
 
-install_targets(${LIB_INSTALL_DIR}/kde4 kfile_ogg )
+install_targets(${PLUGIN_INSTALL_DIR} kfile_ogg )
 
 
 ########### install files ###############
