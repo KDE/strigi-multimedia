@@ -14,8 +14,6 @@ kfile_ogg_la_LIBADD = $(LIB_KIO) -logg -lvorbis -lvorbisfile
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
 
-messages: rc.cpp
-	$(XGETTEXT) kfile_ogg.cpp -o $(podir)/kfile_ogg.pot
 
 services_DATA = kfile_ogg.desktop
 servicesdir = $(kde_servicesdir)

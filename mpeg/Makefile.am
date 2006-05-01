@@ -15,8 +15,6 @@ kfile_mpeg_la_LIBADD = $(LIB_KIO)
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
 
-messages: rc.cpp
-	$(XGETTEXT) kfile_mpeg.cpp -o $(podir)/kfile_mpeg.pot
 
 services_DATA = kfile_mpeg.desktop
 servicesdir = $(kde_servicesdir)

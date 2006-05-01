@@ -15,8 +15,6 @@ kfile_theora_la_LIBADD = $(LIB_KIO) -logg -lvorbis -ltheora
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
 
-messages: rc.cpp
-	$(XGETTEXT) kfile_theora.cpp -o $(podir)/kfile_theora.pot
 
 services_DATA = kfile_theora.desktop
 servicesdir = $(kde_servicesdir)

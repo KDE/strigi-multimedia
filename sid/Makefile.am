@@ -14,8 +14,6 @@ kfile_sid_la_LIBADD = $(LIB_KIO)
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
 
-messages: rc.cpp
-	$(XGETTEXT) kfile_sid.cpp -o $(podir)/kfile_sid.pot
 
 services_DATA = kfile_sid.desktop
 servicesdir = $(kde_servicesdir)

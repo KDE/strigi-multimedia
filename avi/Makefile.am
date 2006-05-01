@@ -15,8 +15,6 @@ kfile_avi_la_LIBADD = $(LIB_KIO)
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
 
-messages: rc.cpp
-	$(XGETTEXT) kfile_avi.cpp -o $(podir)/kfile_avi.pot
 
 services_DATA = kfile_avi.desktop
 servicesdir = $(kde_servicesdir)

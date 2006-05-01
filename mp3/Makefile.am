@@ -15,8 +15,6 @@ kfile_mp3_la_LIBADD = $(LIB_KIO)
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
 
-messages: rc.cpp
-	$(XGETTEXT) kfile_mp3.cpp -o $(podir)/kfile_mp3.pot
 
 services_DATA = kfile_mp3.desktop
 servicesdir = $(kde_servicesdir)
