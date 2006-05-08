@@ -28,7 +28,7 @@ class KMp3Plugin: public KFilePlugin
     Q_OBJECT
 
 public:
-    KMp3Plugin(QObject *parent, const char *name, const QStringList &args);
+    KMp3Plugin(QObject *parent, const QStringList &args);
 
     virtual bool readInfo( KFileMetaInfo& info, uint what );
     virtual bool writeInfo( const KFileMetaInfo& info) const;

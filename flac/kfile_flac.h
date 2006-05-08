@@ -34,7 +34,7 @@ class KFlacPlugin: public KFilePlugin
     Q_OBJECT
 
 public:
-    KFlacPlugin( QObject *parent, const char *name, const QStringList& args );
+    KFlacPlugin( QObject *parent, const QStringList& args );
 
     virtual bool readInfo( KFileMetaInfo& info, uint what);
     virtual bool writeInfo( const KFileMetaInfo& info ) const;

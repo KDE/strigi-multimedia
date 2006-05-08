@@ -45,12 +45,11 @@ typedef KGenericFactory<KAviPlugin> AviFactory;
 
 K_EXPORT_COMPONENT_FACTORY(kfile_avi, AviFactory( "kfile_avi" ))
 
-KAviPlugin::KAviPlugin(QObject *parent, const char *name,
+KAviPlugin::KAviPlugin(QObject *parent, 
                        const QStringList &args)
 
     : KFilePlugin(parent, args)
 {
-	setObjectName(name);
     KFileMimeTypeInfo* info = addMimeTypeInfo( "video/x-msvideo" );
 
     KFileMimeTypeInfo::GroupInfo* group = 0L;

@@ -42,12 +42,11 @@ typedef KGenericFactory<KMpegPlugin> MpegFactory;
 
 K_EXPORT_COMPONENT_FACTORY(kfile_mpeg, MpegFactory( "kfile_mpeg" ))
 
-KMpegPlugin::KMpegPlugin(QObject *parent, const char *name,
+KMpegPlugin::KMpegPlugin(QObject *parent, 
                        const QStringList &args)
 
     : KFilePlugin(parent, args)
 {
-	setObjectName(name);
     KFileMimeTypeInfo* info = addMimeTypeInfo( "video/mpeg" );
 
     KFileMimeTypeInfo::GroupInfo* group = 0L;

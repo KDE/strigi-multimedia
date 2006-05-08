@@ -34,7 +34,7 @@ class KMpcPlugin: public KFilePlugin
     Q_OBJECT
 
 public:
-    KMpcPlugin( QObject *parent, const char *name, const QStringList& args );
+    KMpcPlugin( QObject *parent, const QStringList& args );
 
     virtual bool readInfo( KFileMetaInfo& info, uint what);
     virtual bool writeInfo( const KFileMetaInfo& info ) const;

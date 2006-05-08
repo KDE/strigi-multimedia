@@ -43,12 +43,11 @@ typedef KGenericFactory<KAuPlugin> AuFactory;
 
 K_EXPORT_COMPONENT_FACTORY(kfile_au, AuFactory( "kfile_au" ))
 
-KAuPlugin::KAuPlugin(QObject *parent, const char *name,
+KAuPlugin::KAuPlugin(QObject *parent, 
                        const QStringList &args)
 
     : KFilePlugin(parent, args)
 {
-	setObjectName(name);
     KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/basic" );
 
     KFileMimeTypeInfo::GroupInfo* group = 0L;

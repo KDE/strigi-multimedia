@@ -33,7 +33,7 @@ class theoraPlugin: public KFilePlugin
     Q_OBJECT
     
 public:
-    theoraPlugin( QObject *parent, const char *name, const QStringList& args );
+    theoraPlugin( QObject *parent,  const QStringList& args );
     
     virtual bool readInfo( KFileMetaInfo& info, uint what);
 };

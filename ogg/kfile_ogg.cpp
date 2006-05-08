@@ -61,12 +61,11 @@ static const char* const knownTranslations[] = {
 
 K_EXPORT_COMPONENT_FACTORY(kfile_ogg, KGenericFactory<KOggPlugin>("kfile_ogg"))
 
-KOggPlugin::KOggPlugin( QObject *parent, const char *name,
+KOggPlugin::KOggPlugin( QObject *parent, 
                         const QStringList &args )
     : KFilePlugin( parent, args )
 {
     kDebug(7034) << "ogg plugin\n";
-    setObjectName(name);
     KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/vorbis" );
 
     KFileMimeTypeInfo::GroupInfo* group = 0;

@@ -29,7 +29,7 @@ class KAuPlugin: public KFilePlugin
     Q_OBJECT
     
 public:
-    KAuPlugin( QObject *parent, const char *name, const QStringList& args );
+    KAuPlugin( QObject *parent, const QStringList& args );
     
     virtual bool readInfo( KFileMetaInfo& info, uint what);
 };

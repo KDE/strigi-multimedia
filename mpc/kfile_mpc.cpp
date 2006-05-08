@@ -23,7 +23,6 @@
 
 #include "kfile_mpc.h"
 
-#include <q3cstring.h>
 #include <qfile.h>
 #include <qdatetime.h>
 #include <q3dict.h>
@@ -48,11 +47,10 @@
 
 K_EXPORT_COMPONENT_FACTORY(kfile_mpc, KGenericFactory<KMpcPlugin>("kfile_mpc"))
 
-KMpcPlugin::KMpcPlugin( QObject *parent, const char *name,
+KMpcPlugin::KMpcPlugin( QObject *parent, 
                         const QStringList &args )
     : KFilePlugin( parent, args )
 {
-	setObjectName(name);
     kDebug(7034) << "mpc plugin\n";
 
     KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/x-musepack" );

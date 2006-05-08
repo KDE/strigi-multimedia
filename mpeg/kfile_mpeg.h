@@ -30,7 +30,7 @@ class KMpegPlugin: public KFilePlugin
     Q_OBJECT
 
 public:
-    KMpegPlugin( QObject *parent, const char *name, const QStringList& args );
+    KMpegPlugin( QObject *parent,  const QStringList& args );
 
     virtual bool readInfo( KFileMetaInfo& info, uint what);
 

@@ -43,12 +43,11 @@ typedef KGenericFactory<KWavPlugin> WavFactory;
 
 K_EXPORT_COMPONENT_FACTORY(kfile_wav, WavFactory( "kfile_wav" ))
 
-KWavPlugin::KWavPlugin(QObject *parent, const char *name,
+KWavPlugin::KWavPlugin(QObject *parent, 
                        const QStringList &args)
     
     : KFilePlugin(parent, args)
 {
-	setObjectName(name);
     KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/x-wav" );
 
     KFileMimeTypeInfo::GroupInfo* group = 0L;

@@ -36,12 +36,11 @@ typedef KGenericFactory<KSidPlugin> SidFactory;
 
 K_EXPORT_COMPONENT_FACTORY(kfile_sid, SidFactory("kfile_sid"))
 
-KSidPlugin::KSidPlugin(QObject *parent, const char *name,
+KSidPlugin::KSidPlugin(QObject *parent,
                        const QStringList &args)
     
     : KFilePlugin(parent, args)
 {
-	setObjectName(name);
     kDebug(7034) << "sid plugin\n";
     
     KFileMimeTypeInfo* info = addMimeTypeInfo("audio/prs.sid");

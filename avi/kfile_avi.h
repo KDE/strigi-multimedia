@@ -39,7 +39,7 @@ class KAviPlugin: public KFilePlugin
     Q_OBJECT
     
 public:
-    KAviPlugin( QObject *parent, const char *name, const QStringList& args );
+    KAviPlugin( QObject *parent, const QStringList& args );
 
 
 

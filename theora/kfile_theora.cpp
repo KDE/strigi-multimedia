@@ -56,12 +56,11 @@ typedef KGenericFactory<theoraPlugin> theoraFactory;
 
 K_EXPORT_COMPONENT_FACTORY(kfile_theora, theoraFactory( "kfile_theora" ))
 
-theoraPlugin::theoraPlugin(QObject *parent, const char *name,
+theoraPlugin::theoraPlugin(QObject *parent, 
                            const QStringList &args)
         : KFilePlugin(parent, args)
 {
 //  kDebug(7034) << "theora plugin\n";
-	setObjectName(name);
     KFileMimeTypeInfo* info = addMimeTypeInfo( "video/x-theora" );
 
     KFileMimeTypeInfo::GroupInfo* group = 0;

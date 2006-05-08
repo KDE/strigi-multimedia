@@ -31,7 +31,7 @@ class KOggPlugin: public KFilePlugin
     Q_OBJECT
     
 public:
-    KOggPlugin( QObject *parent, const char *name, const QStringList& args );
+    KOggPlugin( QObject *parent, const QStringList& args );
     
     virtual bool readInfo( KFileMetaInfo& info, uint what);
     virtual bool writeInfo( const KFileMetaInfo& info ) const;

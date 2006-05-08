@@ -29,7 +29,7 @@ class KWavPlugin: public KFilePlugin
     Q_OBJECT
     
 public:
-    KWavPlugin( QObject *parent, const char *name, const QStringList& args );
+    KWavPlugin( QObject *parent, const QStringList& args );
     
     virtual bool readInfo( KFileMetaInfo& info, uint what);
 };
