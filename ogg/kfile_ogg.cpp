@@ -264,6 +264,7 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
     if ( vcedit_open(state, infile)==-1 ) 
     {
         kDebug(7034) << "error in vcedit_open for " << info.path() << endl;
+        vcedit_clear(state);
         return false;
     }
     
