@@ -21,7 +21,7 @@
 #define __KFILE_AVI_H__
 
 #include <kfilemetainfo.h>
-#include <qfile.h>
+#include <QFile>
 
 #if !defined(__osf__)
 #include <inttypes.h>

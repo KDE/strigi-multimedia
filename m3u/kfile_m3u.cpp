@@ -27,9 +27,9 @@
 #include <kgenericfactory.h>
 
 #include <q3cstring.h>
-#include <qfile.h>
+#include <QFile>
 #include <qtextstream.h>
-#include <qdatetime.h>
+#include <QDateTime>
 #include <q3dict.h>
 #include <qvalidator.h>
 

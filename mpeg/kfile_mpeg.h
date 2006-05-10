@@ -21,7 +21,7 @@
 #define __KFILE_MPEG_H__
 
 #include <kfilemetainfo.h>
-#include <qfile.h>
+#include <QFile>
 
 class QStringList;
 

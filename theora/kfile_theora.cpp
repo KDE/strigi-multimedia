@@ -18,7 +18,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.             *
  ***************************************************************************/
 
-#include <qfile.h>
+#include <QFile>
 #include <config.h>
 #include "kfile_theora.h"
 #include <QSize>

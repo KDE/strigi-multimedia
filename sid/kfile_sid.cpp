@@ -23,9 +23,9 @@
 #include <kstringvalidator.h>
 #include <kdebug.h>
 
-#include <qfile.h>
+#include <QFile>
 #include <qvalidator.h>
-#include <qwidget.h>
+#include <QWidget>
 
 #include <unistd.h>
 #include <sys/types.h>

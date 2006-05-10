@@ -24,8 +24,8 @@
 #include "kfile_flac.h"
 
 #include <q3cstring.h>
-#include <qfile.h>
-#include <qdatetime.h>
+#include <QFile>
+#include <QDateTime>
 #include <q3dict.h>
 #include <qvalidator.h>
 #include <qfileinfo.h>

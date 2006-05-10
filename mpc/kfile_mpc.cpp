@@ -23,8 +23,8 @@
 
 #include "kfile_mpc.h"
 
-#include <qfile.h>
-#include <qdatetime.h>
+#include <QFile>
+#include <QDateTime>
 #include <q3dict.h>
 #include <qvalidator.h>
 #include <qfileinfo.h>

@@ -31,8 +31,8 @@
 #include <q3dict.h>
 #include <qvalidator.h>
 #include <q3cstring.h>
-#include <qfile.h>
-#include <qdatetime.h>
+#include <QFile>
+#include <QDateTime>
 
 #include <tstring.h>
 #include <tag.h>
