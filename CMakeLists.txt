@@ -1,4 +1,3 @@
-kde4_header()
 include(CheckIncludeFileCXX)
 
 add_subdirectory( m3u ) 
@@ -32,7 +31,6 @@ endif(OGGVORBIS_FOUND)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

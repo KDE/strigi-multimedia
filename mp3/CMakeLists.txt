@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -24,7 +23,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kfile_mp3 )
 
 install_files( ${SERVICES_INSTALL_DIR} FILES kfile_mp3.desktop )
 
-kde4_footer()
 
 
 
