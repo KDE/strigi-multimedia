@@ -40,6 +40,7 @@ Name[tr]=MusePack Bilgisi
 Name[uk]=Інформація по Musepack
 Name[zh_CN]=Musepack 信息
 Name[zh_HK]=Musepack 資訊
+Name[zh_TW]=Musepack 資訊
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_mpc
 MimeType=audio/x-musepack

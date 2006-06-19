@@ -39,6 +39,7 @@ Name[sv]=MPEG-information
 Name[uk]=Інформація про MPEG
 Name[zh_CN]=MPEG 信息
 Name[zh_HK]=MPEG 資訊
+Name[zh_TW]=MPEG 資訊
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_mpeg
 MimeType=video/mpeg
