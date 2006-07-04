@@ -12,12 +12,12 @@ kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_flac )
 
 target_link_libraries(kfile_flac  ${KDE4_KIO_LIBS} ${TAGLIB_LIBRARIES})
 
-install_targets(${PLUGIN_INSTALL_DIR} kfile_flac )
+install(TARGETS kfile_flac  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${SERVICES_INSTALL_DIR} FILES kfile_flac.desktop )
+install( FILES kfile_flac.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
 
 
 

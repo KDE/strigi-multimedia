@@ -16,12 +16,12 @@ kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_mp3 )
 
 target_link_libraries(kfile_mp3  ${KDE4_KIO_LIBS} ${TAGLIB_LIBRARIES} )
 
-install_targets(${PLUGIN_INSTALL_DIR} kfile_mp3 )
+install(TARGETS kfile_mp3  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${SERVICES_INSTALL_DIR} FILES kfile_mp3.desktop )
+install( FILES kfile_mp3.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
 
 
 

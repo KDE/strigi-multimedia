@@ -14,12 +14,12 @@ kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_m3u )
 
 target_link_libraries(kfile_m3u  ${KDE4_KIO_LIBS} )
 
-install_targets(${PLUGIN_INSTALL_DIR} kfile_m3u )
+install(TARGETS kfile_m3u  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${SERVICES_INSTALL_DIR} FILES kfile_m3u.desktop )
+install( FILES kfile_m3u.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
 
 
 

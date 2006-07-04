@@ -14,12 +14,12 @@ kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_ogg )
 
 target_link_libraries(kfile_ogg ${OGGVORBIS_LIBRARIES} ${KDE4_KIO_LIBS})
 
-install_targets(${PLUGIN_INSTALL_DIR} kfile_ogg )
+install(TARGETS kfile_ogg  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${SERVICES_INSTALL_DIR} FILES kfile_ogg.desktop )
+install( FILES kfile_ogg.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
 
 
 
