@@ -1,1 +1,0 @@
-AM_CONDITIONAL(include_flac_SUBDIR, test "x$have_taglib" = xyes)
