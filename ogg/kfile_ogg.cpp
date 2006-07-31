@@ -201,7 +201,7 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
         for (i=0; i < vc->comments; i++)
         {
             kDebug(7034) << vc->user_comments[i] << endl;
-            QStringList split = QStringList::split("=", QString::fromUtf8(vc->user_comments[i]));
+            QStringList split = QString::fromUtf8(vc->user_comments[i]).split(QChar('='));
             split[0] = split[0].toLower();
             split[0][0] = split[0][0].toUpper();
  
