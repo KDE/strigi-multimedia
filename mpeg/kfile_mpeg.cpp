@@ -36,6 +36,8 @@
 #include <qfile.h>
 #include <qdatetime.h>
 
+// #include <iostream>
+
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
@@ -213,6 +215,16 @@ int KMpegPlugin::skip_packet() {
     return len;
 }
 
+int KMpegPlugin::skip_riff_chunk() {
+    dstream.setByteOrder(QDataStream::LittleEndian);
+    uint32_t len;
+    dstream >> len;
+//     std::cerr << "Length of skipped chunk: " << len << std::endl;
+
+    dstream.setByteOrder(QDataStream::BigEndian);
+    return len;
+}
+
 int KMpegPlugin::parse_private() {
     uint16_t len;
     dstream >> len;
@@ -231,6 +243,53 @@ int KMpegPlugin::parse_private() {
     return len-1;
 }
 
+bool KMpegPlugin::find_mpeg_in_cdxa()
+{
+    int skip_len = 0;
+    uint32_t magic;
+    uint32_t data_len;
+    // search for data chunk
+    while (true) {
+        dstream >> magic;
+        if (magic != 0x64617461) { // "fmt "
+            skip_len = skip_riff_chunk();
+            if (!file.at(file.at()+skip_len)) return false;
+            continue;
+        } else {
+            // size of chunk
+            dstream >> data_len;
+            int block = 0;
+            // search for mpeg part
+            while(block < 32) {
+                // check for CDXA sync thingy
+                dstream >> magic;
+                // 00 ff ff ff ff ff ff ff ff ff ff ff 00
+                if (magic == 0x00ffffff) {
+//                     std::cerr << "Found CD sync" << std::endl;
+                    // skip 20 bytes
+                    if (!file.at(file.at()+20)) return false;
+                    dstream >> magic;
+                    if (magic == 0x000001ba) {
+//                         std::cerr << "Found CDXA mpeg" << std::endl;
+                        return true;
+                    }
+                    else {
+//                         std::cerr << "CDXA block: #" <<block << ": " << magic << std::endl;
+                        if (!file.at(file.at()+2324)) return false;
+                        block++;
+                        continue;
+                    }
+                } else {
+//                     std::cerr << "Incorrect CDXA block" << std::endl;
+                    // shouldn't happen
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+}
+
 bool KMpegPlugin::read_mpeg()
 {
     mpeg = 0;
@@ -243,9 +302,11 @@ bool KMpegPlugin::read_mpeg()
     {
         dstream >> magic;
         dstream >> magic;
-        if (magic == 0x43445841) { // == "CDXA"
-            kdDebug(7034) << "CDXA not yet supported" << endl;
+        if (magic != 0x43445841) { // 0x43445841 == "CDXA"
+            kdDebug(7034) << "Unknown RIFF file" << endl;
             return false;
+        } else {
+            if (!find_mpeg_in_cdxa()) return false;
         }
     }
     else
@@ -253,7 +314,7 @@ bool KMpegPlugin::read_mpeg()
         kdDebug(7034) << "Not a MPEG-PS file" << endl;
         return false;
     }
-    file.at(0);
+//     file.at(0);
 
     uint8_t byte;
     int skip_len = 0;

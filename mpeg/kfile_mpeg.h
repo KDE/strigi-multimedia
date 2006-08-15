@@ -41,6 +41,8 @@ private:
     int parse_audio();
     int parse_private();
     int skip_packet();
+    int skip_riff_chunk();
+    bool find_mpeg_in_cdxa();
 
     bool read_mpeg();
     void read_length();
