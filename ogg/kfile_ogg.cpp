@@ -41,6 +41,7 @@
 
 #include <sys/stat.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 // known translations for common ogg/vorbis keys
 // from http://www.ogg.org/ogg/vorbis/doc/v-comment.html
