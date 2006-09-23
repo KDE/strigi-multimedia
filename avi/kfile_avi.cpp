@@ -126,7 +126,7 @@ bool KAviPlugin::read_avi()
             f.seek( f.pos() + dwbuf1 );
 
         } else {
-            // something we dont understand yet
+            // something we don't understand yet
             kDebug(7034) << "Unknown chunk header found: " << charbuf1 << "\n";
             return false;
         };
@@ -138,7 +138,7 @@ bool KAviPlugin::read_avi()
             done = true;
         }
 
-        // make sure we dont stay here forever
+        // make sure we don't stay here forever
         ++counter;
         if (counter > 10)
             done = true;

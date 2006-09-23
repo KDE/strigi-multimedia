@@ -215,7 +215,7 @@ KSidPlugin::createValidator(const QString& /*mimetype*/, const QString& group,
                             const char* name) const
 {
     kDebug(7034) << k_funcinfo << endl;
-    // all items in "General" group are strings of max lenght 31
+    // all items in "General" group are strings of max length 31
     if (group == "General")
         return new QRegExpValidator(QRegExp(".{,31}"), parent);
     // all others are read-only
