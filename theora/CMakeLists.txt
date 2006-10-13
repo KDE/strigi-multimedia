@@ -6,7 +6,7 @@
 
 set(kfile_theora_PART_SRCS kfile_theora.cpp )
 
-kde4_automoc(${kfile_theora_PART_SRCS})
+kde4_automoc(kfile_theora ${kfile_theora_PART_SRCS})
 
 kde4_add_plugin(kfile_theora ${kfile_theora_PART_SRCS})
 

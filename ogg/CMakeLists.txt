@@ -6,7 +6,7 @@
 
 set(kfile_ogg_PART_SRCS kfile_ogg.cpp vcedit.c )
 
-kde4_automoc(${kfile_ogg_PART_SRCS})
+kde4_automoc(kfile_ogg ${kfile_ogg_PART_SRCS})
 
 kde4_add_plugin(kfile_ogg ${kfile_ogg_PART_SRCS})
 

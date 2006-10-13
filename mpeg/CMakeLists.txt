@@ -6,7 +6,7 @@
 
 set(kfile_mpeg_PART_SRCS kfile_mpeg.cpp )
 
-kde4_automoc(${kfile_mpeg_PART_SRCS})
+kde4_automoc(kfile_mpeg ${kfile_mpeg_PART_SRCS})
 
 kde4_add_plugin(kfile_mpeg ${kfile_mpeg_PART_SRCS})
 

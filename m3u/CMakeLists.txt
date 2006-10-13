@@ -6,7 +6,7 @@
 
 set(kfile_m3u_PART_SRCS kfile_m3u.cpp )
 
-kde4_automoc(${kfile_m3u_PART_SRCS})
+kde4_automoc(kfile_m3u ${kfile_m3u_PART_SRCS})
 
 kde4_add_plugin(kfile_m3u ${kfile_m3u_PART_SRCS})
 
