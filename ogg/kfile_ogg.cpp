@@ -320,14 +320,8 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
     else
         filename = info.path();
     
-    // nothing in Qt or KDE to get the mode as an int?
-    struct stat s;
-    stat(QFile::encodeName(filename), &s);
-    
-    KSaveFile sf(filename, s.st_mode);
-    FILE* outfile = sf.fstream();
-
-    if ( sf.status() || !outfile)
+    KSaveFile sf(filename);
+    if ( !sf.open() )
     {
         kDebug(7034) << "couldn't create temp file\n";
         vcedit_clear(state); // frees comment entries and vendor
@@ -336,15 +330,15 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
         vc->vendor = 0;
         return false;
     }
+    FILE* outfile = sf.fstream();
 
-    
     vcedit_write(state,outfile); // calls vcedit_clear() itself so we don't free anything
 
     if (vc->vendor) free(vc->vendor);
     vc->vendor = 0;
 
     fclose(infile);
-    sf.close();
+    sf.finalize(); //check for error here?
     
     return true;
 }
