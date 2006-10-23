@@ -4,7 +4,7 @@ add_definitions(${TAGLIB_CFLAGS})
 
 set(kfile_flac_PART_SRCS kfile_flac.cpp )
 
-kde4_automoc(kfile_flac ${kfile_flac_PART_SRCS})
+kde4_automoc(${kfile_flac_PART_SRCS})
 
 kde4_add_plugin(kfile_flac ${kfile_flac_PART_SRCS})
 

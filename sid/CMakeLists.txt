@@ -6,7 +6,7 @@
 
 set(kfile_sid_PART_SRCS kfile_sid.cpp )
 
-kde4_automoc(kfile_sid ${kfile_sid_PART_SRCS})
+kde4_automoc(${kfile_sid_PART_SRCS})
 
 kde4_add_plugin(kfile_sid ${kfile_sid_PART_SRCS})
 

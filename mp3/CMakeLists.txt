@@ -8,7 +8,7 @@ ADD_DEFINITIONS(${TAGLIB_CFLAGS})
 
 set(kfile_mp3_PART_SRCS kfile_mp3.cpp )
 
-kde4_automoc(kfile_mp3 ${kfile_mp3_PART_SRCS})
+kde4_automoc(${kfile_mp3_PART_SRCS})
 
 kde4_add_plugin(kfile_mp3 ${kfile_mp3_PART_SRCS})
 

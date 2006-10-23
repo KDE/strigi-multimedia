@@ -6,7 +6,7 @@
 
 set(kfile_wav_PART_SRCS kfile_wav.cpp )
 
-kde4_automoc(kfile_wav ${kfile_wav_PART_SRCS})
+kde4_automoc(${kfile_wav_PART_SRCS})
 
 kde4_add_plugin(kfile_wav ${kfile_wav_PART_SRCS})
 
