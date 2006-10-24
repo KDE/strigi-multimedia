@@ -201,7 +201,7 @@ found_sync:
         kdDebug(7034) << "Invalid MPEG audio layer" << endl;
 
     dstream >> buf;
-    int bitrate_index = buf & 0xf0;
+    int bitrate_index = (buf & 0xf0) >> 4;
     audio_rate = bitrate_123[3-layer][bitrate_index];
 
     return len-3-i;
