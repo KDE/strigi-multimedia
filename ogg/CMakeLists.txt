@@ -10,7 +10,7 @@ kde4_automoc(${kfile_ogg_PART_SRCS})
 
 kde4_add_plugin(kfile_ogg ${kfile_ogg_PART_SRCS})
 
-kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_ogg )
+
 
 target_link_libraries(kfile_ogg ${OGGVORBIS_LIBRARIES} ${KDE4_KIO_LIBS})
 

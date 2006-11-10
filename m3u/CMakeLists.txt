@@ -10,7 +10,7 @@ kde4_automoc(${kfile_m3u_PART_SRCS})
 
 kde4_add_plugin(kfile_m3u ${kfile_m3u_PART_SRCS})
 
-kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_m3u )
+
 
 target_link_libraries(kfile_m3u  ${KDE4_KIO_LIBS} )
 
