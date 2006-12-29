@@ -1,7 +1,7 @@
 /* This program is licensed under the GNU General Public License, version 2,
  * a copy of which is included with this program.
  *
- * (c) 2000-2001 Michael Smith <msmith@labyrinth.net.au>
+ * Copyright (c) 2000-2001 Michael Smith <msmith@labyrinth.net.au>
  *
  * VCEdit header.
  *

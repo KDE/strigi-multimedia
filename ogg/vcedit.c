@@ -1,6 +1,6 @@
 /* This program is licensed under the GNU Library General Public License, version 2
  *
- * (c) 2000-2001 Michael Smith <msmith@labyrinth.net.au>
+ * Copyright (c) 2000-2001 Michael Smith <msmith@labyrinth.net.au>
  *
  * Modified by Warren Spits <spits@cyberdude.com>
  *     - Handles vorbis files that are truncated or missing an eos flag.
@@ -71,7 +71,7 @@ void vcedit_clear(vcedit_state *state)
 
 int vcedit_open(vcedit_state *state, FILE *in)
 {
-	return vcedit_open_callbacks(state, (void *)in, 
+	return vcedit_open_callbacks(state, (void *)in,
 			(vcedit_read_func)fread, (vcedit_write_func)fwrite);
 }
 
@@ -166,7 +166,7 @@ int vcedit_open_callbacks(vcedit_state *state, void *in,
 					{
 						state->booklen = header->bytes;
 						state->bookbuf = malloc(state->booklen);
-						memcpy(state->bookbuf, header->packet, 
+						memcpy(state->bookbuf, header->packet,
 								header->bytes);
 					}
 					i++;
@@ -234,7 +234,7 @@ int vcedit_write(vcedit_state *state, void *out)
 		if(state->write(ogout.header,1,ogout.header_len, out) !=
 				(size_t) ogout.header_len)
 			goto cleanup;
-		if(state->write(ogout.body,1,ogout.body_len, out) != 
+		if(state->write(ogout.body,1,ogout.body_len, out) !=
 				(size_t) ogout.body_len)
 			goto cleanup;
 	}
@@ -247,10 +247,10 @@ int vcedit_write(vcedit_state *state, void *out)
 							ogg_stream_pageout(&streamout, &ogout);
 		if (outresult > 0)
 		{
-			if (state->write(ogout.header,1,ogout.header_len, 
+			if (state->write(ogout.header,1,ogout.header_len,
 							 out) != (size_t) ogout.header_len)
 				goto cleanup;
-			if (state->write(ogout.body,1,ogout.body_len, 
+			if (state->write(ogout.body,1,ogout.body_len,
 							 out) != (size_t) ogout.body_len)
 				goto cleanup;
 			if (ogg_page_eos(&ogout)) eosout = 1;
@@ -295,7 +295,7 @@ int vcedit_write(vcedit_state *state, void *out)
 		result = ogg_sync_pageout(state->oy, &ogout);
 		if (result > 0)
 		{
-			if (state->write(ogout.header,1,ogout.header_len, 
+			if (state->write(ogout.header,1,ogout.header_len,
 							 out) != (size_t) ogout.header_len)
 				goto cleanup;
 			if (state->write(ogout.body,1,ogout.body_len, out) !=
@@ -321,7 +321,7 @@ cleanup:
 	vcedit_clear_internals(state);
 	if(!(eosin && eosout))
 	{
-		state->lasterror =  
+		state->lasterror =
 			"Error writing stream to output. "
 			"Output stream may be corrupted or truncated.";
 		return -1;
