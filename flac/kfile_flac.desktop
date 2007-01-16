@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=FLAC Info
+Name[el]=Πληροφορίες FLAC
 Name[fr]=Informations FLAC
 Name[x-test]=xxFLAC Infoxx
 ServiceTypes=KFilePlugin

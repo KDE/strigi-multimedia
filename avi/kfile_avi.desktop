@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=AVI Info
+Name[el]=Πληροφορίες AVI
 Name[fr]=Informations AVI
 Name[x-test]=xxAVI Infoxx
 ServiceTypes=KFilePlugin

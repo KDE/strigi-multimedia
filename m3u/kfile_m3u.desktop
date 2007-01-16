@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=M3U Playlist Info
+Name[el]=Πληροφορίες λίστας αναπαραγωγής M3U
 Name[fr]=Informations sur une liste de lecture M3U
 Name[x-test]=xxM3U Playlist Infoxx
 ServiceTypes=KFilePlugin

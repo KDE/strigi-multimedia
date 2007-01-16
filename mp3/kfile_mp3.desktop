@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=MP3 Info
+Name[el]=Πληροφορίες MP3
 Name[fr]=Informations Mpeg3
 Name[x-test]=xxMP3 Infoxx
 ServiceTypes=KFilePlugin

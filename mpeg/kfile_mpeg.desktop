@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=MPEG Info
+Name[el]=Πληροφορίες MPEG
 Name[fr]=Informations MPEG
 Name[x-test]=xxMPEG Infoxx
 ServiceTypes=KFilePlugin
