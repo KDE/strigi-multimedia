@@ -1,4 +1,4 @@
-
+include_directories( ${OGG_INCLUDE_DIR} )
 
 
 
