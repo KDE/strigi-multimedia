@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=FLAC Info
+Name[bg]=Информация за FLAC
 Name[br]=Titouroù FLAC
 Name[ca]=Informació FLAC
 Name[cs]=FLAC info
