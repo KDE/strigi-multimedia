@@ -1,5 +1,7 @@
 include(CheckIncludeFileCXX)
 
+message (STATUS "port kfile plugins!!!")
+if(KFILE_PLUGINS_PORTED)
 add_subdirectory( m3u ) 
 add_subdirectory( au ) 
 add_subdirectory( avi ) 
@@ -24,3 +26,4 @@ if (OGGVORBIS_FOUND)
 	add_subdirectory(ogg)
 endif(OGGVORBIS_FOUND)
 
+endif(KFILE_PLUGINS_PORTED)
