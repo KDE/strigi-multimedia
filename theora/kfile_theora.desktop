@@ -48,7 +48,7 @@ Name[zh_TW]=theora 資訊
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_theora
 # change MimeType here! (example: inode/directory)
-MimeType=video/x-theora
+MimeType=video/x-theora+ogg
 # change PreferredGroups here! (example: FolderInfo)
 PreferredGroups=
 # change PreferredItems here! (example: Items;Size)

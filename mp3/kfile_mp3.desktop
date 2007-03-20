@@ -57,6 +57,6 @@ Name[zh_HK]=MP3 資訊
 Name[zh_TW]=MP3 資訊
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_mp3
-MimeType=audio/x-mp3
+MimeType=audio/mpeg
 PreferredGroups=id3,Technical
 PreferredItems=Title,Artist,Album,Tracknumber,Genre,Bitrate,Length,Date,Comment,Sample Rate,Channels,Version,Layer,Copyright,Original,CRC
