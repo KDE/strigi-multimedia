@@ -63,7 +63,7 @@ KFlacPlugin::KFlacPlugin( QObject *parent,
     kDebug(7034) << "flac plugin\n";
     makeMimeTypeInfo( "audio/x-flac" );
 #ifdef TAGLIB_1_2
-    makeMimeTypeInfo( "audio/x-oggflac" );
+    makeMimeTypeInfo( "audio/x-flac+ogg" );
 #endif
 
 }

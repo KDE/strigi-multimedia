@@ -61,7 +61,7 @@ theoraPlugin::theoraPlugin(QObject *parent,
         : KFilePlugin(parent, args)
 {
 //  kDebug(7034) << "theora plugin\n";
-    KFileMimeTypeInfo* info = addMimeTypeInfo( "video/x-theora" );
+    KFileMimeTypeInfo* info = addMimeTypeInfo( "video/x-theora+ogg" );
 
     KFileMimeTypeInfo::GroupInfo* group = 0;
     KFileMimeTypeInfo::ItemInfo* item;
