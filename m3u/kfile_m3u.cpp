@@ -45,6 +45,8 @@ void M3uLineAnalyzer::startAnalysis(Strigi::AnalysisResult* i) {
 
 void M3uLineAnalyzer::handleLine(const char* data, uint32_t length) 
 {
+    Q_UNUSED(length)
+
     if (ready) 
         return;
     
@@ -59,57 +61,6 @@ void M3uLineAnalyzer::handleLine(const char* data, uint32_t length)
     if (!strLine.startsWith('#')) {
         ++count;
     }
-    
-#if 0
-    if (line == 1 && (length < 9 || strncmp(data, "/* XPM */", 9))) {
-        // this is not an xpm file
-        ready = true;
-        return;
-    } else if (length == 0 || data[0] != '"') {
-        return;
-    }
-    uint32_t i = 0;
-    // we have found the line which should contain the information we want
-    ready = true;
-    // read the height
-    uint32_t propertyValue = 0;
-    i++;
-    while (i < length && isdigit(data[i])) {
-        propertyValue = (propertyValue * 10) + data[i] - '0';
-        i++;
-    }
-
-    if (i >= length || data[i] != ' ')
-        return;
-
-    analysisResult->setField(factory->heightField, propertyValue);
-
-    // read the width
-    propertyValue = 0;
-    i++;
-    while (i < length && isdigit(data[i])) {
-        propertyValue = (propertyValue * 10) + data[i] - '0';
-        i++;
-    }
-
-    if (i >= length || data[i] != ' ')
-        return;
-
-    analysisResult->setField(factory->widthField, propertyValue);
-
-    // read the number of colors
-    propertyValue = 0;
-    i++;
-    while (i < length && isdigit(data[i])) {
-        propertyValue = (propertyValue * 10) + data[i] - '0';
-        i++;
-    }
-
-    if (i >= length || data[i] != ' ')
-        return;
-
-    analysisResult->setField(factory->numberOfColorsField, propertyValue);
-#endif
 }
 
 bool M3uLineAnalyzer::isReadyWithStream() 
@@ -119,77 +70,6 @@ bool M3uLineAnalyzer::isReadyWithStream()
 
 void M3uLineAnalyzer::endAnalysis()
 {
-    kDebug(7034) << "m3u - endAnalysis" << endl;
-
     analysisResult->setField(factory->tracksField, count);
 }
-
-#if 0
-
-#include <kdebug.h>
-#include <kurl.h>
-#include <kprocess.h>
-#include <klocale.h>
-#include <kgenericfactory.h>
-
-#include <q3cstring.h>
-#include <QFile>
-#include <qtextstream.h>
-#include <QDateTime>
-#include <q3dict.h>
-#include <qvalidator.h>
-
-typedef KGenericFactory<KM3uPlugin> M3uFactory;
-
-K_EXPORT_COMPONENT_FACTORY( kfile_m3u, M3uFactory( "kfile_m3u" ) )
-
-KM3uPlugin::KM3uPlugin( QObject *parent, 
-                        const QStringList &preferredItems )
-    : KFilePlugin( parent, preferredItems )
-{
-    kDebug(7034) << "m3u plugin\n";
-
-    KFileMimeTypeInfo* info = addMimeTypeInfo( "audio/x-mpegurl" );
-
-    KFileMimeTypeInfo::GroupInfo* group;
-
-    // tracks group
-    group = addGroupInfo(info, "Tracks", i18n("Tracks"));
-    addVariableInfo(group, QVariant::String, 0);
-}
-
-bool KM3uPlugin::readInfo( KFileMetaInfo& info, uint )
-{
-    if ( info.path().isEmpty() ) // remote file
-        return false;
-
-    QFile f(info.path());
-    if (!f.open(QIODevice::ReadOnly)) return false;
-    QTextStream str(&f);
-    str.setEncoding(QTextStream::Locale);
-    
-    
-    KFileMetaInfoGroup group = appendGroup(info, "Tracks");
-    
-    // for now treat all lines that don't start with # like entries
-    int num = 1;
-    while (!str.atEnd())
-    {
-        QString s = str.readLine();
-        if (!s.startsWith("#"))
-        {
-            if (s.endsWith("\n")) s.truncate(s.length()-1);
-
-            if (!s.trimmed().isEmpty()) {
-                appendItem(group, ki18n("Track %1").subs(num, 3).toString(), s);
-                num++;
-            }
-        }
-    }
-    
-    return true;
-}
-
-#include "kfile_m3u.moc"
-#endif
 

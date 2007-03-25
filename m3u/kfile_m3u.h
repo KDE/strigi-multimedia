@@ -70,7 +70,7 @@ private:
     void registerFields(Strigi::FieldRegister&);
 };
 
-//TODO: remove this include when vandenoever fixes analyzerplugin.h
+//TODO: remove this include when analyzerplugin.h is fixed
 #include <strigi/jstreamsconfig.h>
 
 class KDEMULTIMEDIA_EXPORT M3uFactoryFactory : public Strigi::AnalyzerFactoryFactory
@@ -84,29 +84,5 @@ public:
 };
 
 STRIGI_ANALYZER_FACTORY(M3uFactoryFactory)
-
-
-
-#if 0
-
-
-
-
-
-#include <kfilemetainfo.h>
-#include <kurl.h>
-
-class QStringList;
-
-class KM3uPlugin: public KFilePlugin
-{
-    Q_OBJECT
-    
-public:
-    KM3uPlugin( QObject *parent, const QStringList& args );
-    
-    virtual bool readInfo( KFileMetaInfo& info, uint what );
-};
-#endif
 
 #endif
