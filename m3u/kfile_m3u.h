@@ -36,6 +36,7 @@ private:
     const M3uLineAnalyzerFactory* factory;
     int32_t line;
     bool ready;
+    bool extensionOk;
     int count;
 
 public:

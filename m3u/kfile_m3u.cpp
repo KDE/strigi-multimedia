@@ -35,12 +35,10 @@ void M3uLineAnalyzerFactory::registerFields(Strigi::FieldRegister& reg)
 // Analyzer
 void M3uLineAnalyzer::startAnalysis(Strigi::AnalysisResult* i) 
 {
-    // TODO: The code below results in a segmantation fault.
-    // However, it is needed to make a difference between textfiles and m3u files.
-    // Check where the segmentation fault is located and when fixed, uncomment the lines below.
-
-    // if (i->extension() != "m3u")
-    //     return;
+    if (i->extension() != "m3u")
+        extensionOk = false;
+    else
+        extensionOk = true;
 
     analysisResult = i;
     ready = false;
@@ -50,7 +48,7 @@ void M3uLineAnalyzer::startAnalysis(Strigi::AnalysisResult* i)
 
 void M3uLineAnalyzer::handleLine(const char* data, uint32_t length) 
 {
-    if (ready) 
+    if (ready || !extensionOk) 
         return;
     
     ++line;
@@ -74,6 +72,7 @@ bool M3uLineAnalyzer::isReadyWithStream()
 
 void M3uLineAnalyzer::endAnalysis()
 {
-    analysisResult->setField(factory->tracksField, count);
+    if (extensionOk)
+        analysisResult->setField(factory->tracksField, count);
 }
 
