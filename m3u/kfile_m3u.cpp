@@ -33,7 +33,15 @@ void M3uLineAnalyzerFactory::registerFields(Strigi::FieldRegister& reg)
 }
 
 // Analyzer
-void M3uLineAnalyzer::startAnalysis(Strigi::AnalysisResult* i) {
+void M3uLineAnalyzer::startAnalysis(Strigi::AnalysisResult* i) 
+{
+    // TODO: The code below results in a segmantation fault.
+    // However, it is needed to make a difference between textfiles and m3u files.
+    // Check where the segmentation fault is located and when fixed, uncomment the lines below.
+
+    // if (i->extension() != "m3u")
+    //     return;
+
     analysisResult = i;
     ready = false;
     line = 0;
@@ -51,6 +59,10 @@ void M3uLineAnalyzer::handleLine(const char* data, uint32_t length)
         return;
 
     if (*data != '#') {
+
+        // TODO: Check for a valid url with QUrl
+        // TODO: Add the url to the trackPathField
+
         ++count;
     }
 }
