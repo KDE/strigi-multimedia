@@ -25,9 +25,6 @@
 #include <strigi/analysisresult.h>
 #include <strigi/streamlineanalyzer.h>
 
-#include <QString>
-#include <kdebug.h>
-
 // AnalyzerFactory
 void M3uLineAnalyzerFactory::registerFields(Strigi::FieldRegister& reg) 
 {
@@ -45,20 +42,15 @@ void M3uLineAnalyzer::startAnalysis(Strigi::AnalysisResult* i) {
 
 void M3uLineAnalyzer::handleLine(const char* data, uint32_t length) 
 {
-    Q_UNUSED(length)
-
     if (ready) 
         return;
     
     ++line;
 
-    QString strLine(data);
-    strLine = strLine.trimmed();
-
-    if (strLine.isEmpty())
+    if (length == 0)
         return;
 
-    if (!strLine.startsWith('#')) {
+    if (*data != '#') {
         ++count;
     }
 }
