@@ -18,8 +18,80 @@
  *  $Id$
  */
 
-#ifndef __KMIME_M3U_H__
-#define __KMIME_M3U_H__
+#ifndef KMIME_M3U_H
+#define KMIME_M3U_H
+
+#define STRIGI_IMPORT_API
+#include <strigi/analyzerplugin.h>
+#include <strigi/streamlineanalyzer.h>
+#include <kdemultimedia_export.h>
+
+class M3uLineAnalyzerFactory;
+
+class KDEMULTIMEDIA_EXPORT M3uLineAnalyzer : public Strigi::StreamLineAnalyzer 
+{
+private:
+    Strigi::AnalysisResult* analysisResult;
+    const M3uLineAnalyzerFactory* factory;
+    int32_t line;
+    bool ready;
+    int count;
+
+public:
+    M3uLineAnalyzer(const M3uLineAnalyzerFactory* f) : factory(f) {}
+    ~M3uLineAnalyzer() {}
+
+    const char* getName() const { 
+        return "M3uLineAnalyzer"; 
+    }
+
+    void startAnalysis(Strigi::AnalysisResult*);
+    void handleLine(const char* data, uint32_t length);
+    bool isReadyWithStream();
+    void endAnalysis();
+};
+
+class M3uLineAnalyzerFactory : public Strigi::StreamLineAnalyzerFactory 
+{
+friend class M3uLineAnalyzer;
+
+private:
+    const Strigi::RegisteredField* tracksField; //Number of tracks in the m3u playlist
+    const Strigi::RegisteredField* trackPathField; //The paths to the tracks in the playlist
+
+    const char* getName() const {
+        return "M3uLineAnalyzer";
+    }
+
+    Strigi::StreamLineAnalyzer* newInstance() const {
+        return new M3uLineAnalyzer(this);
+    }
+
+    void registerFields(Strigi::FieldRegister&);
+};
+
+//TODO: remove this include when vandenoever fixes analyzerplugin.h
+#include <strigi/jstreamsconfig.h>
+
+class KDEMULTIMEDIA_EXPORT M3uFactoryFactory : public Strigi::AnalyzerFactoryFactory
+{
+public:
+  std::list<Strigi::StreamLineAnalyzerFactory*> getStreamLineAnalyzerFactories() const {
+     std::list<Strigi::StreamLineAnalyzerFactory*> af;
+     af.push_back(new M3uLineAnalyzerFactory);
+     return af;
+  }
+};
+
+STRIGI_ANALYZER_FACTORY(M3uFactoryFactory)
+
+
+
+#if 0
+
+
+
+
 
 #include <kfilemetainfo.h>
 #include <kurl.h>
@@ -35,5 +107,6 @@ public:
     
     virtual bool readInfo( KFileMetaInfo& info, uint what );
 };
+#endif
 
 #endif

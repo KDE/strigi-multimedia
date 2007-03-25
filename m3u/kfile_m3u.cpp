@@ -1,5 +1,6 @@
 /* This file is part of the KDE project
  * Copyright (C) 2001, 2002 Rolf Magnus <ramagnus@kde.org>
+ * Copyright (C) 2007 Tim Beaulen <tbscope@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -19,6 +20,111 @@
  */
 
 #include "kfile_m3u.h"
+
+#include <strigi/fieldtypes.h>
+#include <strigi/analysisresult.h>
+#include <strigi/streamlineanalyzer.h>
+
+#include <QString>
+#include <kdebug.h>
+
+// AnalyzerFactory
+void M3uLineAnalyzerFactory::registerFields(Strigi::FieldRegister& reg) 
+{
+    tracksField = reg.registerField("tracks", Strigi::FieldRegister::integerType, 1, 0);
+    trackPathField = reg.registerField("trackpath", Strigi::FieldRegister::stringType, 1, 0);
+}
+
+// Analyzer
+void M3uLineAnalyzer::startAnalysis(Strigi::AnalysisResult* i) {
+    analysisResult = i;
+    ready = false;
+    line = 0;
+    count = 0;
+}
+
+void M3uLineAnalyzer::handleLine(const char* data, uint32_t length) 
+{
+    if (ready) 
+        return;
+    
+    ++line;
+
+    QString strLine(data);
+    strLine = strLine.trimmed();
+
+    if (strLine.isEmpty())
+        return;
+
+    if (!strLine.startsWith('#')) {
+        ++count;
+    }
+    
+#if 0
+    if (line == 1 && (length < 9 || strncmp(data, "/* XPM */", 9))) {
+        // this is not an xpm file
+        ready = true;
+        return;
+    } else if (length == 0 || data[0] != '"') {
+        return;
+    }
+    uint32_t i = 0;
+    // we have found the line which should contain the information we want
+    ready = true;
+    // read the height
+    uint32_t propertyValue = 0;
+    i++;
+    while (i < length && isdigit(data[i])) {
+        propertyValue = (propertyValue * 10) + data[i] - '0';
+        i++;
+    }
+
+    if (i >= length || data[i] != ' ')
+        return;
+
+    analysisResult->setField(factory->heightField, propertyValue);
+
+    // read the width
+    propertyValue = 0;
+    i++;
+    while (i < length && isdigit(data[i])) {
+        propertyValue = (propertyValue * 10) + data[i] - '0';
+        i++;
+    }
+
+    if (i >= length || data[i] != ' ')
+        return;
+
+    analysisResult->setField(factory->widthField, propertyValue);
+
+    // read the number of colors
+    propertyValue = 0;
+    i++;
+    while (i < length && isdigit(data[i])) {
+        propertyValue = (propertyValue * 10) + data[i] - '0';
+        i++;
+    }
+
+    if (i >= length || data[i] != ' ')
+        return;
+
+    analysisResult->setField(factory->numberOfColorsField, propertyValue);
+#endif
+}
+
+bool M3uLineAnalyzer::isReadyWithStream() 
+{
+    return ready;
+}
+
+void M3uLineAnalyzer::endAnalysis()
+{
+    kDebug(7034) << "m3u - endAnalysis" << endl;
+
+    analysisResult->setField(factory->tracksField, count);
+}
+
+#if 0
 
 #include <kdebug.h>
 #include <kurl.h>
@@ -85,3 +191,5 @@ bool KM3uPlugin::readInfo( KFileMetaInfo& info, uint )
 }
 
 #include "kfile_m3u.moc"
+#endif
+

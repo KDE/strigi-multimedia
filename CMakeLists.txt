@@ -1,8 +1,10 @@
 include(CheckIncludeFileCXX)
 
+add_subdirectory( m3u )
+
 message (STATUS "port kfile plugins!!!")
 if(KFILE_PLUGINS_PORTED)
-add_subdirectory( m3u ) 
+#add_subdirectory( m3u ) 
 add_subdirectory( au ) 
 add_subdirectory( avi ) 
 add_subdirectory( mpeg ) 
