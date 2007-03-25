@@ -60,6 +60,7 @@ friend class M3uLineAnalyzer;
 private:
     const Strigi::RegisteredField* tracksField; //Number of tracks in the m3u playlist
     const Strigi::RegisteredField* trackPathField; //The paths to the tracks in the playlist
+    const Strigi::RegisteredField* m3uTypeField; //The type of the m3u file, a simple list or an extended list
 
     const char* getName() const {
         return "M3uLineAnalyzer";

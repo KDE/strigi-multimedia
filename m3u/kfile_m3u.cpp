@@ -30,6 +30,7 @@ void M3uLineAnalyzerFactory::registerFields(Strigi::FieldRegister& reg)
 {
     tracksField = reg.registerField("tracks", Strigi::FieldRegister::integerType, 1, 0);
     trackPathField = reg.registerField("trackpath", Strigi::FieldRegister::stringType, 1, 0);
+    m3uTypeField = reg.registerField("m3uType", Strigi::FieldRegister::stringType, 1, 0);
 }
 
 // Analyzer
@@ -58,11 +59,18 @@ void M3uLineAnalyzer::handleLine(const char* data, uint32_t length)
 
     if (*data != '#') {
 
+        if (line == 1)
+            analysisResult->setField(factory->m3uTypeField, "simple");
+
         // TODO: Check for a valid url with QUrl
         // TODO: Add the url to the trackPathField
 
         ++count;
-    }
+    } else {
+        if (line == 1)
+            if (strncmp(data, "#EXTM3U", 7) == 0)
+                analysisResult->setField(factory->m3uTypeField, "extended");
+    } 
 }
 
 bool M3uLineAnalyzer::isReadyWithStream() 
