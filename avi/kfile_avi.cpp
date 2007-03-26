@@ -21,7 +21,7 @@
 #include <config.h>
 #include "kfile_avi.h"
 #include <QSize>
-#include <kprocess.h>
+#include <k3process.h>
 #include <klocale.h>
 #include <kgenericfactory.h>
 #include <kstringvalidator.h>

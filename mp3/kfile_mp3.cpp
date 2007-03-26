@@ -22,7 +22,7 @@
 
 #include "kfile_mp3.h"
 
-#include <kprocess.h>
+#include <k3process.h>
 #include <klocale.h>
 #include <kgenericfactory.h>
 #include <kstringvalidator.h>
