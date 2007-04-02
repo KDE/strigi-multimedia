@@ -43,7 +43,7 @@ public:
     M3uLineAnalyzer(const M3uLineAnalyzerFactory* f) : factory(f) {}
     ~M3uLineAnalyzer() {}
 
-    const char* getName() const { 
+    const char* name() const { 
         return "M3uLineAnalyzer"; 
     }
 
@@ -62,7 +62,7 @@ private:
     const Strigi::RegisteredField* trackPathField; //The paths to the tracks in the playlist
     const Strigi::RegisteredField* m3uTypeField; //The type of the m3u file, a simple list or an extended list
 
-    const char* getName() const {
+    const char* name() const {
         return "M3uLineAnalyzer";
     }
 
@@ -73,13 +73,10 @@ private:
     void registerFields(Strigi::FieldRegister&);
 };
 
-//TODO: remove this include when analyzerplugin.h is fixed
-#include <strigi/jstreamsconfig.h>
-
 class KDEMULTIMEDIA_EXPORT M3uFactoryFactory : public Strigi::AnalyzerFactoryFactory
 {
 public:
-  std::list<Strigi::StreamLineAnalyzerFactory*> getStreamLineAnalyzerFactories() const {
+  std::list<Strigi::StreamLineAnalyzerFactory*> streamLineAnalyzerFactories() const {
      std::list<Strigi::StreamLineAnalyzerFactory*> af;
      af.push_back(new M3uLineAnalyzerFactory);
      return af;

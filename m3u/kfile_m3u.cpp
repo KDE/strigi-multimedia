@@ -60,7 +60,7 @@ void M3uLineAnalyzer::handleLine(const char* data, uint32_t length)
     if (*data != '#') {
 
         if (line == 1)
-            analysisResult->setField(factory->m3uTypeField, "simple");
+            analysisResult->addValue(factory->m3uTypeField, "simple");
 
         // TODO: Check for a valid url with QUrl
         // TODO: Add the url to the trackPathField
@@ -69,7 +69,7 @@ void M3uLineAnalyzer::handleLine(const char* data, uint32_t length)
     } else {
         if (line == 1)
             if (strncmp(data, "#EXTM3U", 7) == 0)
-                analysisResult->setField(factory->m3uTypeField, "extended");
+                analysisResult->addValue(factory->m3uTypeField, "extended");
     } 
 }
 
@@ -81,6 +81,6 @@ bool M3uLineAnalyzer::isReadyWithStream()
 void M3uLineAnalyzer::endAnalysis()
 {
     if (extensionOk)
-        analysisResult->setField(factory->tracksField, count);
+        analysisResult->addValue(factory->tracksField, count);
 }
 
