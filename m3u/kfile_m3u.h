@@ -51,6 +51,7 @@ public:
     void handleLine(const char* data, uint32_t length);
     bool isReadyWithStream();
     void endAnalysis();
+    virtual const char* name() const { return "M3uLineAnalyzer"; }
 };
 
 class M3uLineAnalyzerFactory : public Strigi::StreamLineAnalyzerFactory 
