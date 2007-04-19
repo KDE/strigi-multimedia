@@ -35,21 +35,20 @@ ogg_stream_state v_stream_state;
 int              theora_p=0;
 int              vorbis_p=0;
 
-static int queue_page(ogg_page *page)
+static void queue_page(ogg_page *page)
 {
     if(theora_p)
         ogg_stream_pagein(&t_stream_state,page);
     if(vorbis_p)
         ogg_stream_pagein(&v_stream_state,page);
-    return 0;
 }
 
-static int buffer_data(FILE *in,ogg_sync_state *oy)
+static long buffer_data(FILE *in,ogg_sync_state *oy)
 {
     char *buffer=ogg_sync_buffer(oy,4096);
-    int bytes=fread(buffer,1,4096,in);
+    long bytes=fread(buffer,1,4096,in);
     ogg_sync_wrote(oy,bytes);
-    return(bytes);
+    return bytes;
 }
 
 typedef KGenericFactory<theoraPlugin> theoraFactory;
@@ -70,7 +69,7 @@ theoraPlugin::theoraPlugin(QObject *parent,
 
     group = addGroupInfo(info, "Video", i18n("Video Details"));
     setAttributes(group, 0);
-    item = addItemInfo(group, "Length", i18n("Length"), QVariant::Int);
+    item = addItemInfo(group, "Length", i18n("Length"), QVariant::Double);
     setUnit(item, KFileMimeTypeInfo::Seconds);
     setHint(item, KFileMimeTypeInfo::Length);
     item = addItemInfo(group, "Resolution", i18n("Resolution"), QVariant::Size);
@@ -110,9 +109,7 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
     theora_p=0;
     vorbis_p=0;
     int theora_serial=0;
-    int stateflag=0;
-
-    ogg_int64_t duration=0;
+    double duration=0;
 
     // libtheora is still a bit unstable and sadly the init_ functions don't
     // take care of things the way one would expect.  So, let's do some explicit
@@ -149,6 +146,7 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
     theora_comment_init(&t_comment);
     theora_info_init(&t_info);
 
+    int stateflag=0;
     while(!stateflag && buffer_data(fp,&o_sync_state)!=0)
     {
         while (ogg_sync_pageout(&o_sync_state,&o_page)>0)
@@ -239,7 +237,7 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
         }
         else
         {
-            int ret=buffer_data(fp,&o_sync_state); /* someone needs more data */
+            long ret=buffer_data(fp,&o_sync_state); /* someone needs more data */
             if(ret==0)
             {
                 kDebug(7034)<<"End of file while searching for codec headers."<<endl;
@@ -281,7 +279,7 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
             // queue_page(&o_page);
         }
         if (theora_serial==ogg_page_serialno(&o_page))
-            duration=(ogg_int64_t) theora_granule_time(&t_state,ogg_page_granulepos(&o_page));
+            duration=theora_granule_time(&t_state,ogg_page_granulepos(&o_page));
     }
 
     if (readTech)
@@ -290,7 +288,7 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
         if (t_info.fps_denominator!=0)
             stream_fps=t_info.fps_numerator/t_info.fps_denominator;
         KFileMetaInfoGroup videogroup = appendGroup(info, "Video");
-        appendItem(videogroup, "Length", int (duration));
+        appendItem(videogroup, "Length", duration);
         appendItem(videogroup, "Resolution", QSize(t_info.frame_width,t_info.frame_height));
         appendItem(videogroup, "FrameRate", stream_fps);
         appendItem(videogroup, "Quality", (int) t_info.quality);
