@@ -6,7 +6,6 @@
 ADD_DEFINITIONS(${TAGLIB_CFLAGS})
 set(kfile_mpc_PART_SRCS kfile_mpc.cpp )
 
-kde4_automoc(${kfile_mpc_PART_SRCS})
 
 kde4_add_plugin(kfile_mpc ${kfile_mpc_PART_SRCS})
 
