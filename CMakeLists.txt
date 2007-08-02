@@ -2,7 +2,6 @@ include(CheckIncludeFileCXX)
 
 message (STATUS "port strigi-analyzer !!!")
 if(KFILE_PLUGINS_PORTED) 
-add_subdirectory( m3u )
 add_subdirectory( avi ) 
 add_subdirectory( wav ) 
 add_subdirectory( sid ) 
