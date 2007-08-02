@@ -25,11 +25,10 @@
 #define STRIGI_IMPORT_API
 #include <strigi/analyzerplugin.h>
 #include <strigi/streamlineanalyzer.h>
-#include <kdemultimedia_export.h>
 
 class M3uLineAnalyzerFactory;
 
-class KDEMULTIMEDIA_EXPORT M3uLineAnalyzer : public Strigi::StreamLineAnalyzer 
+class M3uLineAnalyzer : public Strigi::StreamLineAnalyzer 
 {
 private:
     Strigi::AnalysisResult* analysisResult;
