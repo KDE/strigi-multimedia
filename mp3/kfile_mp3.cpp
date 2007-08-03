@@ -143,7 +143,7 @@ bool KMp3Plugin::readInfo(KFileMetaInfo &info, uint what)
 
     if(!file.isOpen())
     {
-        kDebug(7034) << "Couldn't open " << file.name() << endl;
+        kDebug(7034) << "Couldn't open " << file.name();
         return false;
     }
 
@@ -239,7 +239,7 @@ bool KMp3Plugin::writeInfo(const KFileMetaInfo &info) const
 
     if(!file.isOpen() || !TagLib::File::isWritable(file.name()))
     {
-        kDebug(7034) << "couldn't open " << info.path() << endl;
+        kDebug(7034) << "couldn't open " << info.path();
         return false;
     }
 
@@ -283,7 +283,7 @@ QValidator *KMp3Plugin::createValidator(const QString & /* mimetype */,
                                         const QString &group, const QString &key,
                                         QObject *parent, const char *name) const
 {
-    kDebug(7034) << "making a validator for " << group << "/" << key << endl;
+    kDebug(7034) << "making a validator for " << group << "/" << key;
 
     if(key == "Tracknumber" || key == "Date")
     {

@@ -132,7 +132,7 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
     fp = fopen(QFile::encodeName(info.path()),"rb");
     if (!fp)
     {
-        kDebug(7034) << "Unable to open " << QFile::encodeName(info.path()) << endl;
+        kDebug(7034) << "Unable to open " << QFile::encodeName(info.path());
         return false;
     }
 
@@ -197,12 +197,12 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
         {
             if(ret<0)
             {
-                kDebug(7034)<<"Error parsing Theora stream headers; corrupt stream?\n"<<endl;
+                kDebug(7034)<<"Error parsing Theora stream headers; corrupt stream?\n";
                 corruptedHeaders=true;
             }
             if(theora_decode_header(&t_info,&t_comment,&o_packet))
             {
-                kDebug(7034)<<"Error parsing Theora stream headers; corrupt stream?"<<endl;
+                kDebug(7034)<<"Error parsing Theora stream headers; corrupt stream?";
                 corruptedHeaders=true;
             }
             theora_p++;
@@ -215,12 +215,12 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
         {
             if(ret<0)
             {
-                kDebug(7034)<<"Error parsing Vorbis stream headers; corrupt stream"<<endl;
+                kDebug(7034)<<"Error parsing Vorbis stream headers; corrupt stream";
                 corruptedHeaders=true;
             }
             if(vorbis_synthesis_headerin(&v_info,&v_comment,&o_packet))
             {
-                kDebug(7034)<<"Error parsing Vorbis stream headers; corrupt stream?"<<endl;
+                kDebug(7034)<<"Error parsing Vorbis stream headers; corrupt stream?";
                 corruptedHeaders=true;
             }
             vorbis_p++;
@@ -240,7 +240,7 @@ bool theoraPlugin::readInfo( KFileMetaInfo& info, uint what)
             long ret=buffer_data(fp,&o_sync_state); /* someone needs more data */
             if(ret==0)
             {
-                kDebug(7034)<<"End of file while searching for codec headers."<<endl;
+                kDebug(7034)<<"End of file while searching for codec headers.";
                 corruptedHeaders=true;
             }
         }

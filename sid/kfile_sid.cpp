@@ -159,7 +159,7 @@ bool KSidPlugin::readInfo(KFileMetaInfo& info, uint /*what*/)
 
 bool KSidPlugin::writeInfo(const KFileMetaInfo& info) const
 {
-    kDebug(7034) << k_funcinfo << endl;
+    kDebug(7034) << k_funcinfo;
 
     char name[32] = {0};
     char artist[32] = {0};
@@ -184,7 +184,7 @@ bool KSidPlugin::writeInfo(const KFileMetaInfo& info) const
     if (s.isNull()) goto failure;
     strncpy(copyright, s.local8Bit(), 31);
     
-    kDebug(7034) << "Opening sid file " << info.path() << endl;
+    kDebug(7034) << "Opening sid file " << info.path();
     file = ::open(QFile::encodeName(info.path()), O_WRONLY);
     //name
     if (-1 == ::lseek(file, 0x16, SEEK_SET))
@@ -214,7 +214,7 @@ KSidPlugin::createValidator(const QString& /*mimetype*/, const QString& group,
                             const QString& /*key*/, QObject* parent,
                             const char* name) const
 {
-    kDebug(7034) << k_funcinfo << endl;
+    kDebug(7034) << k_funcinfo;
     // all items in "General" group are strings of max length 31
     if (group == "General")
         return new QRegExpValidator(QRegExp(".{,31}"), parent);

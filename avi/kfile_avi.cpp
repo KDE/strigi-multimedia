@@ -486,7 +486,7 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     // open file, set up stream and set endianness
     if (!f.open(QIODevice::ReadOnly))
     {
-        kDebug(7034) << "Couldn't open " << QFile::encodeName(info.path()) << endl;
+        kDebug(7034) << "Couldn't open " << QFile::encodeName(info.path());
         return false;
     }
     //QDataStream dstream(&file);
@@ -501,7 +501,7 @@ bool KAviPlugin::readInfo( KFileMetaInfo& info, uint /*what*/)
     wantstrf = false;
 
     if (!read_avi()) {
-        kDebug(7034) << "read_avi() failed!" << endl;
+        kDebug(7034) << "read_avi() failed!";
     }
 
     /***************************************************/

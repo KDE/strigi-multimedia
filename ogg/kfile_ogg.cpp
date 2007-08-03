@@ -176,7 +176,7 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
     fp = fopen(QFile::encodeName(info.path()),"rb");
     if (!fp)
     {
-        kDebug(7034) << "Unable to open " << QFile::encodeName(info.path()) << endl;
+        kDebug(7034) << "Unable to open " << QFile::encodeName(info.path());
         return false;
     }
 
@@ -201,7 +201,7 @@ bool KOggPlugin::readInfo( KFileMetaInfo& info, uint what )
             
         for (i=0; i < vc->comments; i++)
         {
-            kDebug(7034) << vc->user_comments[i] << endl;
+            kDebug(7034) << vc->user_comments[i];
             QStringList split = QString::fromUtf8(vc->user_comments[i]).split(QChar('='));
             split[0] = split[0].toLower();
             split[0][0] = split[0][0].toUpper();
@@ -256,7 +256,7 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
   
     if (!infile) 
     {
-        kDebug(7034) << "couldn't open " << info.path() << endl;
+        kDebug(7034) << "couldn't open " << info.path();
         return false;
     }
 
@@ -264,7 +264,7 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
     
     if ( vcedit_open(state, infile)==-1 ) 
     {
-        kDebug(7034) << "error in vcedit_open for " << info.path() << endl;
+        kDebug(7034) << "error in vcedit_open for " << info.path();
         vcedit_clear(state);
         return false;
     }
@@ -299,14 +299,14 @@ bool KOggPlugin::writeInfo(const KFileMetaInfo& info) const
         {
             QByteArray value = item.value().toString().utf8();
 
-            kDebug(7034) << " writing tag " << key << "=" << value << endl;
+            kDebug(7034) << " writing tag " << key << "=" << value;
        
             vorbis_comment_add_tag(vc,
                         const_cast<char*>(static_cast<const char*>(key)),
                         const_cast<char*>(static_cast<const char*>(value)));
         }
         else
-          kWarning(7034) << "ignoring " << key << endl;
+          kWarning(7034) << "ignoring " << key;
         
     }
     

@@ -168,7 +168,7 @@ bool KFlacPlugin::readInfo( KFileMetaInfo& info, uint what )
 
     if (!file || !file->isValid())
     {
-        kDebug(7034) << "Couldn't open " << file->name() << endl;
+        kDebug(7034) << "Couldn't open " << file->name();
         delete file;
         return false;
     }
@@ -232,7 +232,7 @@ bool KFlacPlugin::writeInfo(const KFileMetaInfo& info) const
     TagLib::File *file;
 
     if (!TagLib::File::isWritable(QFile::encodeName(info.path()).data())) {
-        kDebug(7034) << "can't write to " << info.path() << endl;
+        kDebug(7034) << "can't write to " << info.path();
         return false;
     }
 
@@ -245,7 +245,7 @@ bool KFlacPlugin::writeInfo(const KFileMetaInfo& info) const
 
     if(!file->isOpen())
     {
-        kDebug(7034) << "couldn't open " << info.path() << endl;
+        kDebug(7034) << "couldn't open " << info.path();
         delete file;
         return false;
     }
