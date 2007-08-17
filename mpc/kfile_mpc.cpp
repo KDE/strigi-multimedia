@@ -153,8 +153,8 @@ bool KMpcPlugin::readInfo( KFileMetaInfo& info, uint what )
     {
         KFileMetaInfoGroup commentgroup = appendGroup(info, "Comment");
 
-        QString date  = file->tag()->year() > 0 ? QString::number(file->tag()->year()) : QString::null;
-        QString track = file->tag()->track() > 0 ? QString::number(file->tag()->track()) : QString::null;
+        QString date  = file->tag()->year() > 0 ? QString::number(file->tag()->year()) : QString();
+        QString track = file->tag()->track() > 0 ? QString::number(file->tag()->track()) : QString();
 
         appendItem(commentgroup, "Title",       TStringToQString(file->tag()->title()).trimmed());
         appendItem(commentgroup, "Artist",      TStringToQString(file->tag()->artist()).trimmed());

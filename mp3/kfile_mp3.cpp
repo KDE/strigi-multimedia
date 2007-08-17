@@ -151,8 +151,8 @@ bool KMp3Plugin::readInfo(KFileMetaInfo &info, uint what)
     {
         KFileMetaInfoGroup id3group = appendGroup(info, "id3");
 
-        QString date  = file.tag()->year() > 0 ? QString::number(file.tag()->year()) : QString::null;
-        QString track = file.tag()->track() > 0 ? QString::number(file.tag()->track()) : QString::null;
+        QString date  = file.tag()->year() > 0 ? QString::number(file.tag()->year()) : QString();
+        QString track = file.tag()->track() > 0 ? QString::number(file.tag()->track()) : QString();
 
         QString title = TStringToQString(file.tag()->title()).trimmed();
         if (!title.isEmpty())
