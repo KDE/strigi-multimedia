@@ -17,8 +17,6 @@
  *
  */
 
-
-#include <config.h>
 #include "kfile_avi.h"
 #include <QSize>
 #include <k3process.h>

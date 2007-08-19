@@ -17,7 +17,6 @@
  *
  */
 
-#include <config.h>
 #include "kfile_wav.h"
 
 #include <k3process.h>

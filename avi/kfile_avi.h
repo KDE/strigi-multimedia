@@ -30,8 +30,6 @@ typedef unsigned short uint16_t;
 typedef unsigned int   uint32_t;
 #endif
 
-
-
 class QStringList;
 
 class KAviPlugin: public KFilePlugin
@@ -40,8 +38,6 @@ class KAviPlugin: public KFilePlugin
     
 public:
     KAviPlugin( QObject *parent, const QStringList& args );
-
-
 
     virtual bool readInfo( KFileMetaInfo& info, uint what);
 

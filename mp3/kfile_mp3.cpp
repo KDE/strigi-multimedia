@@ -18,8 +18,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "config.h"
-
 #include "kfile_mp3.h"
 
 #include <k3process.h>
