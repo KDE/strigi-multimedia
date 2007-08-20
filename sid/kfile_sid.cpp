@@ -159,7 +159,7 @@ bool KSidPlugin::readInfo(KFileMetaInfo& info, uint /*what*/)
 
 bool KSidPlugin::writeInfo(const KFileMetaInfo& info) const
 {
-    kDebug(7034) << k_funcinfo;
+    kDebug(7034) ;
 
     char name[32] = {0};
     char artist[32] = {0};
@@ -214,7 +214,7 @@ KSidPlugin::createValidator(const QString& /*mimetype*/, const QString& group,
                             const QString& /*key*/, QObject* parent,
                             const char* name) const
 {
-    kDebug(7034) << k_funcinfo;
+    kDebug(7034) ;
     // all items in "General" group are strings of max length 31
     if (group == "General")
         return new QRegExpValidator(QRegExp(".{,31}"), parent);
