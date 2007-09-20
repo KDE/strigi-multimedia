@@ -49,6 +49,7 @@ Name[tr]=FLAC Bilgisi
 Name[uk]=Інформація по FLAC
 Name[uz]=FLAC ҳақида маълумот
 Name[x-test]=xxFLAC Infoxx
+Name[zh_CN]=FLAC 信息
 Name[zh_HK]=FLAC 資訊
 Name[zh_TW]=FLAC 資訊
 ServiceTypes=KFilePlugin
