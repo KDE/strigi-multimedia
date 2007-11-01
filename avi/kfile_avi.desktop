@@ -59,6 +59,6 @@ Name[zh_HK]=AVI 資訊
 Name[zh_TW]=AVI 資訊
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_avi
-MimeType=video/x-msvideo
+MimeType=video/x-msvideo;
 PreferredGrous=Technical
 PreferredItems=Length,Resolution,Frame rate,Video codec,Audio codec

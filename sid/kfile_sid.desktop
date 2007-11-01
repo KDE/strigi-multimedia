@@ -54,6 +54,6 @@ Name[zh_HK]=SID 資訊
 Name[zh_TW]=SID 資訊
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_sid
-MimeType=audio/prs.sid
+MimeType=audio/prs.sid;
 PreferredGroups=General,Technical
 PreferredItems=Title,Artist,Copyright,Number of Songs,Start Song,Version

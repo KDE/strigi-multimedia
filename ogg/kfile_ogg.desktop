@@ -59,6 +59,6 @@ Name[zh_HK]=OGG 資訊
 Name[zh_TW]=OGG 資訊
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_ogg
-MimeType=audio/x-vorbis+ogg
+MimeType=audio/x-vorbis+ogg;
 PreferredGroups=Comment,Technical
 PreferredItems=Title,Artist,Album,Tracknumber,Genre,Bitrate,Length,Date,Description,Organization,Channels,UpperBitrate,LowerBitrate,NominalBitrate,Location,Copyright,Version
