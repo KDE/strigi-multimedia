@@ -2,6 +2,11 @@ include(CheckIncludeFileCXX)
 
 message (STATUS "port strigi-analyzer !!!")
 if(KFILE_PLUGINS_PORTED) 
+
+macro_optional_find_package(Theora)
+macro_log_feature(THEORA_FOUND "Theora" "A video codec intended for use within the Ogg's project's Ogg multimedia streaming system" "http://www.theora.org" FALSE "" "Required to build the Theora Strigi Analyzer.")
+
+
 add_subdirectory( avi ) 
 add_subdirectory( wav ) 
 add_subdirectory( sid ) 
