@@ -272,7 +272,7 @@ bool KAviPlugin::read_strl()
 
             /*
             this is a pretty annoying hack; many AVIs incorrectly report the
-            length of the strn field by 1 byte.  Its possible that strn's
+            length of the strn field by 1 byte.  It is possible that strn's
             should be word aligned, but no mention in the specs...
 
             I'll clean/optimise this a touch soon
