@@ -1,3 +1,11 @@
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/)
+find_package(Qt4 REQUIRED)
+find_package(KDE4 REQUIRED)
+include(KDE4Defaults)
+include(MacroLibrary)
+
+include_directories(${KDE4_INCLUDES} ${QT_INCLUDES})
+
 include(CheckIncludeFileCXX)
 
 message (STATUS "port strigi-analyzer !!!")
